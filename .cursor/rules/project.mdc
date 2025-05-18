@@ -1,0 +1,8 @@
+---
+description: Help the model understand the codebase
+globs: 
+alwaysApply: true
+---
+<context>
+The project you are working on is a frontend service of the Approvio project. The project use the React framework.
+</context>
