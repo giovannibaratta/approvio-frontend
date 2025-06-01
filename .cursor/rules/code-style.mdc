@@ -12,6 +12,11 @@ alwaysApply: true
 - Do not add unnecessary comments (e.g. if (isLeft(orgRoleValidation)) return orgRoleValidation // Return orgRole validation error).
 </constraints>
 
+<constraints react>
+- If a page is to complex, extract the components and move them dedicated file in src/components to keep things clean
+- Try to create reusable components
+</constraints>
+
 <constraints tests>
 - Inside the IT block, use the Given:[context], When, Expect pattern (use comments to divide the code in logic sections, leave spaces around the sections)
 - When testing a specific functionality, group tests in bad cases and good cases using the describe block
