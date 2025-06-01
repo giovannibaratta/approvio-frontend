@@ -49,7 +49,7 @@ export default tseslint.config(
       "eol-last": "error",
       "prefer-arrow-callback": "error",
       "no-trailing-spaces": "error",
-      quotes: ["warn", "single", {avoidEscape: true}],
+      quotes: ["warn", "double", {avoidEscape: true}],
       "no-restricted-properties": [
         "error",
         {
@@ -66,7 +66,6 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-function": "warn",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/ban-types": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", {argsIgnorePattern: "^_"}],
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
