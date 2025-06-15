@@ -3,6 +3,8 @@ import {debugLogin, type DebugLoginResponse} from "../services/api"
 import {Box, TextField, Button, Typography, Paper, Alert, CircularProgress} from "@mui/material"
 import {useAppDispatch} from "../store/hooks"
 import {setToken as setAuthToken} from "../store/authSlice"
+import {handleEither} from "../utils/either"
+import { useNotification } from "../providers/notification/NotificationContext"
 
 const DebugLoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("")
@@ -10,6 +12,7 @@ const DebugLoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [tokenLocal, setTokenLocal] = useState<string | null>(null)
   const dispatch = useAppDispatch()
+  const notification = useNotification()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -23,17 +26,20 @@ const DebugLoginPage: React.FC = () => {
       return
     }
 
-    try {
-      const result: DebugLoginResponse = await debugLogin(email)
-      setTokenLocal(result.token)
-      dispatch(setAuthToken(result.token))
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("An unexpected error occurred.")
+    const result = await debugLogin(email)
+
+    handleEither(
+      result,
+      (loginResponse: DebugLoginResponse) => {
+        setTokenLocal(loginResponse.token)
+        dispatch(setAuthToken(loginResponse.token))
+        notification.showSuccess("Login successful!")
+      },
+      (errorMessage: string) => {
+        setError(errorMessage)
       }
-    }
+    )
+
     setIsLoading(false)
   }
 
