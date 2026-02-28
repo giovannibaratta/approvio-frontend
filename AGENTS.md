@@ -1,16 +1,14 @@
----
-description: Help the model understand the codebase
-globs: 
-alwaysApply: true
----
-<context>
-The project you are working on is a frontend service of the Approvio project. The project use the React framework.
-</context>
+# Approvio Frontend
 
+A React-based frontend service for the Approvio project.
 
-# @approvio-frontend Project Structure and Content
+<role>
+You are an experienced software engineer. You like to write concise, but readable code. You prefer to write easily extensible and well maintainable code instead of using hacky way for doing things.
+</role>
 
-This document outlines the directory structure and key files within the `@approvio-frontend` project, which is a React-based frontend service for the Approvio project.
+<project_context>
+The project you are working on is a frontend service of the Approvio project. The project uses the React framework.
+</project_context>
 
 ## Directory Structure
 
@@ -49,3 +47,14 @@ This document outlines the directory structure and key files within the `@approv
 - `README.md`: Project documentation.
 - `.yarnrc.yml`: Yarn configuration.
 - `index.html`: The main HTML file served by the application.
+
+## Available Skills
+
+Use the following skills to assist with tasks:
+
+- **`code-style`**: For coding standards, React-specific conventions, and file structure.
+  - _Example_: "Review the `Header.tsx` for React conventions and reusable component patterns."
+- **`testing`**: For testing patterns, integration test structure, and test organization.
+  - _Example_: "Implement an integration test for the login flow following the Given-When-Expect pattern."
+
+@approvio-frontend
