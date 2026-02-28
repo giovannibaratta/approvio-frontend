@@ -326,7 +326,7 @@ const GroupDetailsPage: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" sx={{textTransform: "capitalize"}}>
-                            {member.role}
+                            {(member as any).role || "member"}
                           </Typography>
                         </TableCell>
                       </TableRow>

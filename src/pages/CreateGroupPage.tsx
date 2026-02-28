@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import {Box, Stepper, Step, StepLabel, Button, Typography, Paper, Container, CircularProgress} from "@mui/material"
+import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"

@@ -8,8 +8,31 @@ import {
   type GroupCreate,
   type ListUsers200Response,
   type ListGroups200Response,
+  type Space,
+  type WorkflowTemplateSummary,
+  type Workflow,
+  type WorkflowVote,
 } from "@approvio/api"
 import { type Either, left, right } from "fp-ts/Either"
+
+export interface ListSpaces200Response {
+  data: Space[]
+  pagination: Pagination
+}
+
+export interface ListWorkflowTemplates200Response {
+  data: WorkflowTemplateSummary[]
+  pagination: Pagination
+}
+
+export interface ListWorkflows200Response {
+  data: Workflow[]
+  pagination: Pagination
+}
+
+export interface ListWorkflowVotes200Response {
+  votes: WorkflowVote[]
+}
 
 export interface PaginatedGroupEntitiesResponse {
   entities: GroupMembership[]
@@ -357,5 +380,151 @@ export async function removeGroupEntities(
       return left(error.message)
     }
     return left(`An unknown error occurred while removing entities from group ${groupId}`)
+  }
+}
+
+export async function listSpaces(
+  page: number,
+  limit: number,
+  authToken: string | null
+): Promise<Either<string, ListSpaces200Response>> {
+  if (!authToken) {
+    return left("Authentication token is required.")
+  }
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString()
+  })
+
+  try {
+    const response = await fetch(`${BASE_URL}/spaces?${queryParams.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: `Failed to fetch spaces: ${response.status}` }))
+      return left(errorData.message || `Network response was not ok (${response.status}).`)
+    }
+
+    const result = await response.json() as ListSpaces200Response
+    return right(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return left(error.message)
+    }
+    return left("An unknown error occurred while fetching spaces")
+  }
+}
+
+export async function listWorkflowTemplates(
+  page: number,
+  limit: number,
+  authToken: string | null
+): Promise<Either<string, ListWorkflowTemplates200Response>> {
+  if (!authToken) {
+    return left("Authentication token is required.")
+  }
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString()
+  })
+
+  try {
+    const response = await fetch(`${BASE_URL}/workflow-templates?${queryParams.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: `Failed to fetch workflow templates: ${response.status}` }))
+      return left(errorData.message || `Network response was not ok (${response.status}).`)
+    }
+
+    const result = await response.json() as ListWorkflowTemplates200Response
+    return right(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return left(error.message)
+    }
+    return left("An unknown error occurred while fetching workflow templates")
+  }
+}
+
+export async function listWorkflows(
+  page: number,
+  limit: number,
+  authToken: string | null
+): Promise<Either<string, ListWorkflows200Response>> {
+  if (!authToken) {
+    return left("Authentication token is required.")
+  }
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString()
+  })
+
+  try {
+    const response = await fetch(`${BASE_URL}/workflows?${queryParams.toString()}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: `Failed to fetch workflows: ${response.status}` }))
+      return left(errorData.message || `Network response was not ok (${response.status}).`)
+    }
+
+    const result = await response.json() as ListWorkflows200Response
+    return right(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return left(error.message)
+    }
+    return left("An unknown error occurred while fetching workflows")
+  }
+}
+
+export async function listWorkflowVotes(
+  workflowId: string,
+  authToken: string | null
+): Promise<Either<string, ListWorkflowVotes200Response>> {
+  if (!authToken) {
+    return left("Authentication token is required.")
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/workflows/${workflowId}/votes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: `Failed to fetch workflow votes: ${response.status}` }))
+      return left(errorData.message || `Network response was not ok (${response.status}).`)
+    }
+
+    const result = await response.json() as ListWorkflowVotes200Response
+    return right(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return left(error.message)
+    }
+    return left("An unknown error occurred while fetching workflow votes")
   }
 }

@@ -1,42 +1,44 @@
 import React, {useEffect, useState} from "react"
-import {Alert} from "@mui/material"
-import {listUsers} from "../services/api"
+import {Box, Alert} from "@mui/material"
+import {listSpaces, type ListSpaces200Response} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
-import type {ListUsers200Response, Pagination, UserSummary} from "@approvio/api"
+import type {Space, Pagination} from "@approvio/api"
 import {useAuthToken} from "../hooks/useAuthToken"
 import {DataTable, type Column} from "../components/DataTable"
 
-const columns: Column<UserSummary>[] = [
-  {id: "name", label: "Name", render: (user) => user.displayName},
-  {id: "email", label: "Email", render: (user) => user.email},
+const columns: Column<Space>[] = [
+  {id: "name", label: "Name", render: (space) => space.name},
+  {id: "description", label: "Description", render: (space) => space.description || "No description"},
+  {
+    id: "createdAt",
+    label: "Created At",
+    render: (space) => new Date(space.createdAt).toLocaleDateString()
+  },
 ]
 
-const UsersPage: React.FC = () => {
-  const [users, setUsers] = useState<UserSummary[]>([])
+const SpacesPage: React.FC = () => {
+  const [spaces, setSpaces] = useState<Space[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [page, setPage] = useState<number>(0) // MUI TablePagination is 0-indexed
+  const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
   const authToken = useAuthToken()
   const notification = useNotification()
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchSpaces = async () => {
       setLoading(true)
       setError(null)
 
-      const result = await listUsers(authToken, {
-        page: page + 1,
-        limit: rowsPerPage,
-      })
+      const result = await listSpaces(page + 1, rowsPerPage, authToken)
 
       handleEither(
         result,
-        (response: ListUsers200Response) => {
-          setUsers(response.users)
+        (response: ListSpaces200Response) => {
+          setSpaces(response.data)
           setPagination(response.pagination)
         },
         (errorMessage: string) => {
@@ -48,7 +50,7 @@ const UsersPage: React.FC = () => {
       setLoading(false)
     }
 
-    fetchUsers()
+    fetchSpaces()
   }, [page, rowsPerPage, authToken, notification])
 
   const handleChangePage = (newPage: number) => {
@@ -57,7 +59,7 @@ const UsersPage: React.FC = () => {
 
   const handleChangeRowsPerPage = (newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage)
-    setPage(0) // Reset to first page
+    setPage(0)
   }
 
   if (error) {
@@ -69,18 +71,20 @@ const UsersPage: React.FC = () => {
   }
 
   return (
-    <DataTable
-      title="Users"
-      columns={columns}
-      data={users}
-      loading={loading}
-      total={pagination?.total || 0}
-      page={page}
-      rowsPerPage={rowsPerPage}
-      onPageChange={handleChangePage}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
+    <Box>
+      <DataTable
+        title="Spaces"
+        columns={columns}
+        data={spaces}
+        loading={loading}
+        total={pagination?.total || 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Box>
   )
 }
 
-export default UsersPage
+export default SpacesPage

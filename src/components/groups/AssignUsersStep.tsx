@@ -179,6 +179,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
         id: user.id,
         displayName: user.displayName,
         email: user.email,
+        orgRole: "member",
         createdAt: new Date().toISOString()
       }
       const userWithRole: UserAssignment = {...userForAssignment, role: "approver"}

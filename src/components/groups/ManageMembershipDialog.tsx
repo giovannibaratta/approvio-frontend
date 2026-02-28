@@ -156,6 +156,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         id: user.id,
         displayName: user.displayName,
         email: user.email,
+        orgRole: "member",
         createdAt: new Date().toISOString(),
         role: "approver",
         isNew: true,
@@ -174,11 +175,12 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         id: userSummary.id,
         displayName: userSummary.displayName,
         email: userSummary.email,
+        orgRole: "member",
         createdAt: new Date().toISOString(),
-        role: currentMembers.find(m => m.entity.entityId === userSummary.id)?.role || "",
+        role: (currentMembers.find(m => m.entity.entityId === userSummary.id) as any)?.role || "",
         isNew: false,
         isRemoved: true,
-        originalRole: currentMembers.find(m => m.entity.entityId === userSummary.id)?.role
+        originalRole: (currentMembers.find(m => m.entity.entityId === userSummary.id) as any)?.role
       }
       setDraftMembers(prev => [...prev, memberToRemove])
     }

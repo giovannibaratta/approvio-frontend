@@ -2,15 +2,6 @@ import React, {useEffect, useState} from "react"
 import {
   Box,
   Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  CircularProgress,
   Alert,
   Button
 } from "@mui/material"
@@ -22,6 +13,7 @@ import AddIcon from "@mui/icons-material/Add"
 import Tooltip from "@mui/material/Tooltip"
 import type {Group, ListGroups200Response, Pagination} from "@approvio/api"
 import {useAuthToken} from "../hooks/useAuthToken"
+import {DataTable, type Column} from "../components/DataTable"
 
 const GroupsPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([])
@@ -60,21 +52,13 @@ const GroupsPage: React.FC = () => {
     fetchGroups()
   }, [page, rowsPerPage, authToken, notification])
 
-  const handleChangePage = (_event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage)
   }
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
+  const handleChangeRowsPerPage = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage)
     setPage(0) // Reset to first page
-  }
-
-  if (loading) {
-    return (
-      <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", height: "80vh"}}>
-        <CircularProgress />
-      </Box>
-    )
   }
 
   if (error) {
@@ -85,74 +69,68 @@ const GroupsPage: React.FC = () => {
     )
   }
 
-  return (
-    <Paper sx={{m: 2, p: 2}}>
-      <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2}}>
-        <Typography variant="h4" component="h1">
-          Groups
+  const columns: Column<Group>[] = [
+    {
+      id: "name",
+      label: "Name",
+      render: (group) => (
+        <Tooltip title={`Click to view details for ${group.name}`} placement="top-start">
+          <Typography
+            variant="body2"
+            sx={{fontWeight: "medium", color: "primary.main", cursor: "pointer"}}
+            onClick={() => navigate(`/groups/${group.id}`)}
+          >
+            {group.name}
+          </Typography>
+        </Tooltip>
+      )
+    },
+    {
+      id: "description",
+      label: "Description",
+      render: (group) => (
+        <Typography variant="body2" color="text.secondary">
+          {group.description || "No description"}
         </Typography>
+      )
+    },
+    {
+      id: "entitiesCount",
+      label: "Entity Count",
+      render: (group) => <Typography variant="body2">{group.entitiesCount}</Typography>
+    },
+    {
+      id: "createdAt",
+      label: "Created At",
+      render: (group) => (
+        <Tooltip title={new Date(group.createdAt).toLocaleString()} placement="top">
+          <Typography variant="body2" color="text.secondary">
+            {new Date(group.createdAt).toLocaleDateString()}
+          </Typography>
+        </Tooltip>
+      )
+    }
+  ]
+
+  return (
+    <Box>
+      <Box sx={{display: "flex", justifyContent: "flex-end", m: 2, mb: 0}}>
         <Button variant="contained" component={RouterLink} to="/groups/create" startIcon={<AddIcon />}>
           Create Group
         </Button>
       </Box>
-      <TableContainer>
-        <Table stickyHeader aria-label="groups table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell align="center">Entity Count</TableCell>
-              <TableCell align="center">Created At</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {groups &&
-              groups.map(group => (
-                <TableRow
-                  hover
-                  key={group.id}
-                  onClick={() => navigate(`/groups/${group.id}`)}
-                  sx={{cursor: "pointer"}}
-                >
-                  <TableCell>
-                    <Tooltip title={`Click to view details for ${group.name}`} placement="top-start">
-                      <Typography variant="body2" sx={{fontWeight: "medium", color: "primary.main"}}>
-                        {group.name}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {group.description || "No description"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Typography variant="body2">{group.entitiesCount}</Typography>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Tooltip title={new Date(group.createdAt).toLocaleString()} placement="top">
-                      <Typography variant="body2" color="text.secondary">
-                        {new Date(group.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {pagination && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={pagination.total}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      )}
-    </Paper>
+      <DataTable
+        title="Groups"
+        columns={columns}
+        data={groups}
+        loading={loading}
+        total={pagination?.total || 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Box>
   )
 }
 

@@ -5,6 +5,10 @@ import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import UsersPage from "./pages/UsersPage"
 import GroupsPage from "./pages/GroupsPage"
+import SpacesPage from "./pages/SpacesPage"
+import WorkflowTemplatesPage from "./pages/WorkflowTemplatesPage"
+import WorkflowsPage from "./pages/WorkflowsPage"
+import WorkflowVotesPage from "./pages/WorkflowVotesPage"
 import CreateGroupPage from "./pages/CreateGroupPage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
@@ -66,8 +70,17 @@ const App: React.FC = () => {
                       <Button component={RouterLink} to="/users" sx={{color: "common.white", mr: 1}}>
                         Users
                       </Button>
-                      <Button component={RouterLink} to="/groups" sx={{color: "common.white", mr: 2}}>
+                      <Button component={RouterLink} to="/groups" sx={{color: "common.white", mr: 1}}>
                         Groups
+                      </Button>
+                      <Button component={RouterLink} to="/spaces" sx={{color: "common.white", mr: 1}}>
+                        Spaces
+                      </Button>
+                      <Button component={RouterLink} to="/workflow-templates" sx={{color: "common.white", mr: 1}}>
+                        Templates
+                      </Button>
+                      <Button component={RouterLink} to="/workflows" sx={{color: "common.white", mr: 2}}>
+                        Workflows
                       </Button>
                       <Divider orientation="vertical" flexItem sx={{bgcolor: "primary.light", mr: 2}} />
                     </>
@@ -101,6 +114,10 @@ const App: React.FC = () => {
                 <Route path="/groups" element={<GroupsPage />} />
                 <Route path="/groups/create" element={<CreateGroupPage />} />
                 <Route path="/groups/:groupIdentifier" element={<GroupDetailsPage />} />
+                <Route path="/spaces" element={<SpacesPage />} />
+                <Route path="/workflow-templates" element={<WorkflowTemplatesPage />} />
+                <Route path="/workflows" element={<WorkflowsPage />} />
+                <Route path="/workflows/:workflowId/votes" element={<WorkflowVotesPage />} />
               </Route>
             </Routes>
           </Container>

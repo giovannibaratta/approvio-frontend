@@ -15,10 +15,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@approvio/api@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@approvio/api@npm:0.0.2"
-  checksum: 10/f07911f37bb97d3d56df1ba1145b8228b0abc3db2715fc829a158a976b4b016d0ac574f988010715bd2f2160420033455e7557f8a6ecf957e7209e90167ade26
+"@approvio/api@npm:^0.0.26":
+  version: 0.0.26
+  resolution: "@approvio/api@npm:0.0.26"
+  checksum: 10/4ae9e36ad341dcf346dc11542a01b9dec50a8fcf0c41ef951288cb0f4547d2803c973ba3c5bf2b49069caf88d293514c2e832047ef52f5f64c14a1d4028d5143
   languageName: node
   linkType: hard
 
@@ -26,7 +26,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@approvio/frontend@workspace:."
   dependencies:
-    "@approvio/api": "npm:0.0.2"
+    "@approvio/api": "npm:^0.0.26"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.0"
     "@mui/icons-material": "npm:7.1.0"
