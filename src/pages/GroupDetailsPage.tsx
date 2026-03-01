@@ -38,6 +38,7 @@ import type { PaginatedGroupEntitiesResponse } from "../services/api"
 interface MemberDetails extends GroupMembership {
   userDetails?: User
   loadingUserDetails: boolean
+  role?: string
 }
 
 const GroupDetailsPage: React.FC = () => {
@@ -326,7 +327,7 @@ const GroupDetailsPage: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" sx={{textTransform: "capitalize"}}>
-                            {(member as any).role || "member"}
+                            {member.role || "member"}
                           </Typography>
                         </TableCell>
                       </TableRow>
