@@ -1,15 +1,18 @@
 import React from "react"
 import {BrowserRouter as Router, Routes, Route, Link as RouterLink, Navigate, Outlet} from "react-router-dom"
-import DebugLoginPage from "./pages/DebugPage"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
+import AuthCallbackPage from "./pages/AuthCallbackPage"
 import UsersPage from "./pages/UsersPage"
 import GroupsPage from "./pages/GroupsPage"
 import CreateGroupPage from "./pages/CreateGroupPage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
+import ProfilePage from "./pages/ProfilePage"
 import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
-import {clearToken} from "./store/authSlice"
+import {clearAuth, setAuthenticated} from "./store/authSlice"
+import {getEntityInfo} from "./services/auth"
+import {isRight} from "fp-ts/lib/Either"
 import {NotificationProvider} from "./providers/notification/NotificationProvider"
 
 interface ProtectedRouteProps {
@@ -25,19 +28,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, redirec
 }
 
 const App: React.FC = () => {
-  const isDevelopment = import.meta.env.VITE_APP_ENV === "development"
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-  const token = useAppSelector(state => state.auth.token)
   const dispatch = useAppDispatch()
 
   React.useEffect(() => {
-    if (token) {
-      console.log("Auth Token from Redux:", token)
+    const checkSession = async () => {
+      const result = await getEntityInfo()
+      if (isRight(result)) {
+        dispatch(setAuthenticated(true))
+      } else {
+        dispatch(clearAuth())
+      }
     }
-  }, [token])
+    checkSession()
+  }, [dispatch])
 
   const handleLogout = () => {
-    dispatch(clearToken())
+    dispatch(clearAuth())
   }
 
   return (
@@ -73,10 +80,14 @@ const App: React.FC = () => {
                     </>
                   )}
                   {isAuthenticated && (
-                    <Button
-                      variant="outlined"
-                      onClick={handleLogout}
-                      sx={{
+                    <>
+                      <Button component={RouterLink} to="/me" sx={{color: "common.white", mr: 1}}>
+                        Profile
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={handleLogout}
+                        sx={{
                         ml: 1,
                         color: "common.white",
                         borderColor: "common.white",
@@ -85,6 +96,7 @@ const App: React.FC = () => {
                     >
                       Logout
                     </Button>
+                    </>
                   )}
                 </Box>
               </Toolbar>
@@ -94,13 +106,14 @@ const App: React.FC = () => {
           <Container component="main" maxWidth="lg" sx={{flexGrow: 1, p: 3}}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/debug" element={isDevelopment ? <DebugLoginPage /> : <Navigate to="/login" replace />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
               <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/groups" element={<GroupsPage />} />
                 <Route path="/groups/create" element={<CreateGroupPage />} />
                 <Route path="/groups/:groupIdentifier" element={<GroupDetailsPage />} />
+                <Route path="/me" element={<ProfilePage />} />
               </Route>
             </Routes>
           </Container>

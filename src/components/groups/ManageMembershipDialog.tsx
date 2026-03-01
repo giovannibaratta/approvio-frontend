@@ -44,7 +44,6 @@ import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
 
 import type { MemberDetails } from "@/models/group-details"
-import {useAuthToken} from "../../hooks/useAuthToken"
 
 interface UserAssignment extends User {
   role: string
@@ -81,7 +80,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const authToken = useAuthToken()
   const notification = useNotification()
 
   useEffect(() => {
@@ -102,7 +100,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       }
 
       setLoadingSearch(true)
-      const result = await listUsers(authToken, {page: 1, limit: 20, search: query})
+      const result = await listUsers({page: 1, limit: 20, search: query})
 
       handleEither(
         result,
@@ -122,7 +120,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
 
       setLoadingSearch(false)
     },
-    [authToken, draftMembers, notification]
+    [draftMembers, notification]
   )
 
   const debouncedSearch = useMemo(
@@ -219,7 +217,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         }))
       }
 
-      const removeResult = await removeGroupEntities(groupId, payload, authToken)
+      const removeResult = await removeGroupEntities(groupId, payload)
       handleEither(
         removeResult,
         () => { /* Do nothing on success */ },
@@ -244,7 +242,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         }))
       }
 
-      const addResult = await addGroupEntities(groupId, payload, authToken)
+      const addResult = await addGroupEntities(groupId, payload)
       handleEither(
         addResult,
         () => { /* Do nothing on success */ },

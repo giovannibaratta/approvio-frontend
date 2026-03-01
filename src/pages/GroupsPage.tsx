@@ -21,7 +21,6 @@ import {handleEither} from "../utils/either"
 import AddIcon from "@mui/icons-material/Add"
 import Tooltip from "@mui/material/Tooltip"
 import type {Group, ListGroups200Response, Pagination} from "@approvio/api"
-import {useAuthToken} from "../hooks/useAuthToken"
 
 const GroupsPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([])
@@ -31,7 +30,6 @@ const GroupsPage: React.FC = () => {
   const [page, setPage] = useState<number>(0) // MUI TablePagination is 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
-  const authToken = useAuthToken()
   const navigate = useNavigate()
   const notification = useNotification()
 
@@ -40,7 +38,7 @@ const GroupsPage: React.FC = () => {
       setLoading(true)
       setError(null)
 
-      const result = await listGroups(page + 1, rowsPerPage, authToken)
+      const result = await listGroups(page + 1, rowsPerPage)
 
       handleEither(
         result,
@@ -58,7 +56,7 @@ const GroupsPage: React.FC = () => {
     }
 
     fetchGroups()
-  }, [page, rowsPerPage, authToken, notification])
+  }, [page, rowsPerPage, notification])
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage)

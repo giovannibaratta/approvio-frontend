@@ -17,7 +17,6 @@ import {listUsers} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {ListUsers200Response, Pagination, UserSummary} from "@approvio/api"
-import {useAuthToken} from "../hooks/useAuthToken"
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<UserSummary[]>([])
@@ -27,7 +26,6 @@ const UsersPage: React.FC = () => {
   const [page, setPage] = useState<number>(0) // MUI TablePagination is 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
-  const authToken = useAuthToken()
   const notification = useNotification()
 
   useEffect(() => {
@@ -35,7 +33,7 @@ const UsersPage: React.FC = () => {
       setLoading(true)
       setError(null)
 
-      const result = await listUsers(authToken, {
+      const result = await listUsers({
         page: page + 1,
         limit: rowsPerPage,
       })
@@ -56,7 +54,7 @@ const UsersPage: React.FC = () => {
     }
 
     fetchUsers()
-  }, [page, rowsPerPage, authToken, notification])
+  }, [page, rowsPerPage, notification])
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage)

@@ -5,7 +5,6 @@ import {useAppSelector} from "../store/hooks"
 
 const LoginPage: React.FC = () => {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-  const isDevelopment = import.meta.env.VITE_APP_ENV === "development"
 
   return (
     <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh"}}>
@@ -19,20 +18,15 @@ const LoginPage: React.FC = () => {
             <Typography variant="body1" color="text.secondary" sx={{mb: 3}}>
               Please log in to access the application and manage your approval workflows.
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{mb: 4}}>
-              Login functionality is coming soon. Stay tuned for updates!
-            </Typography>
-            {isDevelopment && (
-              <Button
-                component={RouterLink}
-                to="/debug"
-                variant="contained"
-                color="secondary"
-                sx={{mt: 2}}
-              >
-                Debug Login (Development Only)
-              </Button>
-            )}
+            <Button
+              href={`${import.meta.env.VITE_API_BASE_URL || "/api"}/auth/web/login`}
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{mt: 2}}
+            >
+              Login with SSO
+            </Button>
           </>
         ) : (
           <>

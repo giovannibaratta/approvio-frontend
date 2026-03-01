@@ -30,7 +30,6 @@ import {listUsers, listGroupEntities} from "../../services/api"
 import type { User, UserSummary, ListUsers200Response } from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
-import {useAuthToken} from "../../hooks/useAuthToken"
 
 interface UserAssignment extends User {
   role: string
@@ -64,16 +63,15 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const authToken = useAuthToken()
   const notification = useNotification()
 
   useEffect(() => {
-    if (groupId && authToken) {
+    if (groupId) {
       setLoadingAssigned(true)
       setAssignedError(null)
 
       const fetchAssignedUsers = async () => {
-        const result = await listGroupEntities(groupId, 1, 1000, authToken)
+        const result = await listGroupEntities(groupId, 1, 1000)
 
         handleEither(
           result,
@@ -98,7 +96,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
     } else {
       setAssignedUserIds([])
     }
-  }, [groupId, authToken])
+  }, [groupId, notification])
 
   const performSearch = useCallback(
     async (query: string) => {
@@ -110,7 +108,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
       setLoadingSearch(true)
       setSearchError(null)
 
-      const result = await listUsers(authToken, {page: 1, limit: 20, search: query})
+      const result = await listUsers({page: 1, limit: 20, search: query})
 
       handleEither(
         result,
@@ -133,7 +131,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 
       setLoadingSearch(false)
     },
-    [authToken, assignedUserIds, selectedUsers]
+    [assignedUserIds, selectedUsers, notification]
   )
 
   const debouncedSearch = useMemo(

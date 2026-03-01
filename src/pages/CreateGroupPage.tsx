@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import {Box, Stepper, Step, StepLabel, Button, Typography, Paper, Container, CircularProgress} from "@mui/material"
+import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -7,7 +7,6 @@ import CreateGroupForm from "../components/groups/GroupDetailsForm"
 import AssignUsersStep from "../components/groups/AssignUsersStep"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
 import type { GroupCreate } from "@approvio/api"
-import {useAuthToken} from "../hooks/useAuthToken"
 import {createGroup, addGroupEntities} from "../services/api"
 
 interface UserAssignment {
@@ -55,7 +54,6 @@ const CreateGroupPage: React.FC = () => {
   const [groupNameError, setGroupNameError] = useState<string | null>(null)
   const [usersToAssign, setUsersToAssign] = useState<UserAssignment[]>([])
 
-  const authToken = useAuthToken()
   const navigate = useNavigate()
   const notification = useNotification()
 
@@ -91,7 +89,7 @@ const CreateGroupPage: React.FC = () => {
       clearApiErrors()
 
       const payload: GroupCreate = {name: groupName, description: groupDescription}
-      const result = await createGroup(payload, authToken)
+      const result = await createGroup(payload)
 
       handleEither(
         result,
@@ -135,7 +133,7 @@ const CreateGroupPage: React.FC = () => {
       }))
     }
 
-    const result = await addGroupEntities(createdGroupId, assignmentPayload, authToken)
+    const result = await addGroupEntities(createdGroupId, assignmentPayload)
 
     handleEither(
       result,

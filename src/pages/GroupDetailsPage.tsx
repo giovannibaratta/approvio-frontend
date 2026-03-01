@@ -28,7 +28,6 @@ import {handleEither} from "../utils/either"
 import ManageMembershipDialog from "../components/groups/ManageMembershipDialog"
 import { isRight } from "fp-ts/lib/Either"
 import { useNotification } from "../providers/notification/NotificationContext"
-import {useAuthToken} from "../hooks/useAuthToken"
 
 import type { Group, Pagination } from "@approvio/api"
 import type { User } from "@approvio/api"
@@ -53,7 +52,6 @@ const GroupDetailsPage: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [manageMembershipDialogOpen, setManageMembershipDialogOpen] = useState<boolean>(false)
 
-  const authToken = useAuthToken()
   const notification = useNotification()
 
   useEffect(() => {
@@ -65,7 +63,7 @@ const GroupDetailsPage: React.FC = () => {
       setLoadingGroup(true)
       setErrorGroup(null)
 
-      const result = await getGroup(groupIdentifier, authToken)
+      const result = await getGroup(groupIdentifier)
 
       handleEither(
         result,
@@ -82,7 +80,7 @@ const GroupDetailsPage: React.FC = () => {
     }
 
     fetchGroupDetails()
-  }, [groupIdentifier, authToken, notification])
+  }, [groupIdentifier, notification])
 
   const fetchGroupMembers = useCallback(
     async () => {
@@ -97,7 +95,7 @@ const GroupDetailsPage: React.FC = () => {
     setMembers([])
     setPagination(null)
 
-    const result = await listGroupEntities(groupIdentifier, page + 1, rowsPerPage, authToken)
+    const result = await listGroupEntities(groupIdentifier, page + 1, rowsPerPage)
 
     handleEither(
       result,
@@ -114,7 +112,7 @@ const GroupDetailsPage: React.FC = () => {
         const humanMembers = membersWithLoadingState.filter(member => member.entity.entityType === "human")
         if (humanMembers.length > 0) {
           const userDetailsPromises = humanMembers.map(async member => {
-            const userResult = await getUser(member.entity.entityId, authToken)
+            const userResult = await getUser(member.entity.entityId)
             return isRight(userResult) ? userResult.right : null
           })
 
@@ -141,11 +139,11 @@ const GroupDetailsPage: React.FC = () => {
     )
 
     setLoadingMembers(false)
-  }, [groupIdentifier, page, rowsPerPage, authToken, notification])
+  }, [groupIdentifier, page, rowsPerPage, notification])
 
   useEffect(() => {
     fetchGroupMembers()
-  }, [groupIdentifier, page, rowsPerPage, authToken, fetchGroupMembers])
+  }, [groupIdentifier, page, rowsPerPage, fetchGroupMembers])
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage)
@@ -160,7 +158,7 @@ const GroupDetailsPage: React.FC = () => {
     fetchGroupMembers()
 
     if (groupIdentifier) {
-      getGroup(groupIdentifier, authToken).then(result => {
+      getGroup(groupIdentifier).then(result => {
         handleEither(
           result,
           (groupData: Group) => setGroup(groupData),
