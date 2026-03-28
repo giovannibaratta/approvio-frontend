@@ -36,13 +36,28 @@ const theme = createTheme({
   }
 })
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </Provider>
-  </React.StrictMode>
-)
+// Conditionally start MSW in development and test mode
+async function enableMocking() {
+  if (import.meta.env.VITE_USE_MOCKS !== "true")
+    return
+
+  // Import the worker and handlers dynamically to avoid loading them in production
+  const {worker} = await import("./mocks/browser")
+
+  return worker.start({
+    onUnhandledRequest: "error"
+  })
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </Provider>
+    </React.StrictMode>
+  )
+})

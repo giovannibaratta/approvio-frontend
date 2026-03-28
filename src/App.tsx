@@ -12,7 +12,7 @@ import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Di
 import {useAppSelector, useAppDispatch} from "./store/hooks"
 import {clearAuth, setAuthenticated} from "./store/authSlice"
 import {getEntityInfo} from "./services/auth"
-import {isRight} from "fp-ts/lib/Either"
+import {isRight} from "fp-ts/Either"
 import {NotificationProvider} from "./providers/notification/NotificationProvider"
 
 interface ProtectedRouteProps {

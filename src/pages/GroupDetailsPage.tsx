@@ -26,7 +26,7 @@ import {
 } from "../services/api"
 import {handleEither} from "../utils/either"
 import ManageMembershipDialog from "../components/groups/ManageMembershipDialog"
-import { isRight } from "fp-ts/lib/Either"
+import { isRight } from "fp-ts/Either"
 import { useNotification } from "../providers/notification/NotificationContext"
 
 import type { Group, Pagination } from "@approvio/api"
