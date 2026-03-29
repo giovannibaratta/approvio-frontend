@@ -6,11 +6,19 @@ import {
   type GroupCreate,
   type ListUsers200Response,
   type ListGroups200Response,
-  type ListGroupEntities200Response
+  type WorkflowVote,
+  type ListGroupEntities200Response,
+  type ListSpaces200Response,
+  type ListWorkflowTemplates200Response,
+  type ListWorkflows200Response
 } from "@approvio/api"
 import {type Either, mapLeft} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
 import {API_BASE_URL} from "../constants"
+
+export interface ListWorkflowVotes200Response {
+  votes: WorkflowVote[]
+}
 
 const authenticator = new WebAuthenticator()
 const client = new ApprovioUserClient({endpoint: API_BASE_URL}, authenticator)
@@ -75,5 +83,23 @@ export async function removeGroupEntities(
   payload: RemoveGroupEntitiesRequest
 ): Promise<Either<string, Group>> {
   const result = await client.removeGroupEntities(groupId, payload)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listSpaces(page: number, limit: number): Promise<Either<string, ListSpaces200Response>> {
+  const result = await client.listSpaces({page, limit})()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listWorkflowTemplates(
+  page: number,
+  limit: number
+): Promise<Either<string, ListWorkflowTemplates200Response>> {
+  const result = await client.listWorkflowTemplates({page, limit})()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listWorkflows(page: number, limit: number): Promise<Either<string, ListWorkflows200Response>> {
+  const result = await client.listWorkflows({page, limit})()
   return mapLeft(handleApiError)(result)
 }
