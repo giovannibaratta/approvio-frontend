@@ -17,9 +17,8 @@ const onRefreshed = (success: boolean) => {
 
 export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
   const headers = new Headers(options.headers || {})
-  if (!headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json")
-  }
+
+  if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json")
 
   // Include credentials for HttpOnly cookies
   const requestOptions: RequestInit = {
@@ -44,18 +43,18 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
     if (!isRefreshing) {
       isRefreshing = true
       try {
+        console.log("Attempting to refresh authentication...")
         const refreshRes = await fetch(`${BASE_URL}/auth/web/refresh`, {
           method: "POST",
           credentials: "include"
         })
 
-        if (!refreshRes.ok) {
-          throw new Error("Refresh failed")
-        }
+        if (!refreshRes.ok) throw new Error("Refresh failed")
 
         isRefreshing = false
         onRefreshed(true)
       } catch {
+        console.error("Authentication refresh failed. Logging out.")
         isRefreshing = false
         store.dispatch(clearAuth())
         onRefreshed(false)

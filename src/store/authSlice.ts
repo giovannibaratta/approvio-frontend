@@ -13,9 +13,11 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      console.log("Setting authentication state to:", action.payload)
       state.isAuthenticated = action.payload
     },
     clearAuth: state => {
+      console.log("Clearing authentication state.")
       state.isAuthenticated = false
     }
   }

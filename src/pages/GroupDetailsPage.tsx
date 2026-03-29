@@ -29,10 +29,9 @@ import ManageMembershipDialog from "../components/groups/ManageMembershipDialog"
 import { isRight } from "fp-ts/Either"
 import { useNotification } from "../providers/notification/NotificationContext"
 
-import type { Group, Pagination } from "@approvio/api"
+import type { Group, ListGroupEntities200Response, Pagination } from "@approvio/api"
 import type { User } from "@approvio/api"
 import type { GroupMembership } from "@approvio/api"
-import type { PaginatedGroupEntitiesResponse } from "../services/api"
 
 interface MemberDetails extends GroupMembership {
   userDetails?: User
@@ -99,7 +98,7 @@ const GroupDetailsPage: React.FC = () => {
 
     handleEither(
       result,
-      async (response: PaginatedGroupEntitiesResponse) => {
+      async (response: ListGroupEntities200Response) => {
         const membersWithLoadingState: MemberDetails[] = response.entities.map(member => ({
           ...member,
           userDetails: undefined,
@@ -276,7 +275,6 @@ const GroupDetailsPage: React.FC = () => {
                     <TableCell>Type</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Email</TableCell>
-                    <TableCell>Role</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -321,11 +319,6 @@ const GroupDetailsPage: React.FC = () => {
                               N/A
                             </Typography>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{textTransform: "capitalize"}}>
-                            {member.role}
-                          </Typography>
                         </TableCell>
                       </TableRow>
                     ))

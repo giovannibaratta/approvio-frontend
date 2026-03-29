@@ -12,6 +12,8 @@
     "format:prettier": "yarn prettier --config .prettierrc . --write"
   },
   "dependencies": {
+    "@approvio/api": "0.0.32",
+    "@approvio/ts-sdk": "0.0.10",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
     "@mui/icons-material": "7.1.0",

@@ -17,33 +17,24 @@ import {
   ListItem,
   ListItemText,
   debounce,
-  ListItemIcon,
-  Select,
-  MenuItem,
-  FormControl
+  ListItemIcon
 } from "@mui/material"
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 
 import {listUsers, listGroupEntities} from "../../services/api"
-import type { User, UserSummary, ListUsers200Response } from "@approvio/api"
+import type { UserSummary, ListUsers200Response } from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
-
-interface UserAssignment extends User {
-  role: string
-}
 
 interface AssignUsersStepProps {
   groupName: string
   groupSuccessfullyCreated: boolean
   groupId?: string
   loading: boolean
-  onSelectedUsersChange: (users: UserAssignment[]) => void
+  onSelectedUsersChange: (users: UserSummary[]) => void
 }
-
-const possibleRoles = ["approver", "admin", "owner", "auditor"]
 
 const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
   groupName,
@@ -54,7 +45,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<UserSummary[]>([])
-  const [selectedUsers, setSelectedUsers] = useState<UserAssignment[]>([])
+  const [selectedUsers, setSelectedUsers] = useState<UserSummary[]>([])
   const [loadingSearch, setLoadingSearch] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const [assignedUserIds, setAssignedUserIds] = useState<string[]>([])
@@ -173,14 +164,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 
   const handleSelectUser = (user: UserSummary) => {
     if (!selectedUsers.some(selectedUser => selectedUser.id === user.id)) {
-      const userForAssignment: User = {
-        id: user.id,
-        displayName: user.displayName,
-        email: user.email,
-        createdAt: new Date().toISOString()
-      }
-      const userWithRole: UserAssignment = {...userForAssignment, role: "approver"}
-      setSelectedUsers(prevSelected => [...prevSelected, userWithRole])
+      setSelectedUsers(prevSelected => [...prevSelected, user])
       setSearchQuery("")
       setSearchResults([])
     }
@@ -227,10 +211,6 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
     )
   }
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    setSelectedUsers(prevSelected => prevSelected.map(user => (user.id === userId ? {...user, role: newRole} : user)))
-  }
-
   useEffect(() => {
     onSelectedUsersChange(selectedUsers)
   }, [selectedUsers, onSelectedUsersChange])
@@ -258,6 +238,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
             sx={{mb: 2}}
             disabled={loadingSearch || loadingAssigned || loading}
             inputRef={searchInputRef}
+            autoComplete="off"
             InputProps={{
               endAdornment: loadingSearch ? <CircularProgress color="inherit" size={20} /> : null
             }}
@@ -321,7 +302,6 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
                   <TableHead>
                     <TableRow>
                       <TableCell>User</TableCell>
-                      <TableCell>Role</TableCell>
                       <TableCell align="center">Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -337,21 +317,6 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
                               {user.email}
                             </Typography>
                           </Box>
-                        </TableCell>
-                        <TableCell>
-                          <FormControl size="small" sx={{minWidth: 120}}>
-                            <Select
-                              value={user.role}
-                              onChange={e => handleRoleChange(user.id, e.target.value)}
-                              variant="outlined"
-                            >
-                              {possibleRoles.map(role => (
-                                <MenuItem key={role} value={role}>
-                                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
                         </TableCell>
                         <TableCell align="center">
                           <IconButton

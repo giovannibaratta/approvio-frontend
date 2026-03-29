@@ -6,13 +6,8 @@ import {handleEither} from "../utils/either"
 import CreateGroupForm from "../components/groups/GroupDetailsForm"
 import AssignUsersStep from "../components/groups/AssignUsersStep"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
-import type { GroupCreate } from "@approvio/api"
+import type { GroupCreate, UserSummary } from "@approvio/api"
 import {createGroup, addGroupEntities} from "../services/api"
-
-interface UserAssignment {
-  id: string
-  role: string
-}
 
 enum CreateGroupSteps {
   CreateGroup = "CreateGroup",
@@ -52,7 +47,7 @@ const CreateGroupPage: React.FC = () => {
   const [groupSuccessfullyCreated, setGroupSuccessfullyCreated] = useState(false)
   const [createdGroupId, setCreatedGroupId] = useState<string | undefined>(undefined)
   const [groupNameError, setGroupNameError] = useState<string | null>(null)
-  const [usersToAssign, setUsersToAssign] = useState<UserAssignment[]>([])
+  const [usersToAssign, setUsersToAssign] = useState<UserSummary[]>([])
 
   const navigate = useNavigate()
   const notification = useNotification()
@@ -128,8 +123,7 @@ const CreateGroupPage: React.FC = () => {
 
     const assignmentPayload = {
       entities: usersToAssign.map(user => ({
-        entity: {entityType: "human", entityId: user.id},
-        role: user.role
+        entity: {entityType: "human", entityId: user.id}
       }))
     }
 

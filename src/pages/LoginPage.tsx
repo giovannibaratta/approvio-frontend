@@ -2,9 +2,12 @@ import React from "react"
 import {Typography, Paper, Box, Button} from "@mui/material"
 import {Link as RouterLink} from "react-router-dom"
 import {useAppSelector} from "../store/hooks"
+import { API_BASE_URL } from "../constants"
 
 const LoginPage: React.FC = () => {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
+
+  console.log("LoginPage rendered. Authentication state:", isAuthenticated)
 
   return (
     <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh"}}>
@@ -19,7 +22,7 @@ const LoginPage: React.FC = () => {
               Please log in to access the application and manage your approval workflows.
             </Typography>
             <Button
-              href={`${import.meta.env.VITE_API_BASE_URL || "/api"}/auth/web/login`}
+              href={`${API_BASE_URL}/auth/web/login`}
               variant="contained"
               color="primary"
               size="large"

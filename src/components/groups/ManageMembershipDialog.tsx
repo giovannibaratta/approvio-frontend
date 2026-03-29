@@ -22,9 +22,6 @@ import {
   ListItemText,
   debounce,
   Chip,
-  Select,
-  MenuItem,
-  FormControl,
   ButtonGroup
 } from "@mui/material"
 
@@ -34,7 +31,6 @@ import {
   removeGroupEntities,
 } from "../../services/api"
 import type {
-  User,
   AddGroupEntitiesRequest,
   RemoveGroupEntitiesRequest,
   UserSummary,
@@ -45,11 +41,9 @@ import {handleEither} from "../../utils/either"
 
 import type { MemberDetails } from "@/models/group-details"
 
-interface UserAssignment extends User {
-  role: string
+interface UserAssignment extends UserSummary {
   isNew?: boolean
   isRemoved?: boolean
-  originalRole?: string
 }
 
 interface ManageMembershipDialogProps {
@@ -60,8 +54,6 @@ interface ManageMembershipDialogProps {
   currentMembers: MemberDetails[]
   onMembersUpdated: () => void
 }
-
-const possibleRoles = ["approver", "admin", "owner", "auditor"]
 
 const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
   open,
@@ -154,11 +146,8 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         id: user.id,
         displayName: user.displayName,
         email: user.email,
-        createdAt: new Date().toISOString(),
-        role: "approver",
         isNew: true,
-        isRemoved: false,
-        originalRole: undefined
+        isRemoved: false
       }
       setDraftMembers(prev => [...prev, newMember])
     }
@@ -172,11 +161,8 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         id: userSummary.id,
         displayName: userSummary.displayName,
         email: userSummary.email,
-        createdAt: new Date().toISOString(),
-        role: currentMembers.find(m => m.entity.entityId === userSummary.id)?.role || "",
         isNew: false,
         isRemoved: true,
-        originalRole: currentMembers.find(m => m.entity.entityId === userSummary.id)?.role
       }
       setDraftMembers(prev => [...prev, memberToRemove])
     }
@@ -185,19 +171,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
   const handleUndoRemove = (memberId: string) => {
     setDraftMembers(prev =>
       prev.filter(member => !(member.id === memberId && member.isRemoved))
-    )
-  }
-
-  const handleRoleChangeForNewUser = (memberId: string, newRole: string) => {
-    setDraftMembers(prev =>
-      prev.map(member =>
-        member.id === memberId && member.isNew
-          ? {
-              ...member,
-              role: newRole,
-            }
-          : member
-      )
     )
   }
 
@@ -237,8 +210,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
     if (usersToAdd.length > 0) {
       const payload: AddGroupEntitiesRequest = {
         entities: usersToAdd.map(member => ({
-          entity: {entityType: "human", entityId: member.id},
-          role: member.role
+          entity: {entityType: "human", entityId: member.id}
         }))
       }
 
@@ -310,6 +282,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
             onChange={handleSearchChange}
             disabled={loading}
             inputRef={searchInputRef}
+            autoComplete="off"
             slotProps={{
               input: {
                 endAdornment: loadingSearch ? <CircularProgress size={20} /> : null
@@ -387,7 +360,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Role</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
@@ -414,29 +386,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                       >
                         {member.email}
                       </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {member.isRemoved ? (
-                        <Typography variant="body2" sx={{textDecoration: "line-through"}}>
-                          {member.originalRole}
-                        </Typography>
-                      ) : (
-                        <FormControl size="small" sx={{minWidth: 120}}>
-                          <Select
-                            value={member.role}
-                            onChange={e => handleRoleChangeForNewUser(member.id, e.target.value)}
-                            disabled={loading}
-                            variant="standard"
-                            disableUnderline
-                          >
-                            {possibleRoles.map(role => (
-                              <MenuItem key={role} value={role}>
-                                {role.charAt(0).toUpperCase() + role.slice(1)}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      )}
                     </TableCell>
                     <TableCell>
                       {member.isNew && !member.isRemoved && (

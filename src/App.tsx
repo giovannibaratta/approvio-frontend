@@ -21,9 +21,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, redirectPath = "/login"}) => {
-  if (!isAuthenticated) {
-    return <Navigate to={redirectPath} replace />
-  }
+  if (!isAuthenticated) return <Navigate to={redirectPath} replace />
   return <Outlet />
 }
 
