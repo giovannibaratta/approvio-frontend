@@ -13,15 +13,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: "22"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm install -g yarn && yarn
+        run: yarn install --immutable
 
       - name: Install Playwright Browsers
         run: yarn playwright:deps
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
 
       - name: Run Playwright E2E Tests
         run: yarn test:e2e:ci
