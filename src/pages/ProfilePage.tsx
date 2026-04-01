@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
-import { Box, Paper, Typography, CircularProgress, Alert, List, ListItem, ListItemText, Divider } from "@mui/material"
-import { getEntityInfo, type EntityInfo } from "../services/auth"
-import { handleEither } from "../utils/either"
+import React, {useEffect, useState} from "react"
+import {Box, Paper, Typography, CircularProgress, Alert, List, ListItem, ListItemText, Divider} from "@mui/material"
+import {getEntityInfo, type EntityInfo} from "../services/auth"
+import {handleEither} from "../utils/either"
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<EntityInfo | null>(null)
@@ -13,11 +13,11 @@ const ProfilePage: React.FC = () => {
       const result = await getEntityInfo()
       handleEither(
         result,
-        (data) => {
+        data => {
           setProfile(data)
           setLoading(false)
         },
-        (errMsg) => {
+        errMsg => {
           setError(errMsg)
           setLoading(false)
         }
@@ -29,7 +29,7 @@ const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+      <Box sx={{display: "flex", justifyContent: "center", mt: 4}}>
         <CircularProgress />
       </Box>
     )
@@ -37,7 +37,7 @@ const ProfilePage: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{mt: 4}}>
         <Alert severity="error">{error}</Alert>
       </Box>
     )
@@ -48,24 +48,15 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: "bold" }}>
+    <Box sx={{maxWidth: 600, mx: "auto", mt: 4}}>
+      <Paper elevation={3} sx={{p: 4}}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{fontWeight: "bold"}}>
           My Profile
         </Typography>
-        <Divider sx={{ mb: 3 }} />
-
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Entity Type
-          </Typography>
-          <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
-            {profile.entityType}
-          </Typography>
-        </Box>
+        <Divider sx={{mb: 3}} />
 
         {profile.email && (
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{mb: 3}}>
             <Typography variant="subtitle2" color="text.secondary">
               Email
             </Typography>
@@ -74,7 +65,7 @@ const ProfilePage: React.FC = () => {
         )}
 
         {profile.name && (
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{mb: 3}}>
             <Typography variant="subtitle2" color="text.secondary">
               Name
             </Typography>
@@ -82,19 +73,16 @@ const ProfilePage: React.FC = () => {
           </Box>
         )}
 
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{mt: 4}}>
           <Typography variant="h6" gutterBottom>
             Groups
           </Typography>
           {profile.groups.length > 0 ? (
-            <List sx={{ bgcolor: "background.paper", borderRadius: 1, border: "1px solid", borderColor: "divider" }}>
+            <List sx={{bgcolor: "background.paper", borderRadius: 1, border: "1px solid", borderColor: "divider"}}>
               {profile.groups.map((group, index) => (
                 <React.Fragment key={group.groupId}>
                   <ListItem>
-                    <ListItemText
-                      primary={group.groupName}
-                      secondary={`ID: ${group.groupId}`}
-                    />
+                    <ListItemText primary={group.groupName} secondary={`ID: ${group.groupId}`} />
                   </ListItem>
                   {index < profile.groups.length - 1 && <Divider />}
                 </React.Fragment>

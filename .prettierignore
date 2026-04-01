@@ -1,0 +1,10 @@
+.yarn/*
+.pnp.cjs
+.pnp.loader.mjs
+yarn.lock
+generated/*
+test-results/*
+playwright-report/*
+coverage/*
+dist/*
+node_modules/*

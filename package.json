@@ -9,7 +9,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint --cache --fix .",
     "preview": "vite preview",
-    "format:prettier": "yarn prettier --config .prettierrc . --write"
+    "format:prettier": "yarn prettier --config .prettierrc . --write",
+    "test": "yarn test:e2e && yarn test:ct",
+    "test:ci": "yarn test:e2e:ci && yarn test:ct:ci",
+    "test:e2e": "playwright test -c playwright.config.ts",
+    "test:e2e:ci": "PLAYWRIGHT_HTML_OPEN=never yarn test:e2e",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct:ci": "PLAYWRIGHT_HTML_OPEN=never yarn test:ct",
+    "playwright:deps": "playwright install --with-deps"
   },
   "dependencies": {
     "@approvio/api": "0.0.32",
@@ -26,10 +33,13 @@
     "react-router-dom": "7.6.1"
   },
   "devDependencies": {
+    "@playwright/experimental-ct-react": "^1.58.2",
+    "@playwright/test": "^1.58.2",
     "@types/node": "22.15.29",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",
     "@vitejs/plugin-react": "4.5.0",
+    "dotenv": "^17.3.1",
     "eslint": "9.28.0",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-jsx-a11y": "6.10.2",

@@ -8,7 +8,7 @@ import eslintConfigPrettier from "eslint-config-prettier"
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**", ".yarn/**", "build/**"]
+    ignores: ["dist/**", "node_modules/**", ".yarn/**", "build/**", "coverage/**", "playwright-report/**", "test-results/**", "playwright/**"]
   },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],

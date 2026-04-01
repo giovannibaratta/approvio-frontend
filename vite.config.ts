@@ -21,7 +21,15 @@ export default defineConfig(({mode}) => {
       }
     ],
     resolve: {
-      preserveSymlinks: true
+      preserveSymlinks: true,
+      alias: [
+        { find: /^fp-ts\/(.*)\.js$/, replacement: "fp-ts/$1" }
+      ]
+    },
+    server: {
+      port: Number(process.env.VITE_PORT || "5173"),
+      strictPort: true,
+      host: true
     },
     optimizeDeps: {
       // Forces Vite to treat the SDK as source code,

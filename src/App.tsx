@@ -13,7 +13,7 @@ import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
 import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
-import {clearAuth, setAuthenticated} from "./store/authSlice"
+import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
 import {getEntityInfo} from "./services/auth"
 import {isRight} from "fp-ts/Either"
 import {NotificationProvider} from "./providers/notification/NotificationProvider"
@@ -29,23 +29,32 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, redirec
 }
 
 const App: React.FC = () => {
+  const isInitialized = useAppSelector(state => state.auth.isInitialized)
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
   const dispatch = useAppDispatch()
 
   React.useEffect(() => {
     const checkSession = async () => {
       const result = await getEntityInfo()
-      if (isRight(result)) {
-        dispatch(setAuthenticated(true))
-      } else {
-        dispatch(clearAuth())
-      }
+      if (isRight(result)) dispatch(setAuthenticated(true))
+      else dispatch(clearAuth())
+      dispatch(setInitialized(true))
     }
     checkSession()
   }, [dispatch])
 
   const handleLogout = () => {
     dispatch(clearAuth())
+  }
+
+  if (!isInitialized) {
+    return (
+      <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", height: "100vh"}}>
+        <Typography variant="h6" color="textSecondary">
+          Loading...
+        </Typography>
+      </Box>
+    )
   }
 
   return (
@@ -98,14 +107,14 @@ const App: React.FC = () => {
                         variant="outlined"
                         onClick={handleLogout}
                         sx={{
-                        ml: 1,
-                        color: "common.white",
-                        borderColor: "common.white",
-                        "&:hover": {borderColor: "primary.light", color: "primary.light"}
-                      }}
-                    >
-                      Logout
-                    </Button>
+                          ml: 1,
+                          color: "common.white",
+                          borderColor: "common.white",
+                          "&:hover": {borderColor: "primary.light", color: "primary.light"}
+                        }}
+                      >
+                        Logout
+                      </Button>
                     </>
                   )}
                 </Box>
