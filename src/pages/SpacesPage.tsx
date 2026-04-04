@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react"
-import {Box, Alert} from "@mui/material"
+import {Box, Alert, Button} from "@mui/material"
+import {Link as RouterLink} from "react-router-dom"
+import AddIcon from "@mui/icons-material/Add"
 import {listSpaces} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -7,13 +9,13 @@ import type {Space, Pagination, ListSpaces200Response} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
 
 const columns: Column<Space>[] = [
-  {id: "name", label: "Name", render: (space) => space.name},
-  {id: "description", label: "Description", render: (space) => space.description || "No description"},
+  {id: "name", label: "Name", render: space => space.name},
+  {id: "description", label: "Description", render: space => space.description || "No description"},
   {
     id: "createdAt",
     label: "Created At",
-    render: (space) => new Date(space.createdAt).toLocaleDateString()
-  },
+    render: space => new Date(space.createdAt).toLocaleDateString()
+  }
 ]
 
 const SpacesPage: React.FC = () => {
@@ -70,6 +72,11 @@ const SpacesPage: React.FC = () => {
 
   return (
     <Box>
+      <Box sx={{display: "flex", justifyContent: "flex-end", m: 2, mb: 0}}>
+        <Button variant="contained" component={RouterLink} to="/spaces/new" startIcon={<AddIcon />}>
+          Create Space
+        </Button>
+      </Box>
       <DataTable
         title="Spaces"
         columns={columns}

@@ -9,6 +9,7 @@ import SpacesPage from "./pages/SpacesPage"
 import WorkflowTemplatesPage from "./pages/WorkflowTemplatesPage"
 import WorkflowsPage from "./pages/WorkflowsPage"
 import CreateGroupPage from "./pages/CreateGroupPage"
+import CreateSpacePage from "./pages/CreateSpacePage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
 import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
@@ -130,10 +131,11 @@ const App: React.FC = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/groups" element={<GroupsPage />} />
-                <Route path="/groups/create" element={<CreateGroupPage />} />
+                <Route path="/groups/new" element={<CreateGroupPage />} />
                 <Route path="/groups/:groupIdentifier" element={<GroupDetailsPage />} />
                 <Route path="/me" element={<ProfilePage />} />
                 <Route path="/spaces" element={<SpacesPage />} />
+                <Route path="/spaces/new" element={<CreateSpacePage />} />
                 <Route path="/workflow-templates" element={<WorkflowTemplatesPage />} />
                 <Route path="/workflows" element={<WorkflowsPage />} />
               </Route>

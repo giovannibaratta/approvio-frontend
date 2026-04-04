@@ -1,10 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {
-  Box,
-  Typography,
-  Alert,
-  Button
-} from "@mui/material"
+import {Box, Typography, Alert, Button} from "@mui/material"
 import {Link as RouterLink, useNavigate} from "react-router-dom"
 import {listGroups} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
@@ -71,7 +66,7 @@ const GroupsPage: React.FC = () => {
     {
       id: "name",
       label: "Name",
-      render: (group) => (
+      render: group => (
         <Tooltip title={`Click to view details for ${group.name}`} placement="top-start">
           <Typography
             variant="body2"
@@ -86,7 +81,7 @@ const GroupsPage: React.FC = () => {
     {
       id: "description",
       label: "Description",
-      render: (group) => (
+      render: group => (
         <Typography variant="body2" color="text.secondary">
           {group.description || "No description"}
         </Typography>
@@ -95,12 +90,12 @@ const GroupsPage: React.FC = () => {
     {
       id: "entitiesCount",
       label: "Entity Count",
-      render: (group) => <Typography variant="body2">{group.entitiesCount}</Typography>
+      render: group => <Typography variant="body2">{group.entitiesCount}</Typography>
     },
     {
       id: "createdAt",
       label: "Created At",
-      render: (group) => (
+      render: group => (
         <Tooltip title={new Date(group.createdAt).toLocaleString()} placement="top">
           <Typography variant="body2" color="text.secondary">
             {new Date(group.createdAt).toLocaleDateString()}
@@ -113,7 +108,7 @@ const GroupsPage: React.FC = () => {
   return (
     <Box>
       <Box sx={{display: "flex", justifyContent: "flex-end", m: 2, mb: 0}}>
-        <Button variant="contained" component={RouterLink} to="/groups/create" startIcon={<AddIcon />}>
+        <Button variant="contained" component={RouterLink} to="/groups/new" startIcon={<AddIcon />}>
           Create Group
         </Button>
       </Box>

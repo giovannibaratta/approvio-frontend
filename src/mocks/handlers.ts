@@ -38,5 +38,40 @@ export const handlers = [
         total: 2
       }
     })
+  }),
+
+  // 3. Create Space Handler
+  http.post("*/spaces", async ({request}) => {
+    const data = (await request.json()) as {name: string}
+    if (!data.name) {
+      return new HttpResponse(JSON.stringify({message: "Name is required"}), {
+        status: 400,
+        headers: {"Content-Type": "application/json"}
+      })
+    }
+    return new HttpResponse(null, {status: 201})
+  }),
+
+  // 4. Spaces List Handler
+  http.get("*/spaces", ({request}) => {
+    const url = new URL(request.url)
+    const page = url.searchParams.get("page") || "1"
+    const limit = url.searchParams.get("limit") || "10"
+
+    return HttpResponse.json({
+      data: [
+        {
+          id: "1",
+          name: "Engineering Team",
+          description: "Space for engineering team collaboration",
+          createdAt: new Date().toISOString()
+        }
+      ],
+      pagination: {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        total: 1
+      }
+    })
   })
 ]

@@ -4,6 +4,7 @@ import {
   type AddGroupEntitiesRequest,
   type RemoveGroupEntitiesRequest,
   type GroupCreate,
+  type SpaceCreate,
   type ListUsers200Response,
   type ListGroups200Response,
   type WorkflowVote,
@@ -88,6 +89,11 @@ export async function removeGroupEntities(
 
 export async function listSpaces(page: number, limit: number): Promise<Either<string, ListSpaces200Response>> {
   const result = await client.listSpaces({page, limit})()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function createSpace(spaceData: SpaceCreate): Promise<Either<ErrorMessage, void>> {
+  const result = await client.createSpace(spaceData)()
   return mapLeft(handleApiError)(result)
 }
 
