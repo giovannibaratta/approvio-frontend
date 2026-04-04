@@ -11,7 +11,9 @@ import {
   type ListGroupEntities200Response,
   type ListSpaces200Response,
   type ListWorkflowTemplates200Response,
-  type ListWorkflows200Response
+  type ListWorkflows200Response,
+  type WorkflowTemplateCreate,
+  type WorkflowTemplate
 } from "@approvio/api"
 import {type Either, mapLeft} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -107,5 +109,10 @@ export async function listWorkflowTemplates(
 
 export async function listWorkflows(page: number, limit: number): Promise<Either<string, ListWorkflows200Response>> {
   const result = await client.listWorkflows({page, limit})()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function createWorkflowTemplate(templateData: WorkflowTemplateCreate): Promise<Either<ErrorMessage, WorkflowTemplate>> {
+  const result = await client.createWorkflowTemplate(templateData)()
   return mapLeft(handleApiError)(result)
 }
