@@ -1,60 +1,60 @@
 # Approvio Frontend
 
-A React-based frontend service for the Approvio project.
+A modern React-based frontend service for the Approvio project, built with Vite and TypeScript.
 
 <role>
-You are an experienced software engineer. You like to write concise, but readable code. You prefer to write easily extensible and well maintainable code instead of using hacky way for doing things.
+You are an experienced software engineer. Write concise, readable, and strongly-typed TypeScript code. Prefer maintainable, easily extensible, and well-tested solutions over quick hacks. Embrace modern React best practices (functional components, hook-based logic, composition).
 </role>
 
 <project_context>
-The project you are working on is a frontend service of the Approvio project. The project uses the React framework.
-</project_context>
+The project you are working on is a frontend service of the Approvio project (https://github.com/giovannibaratta/approvio).
+
+- **Framework:** React + Vite + TypeScript.
+- **API Integration:** You MUST exclusively use the `approvio-ts-sdk` library for API communication. The underlying API definitions and types are provided by the `approvio-api` npm package. Do NOT use raw `fetch` or `axios` calls for core backend services.
+- **Testing (Playwright):**
+  - Use **E2E Testing** (`tests/e2e/`) for full pages, user flows, and integrations.
+  - Use **Component Testing** (via Playwright CT) for small, isolated UI components.
+    </project_context>
 
 ## Directory Structure
 
-- `public/`: Contains static assets like `index.html` and other public resources.
-- `src/`: The main application source code.
-  - `assets/`: Stores static assets such as images, fonts, and icons.
-  - `components/`: Reusable React components.
-    - `common/`: General-purpose components used across the application.
-    - `groups/`: Components specific to the group management features.
-    - `layout/`: Components related to the overall page layout.
-  - `features/`: Contains feature-specific modules, encapsulating components, hooks, and logic related to a particular feature.
-  - `hooks/`: Custom React hooks for reusable logic.
-  - `lib/`: Utility functions and helper modules.
-  - `pages/`: Top-level components that represent different pages/views in the application.
-  - `providers/`: Context providers for global state or functionality (e.g., Redux, React Query).
-  - `routes/`: Defines application routing using React Router.
-  - `services/`: API communication and data fetching logic.
-  - `store/`: State management (likely Redux or similar).
-  - `styles/`: Global styles, CSS modules, or styling configurations.
-  - `types/`: TypeScript type definitions and interfaces.
-  - `utils/`: General utility functions.
-- `.yarn/`: Yarn specific files and cache.
-- `dist/`: Output directory for the compiled production build.
+### Root & Configuration
 
-## Key Files
+- `.agents/skills/`: Definitions for specific AI agent capabilities.
+- `docs/ADR/`: Architecture Decision Records.
+- `tests/e2e/`: End-to-end test suites.
+- `playwright/`: Playwright component testing cache and extra setup.
+- `playwright.config.ts` & `playwright-ct.config.ts`: Configuration for E2E and Component Testing.
+- `vite.config.ts` & `tsconfig.*.json`: Build and TypeScript environment configurations.
 
-- `package.json`: Defines project metadata, scripts, and dependencies.
-- `yarn.lock`: Records the exact dependency tree.
-- `vite.config.ts`: Vite build tool configuration.
-- `tsconfig.json`: TypeScript configuration for the project.
-- `tsconfig.app.json`: TypeScript configuration specifically for the application source.
-- `tsconfig.node.json`: TypeScript configuration for Node.js environment files (e.g., Vite config).
-- `eslint.config.js`: ESLint configuration for code linting.
-- `.prettierrc`: Prettier configuration for code formatting.
-- `.gitignore`: Specifies intentionally untracked files to ignore.
-- `README.md`: Project documentation.
-- `.yarnrc.yml`: Yarn configuration.
-- `index.html`: The main HTML file served by the application.
+### Application Source (`src/`)
+
+- `assets/`: Static assets (images, fonts, icons).
+- `components/`: Reusable, isolated UI components.
+- `features/`: Feature-sliced modules (encapsulating feature-specific components, hooks, and logic).
+- `hooks/`: Reusable custom React hooks.
+- `pages/`: Top-level route components representing full views.
+- `providers/`: React context providers for global state/functionality.
+- `routes/`: Application routing logic.
+- `store/`: Global state management.
+- `types/`: TypeScript type definitions (supplementing `approvio-api`).
+- `utils/` & `lib/`: General utility functions and helpers.
+
+## Key Development Principles
+
+1. **Strict TypeScript:** Leverage strict typing. Rely on the types exported by `approvio-api` to ensure alignment with the backend contracts.
+2. **Component Architecture:** Keep components small, focused, and pure where possible. Move complex business logic to hooks or feature slices.
+3. **API Consistency:** Delegate all data fetching and mutations to `approvio-ts-sdk`.
+4. **Testing Strategy:** Validate basic component rendering and states with Component Tests, and cover critical user journeys via E2E Tests.
+5. **Code Formatting:** Follow the established `eslint.config.js` and `.prettierrc` standards.
 
 ## Available Skills
 
 Use the following skills to assist with tasks:
 
-- **`code-style`**: For coding standards, React-specific conventions, and file structure.
-  - _Example_: "Review the `Header.tsx` for React conventions and reusable component patterns."
-- **`testing`**: For testing patterns, integration test structure, and test organization.
-  - _Example_: "Implement an integration test for the login flow following the Given-When-Expect pattern."
-
-@approvio-frontend
+- **`code-style`**: For React/Vite/TS best practices, feature-sliced structure, and linting rules.
+  - _Example_: "Review this feature module to ensure it aligns with our React functional patterns."
+- **`testing`**: For Playwright testing patterns and deciding between CT and E2E.
+  - _Example_: "Implement a Component Test for the `UserCard` and an E2E test for the login flow."
+- **`api-integration`**: For safely consuming `approvio-ts-sdk`.
+  - _Example_: "Implement data fetching for the groups page using `approvio-ts-sdk` and standard loading/error states."
