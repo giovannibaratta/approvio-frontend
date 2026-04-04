@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react"
-import {Box, Alert} from "@mui/material"
+import {Box, Alert, Button} from "@mui/material"
+import {Link as RouterLink} from "react-router-dom"
 import {listWorkflowTemplates} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -81,6 +82,11 @@ const WorkflowTemplatesPage: React.FC = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        headerAction={
+          <Button variant="contained" component={RouterLink} to="/workflow-templates/new">
+            Create Template
+          </Button>
+        }
       />
     </Box>
   )

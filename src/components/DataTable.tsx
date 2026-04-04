@@ -30,6 +30,7 @@ export interface DataTableProps<T> {
   onPageChange: (newPage: number) => void
   onRowsPerPageChange: (newRowsPerPage: number) => void
   actions?: (row: T) => React.ReactNode
+  headerAction?: React.ReactNode
 }
 
 export function DataTable<T extends { id: string }>({
@@ -43,6 +44,7 @@ export function DataTable<T extends { id: string }>({
   onPageChange,
   onRowsPerPageChange,
   actions,
+  headerAction,
 }: DataTableProps<T>) {
   const handleChangePage = (_event: unknown, newPage: number) => {
     onPageChange(newPage)
@@ -58,6 +60,7 @@ export function DataTable<T extends { id: string }>({
         <Typography variant="h5" component="h1" fontWeight="bold">
           {title}
         </Typography>
+        {headerAction && <Box>{headerAction}</Box>}
       </Box>
 
       {loading ? (
