@@ -1,25 +1,40 @@
 import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
-import {Box, Alert, Button} from "@mui/material"
-import {Link as RouterLink} from "react-router-dom"
+import {Box, Alert, Button, Tooltip, Typography} from "@mui/material"
+import {Link as RouterLink, useNavigate} from "react-router-dom"
 import {listWorkflowTemplates} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {WorkflowTemplateSummary, Pagination, ListWorkflowTemplates200Response} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
 
-const columns: Column<WorkflowTemplateSummary>[] = [
-  {id: "name", label: "Name", render: (template) => template.name},
-  {id: "version", label: "Version", render: (template) => template.version},
-  {id: "description", label: "Description", render: (template) => template.description || "No description"},
-  {
-    id: "createdAt",
-    label: "Created At",
-    render: (template) => new Date(template.createdAt).toLocaleDateString()
-  },
-]
-
 const WorkflowTemplatesPage: React.FC = () => {
+  const navigate = useNavigate()
+
+  const columns: Column<WorkflowTemplateSummary>[] = [
+    {
+      id: "name",
+      label: "Name",
+      render: (template) => (
+        <Tooltip title={`Click to view details for ${template.name}`} placement="top-start">
+          <Typography
+            variant="body2"
+            sx={{fontWeight: "medium", color: "primary.main", cursor: "pointer"}}
+            onClick={() => navigate(`/workflow-templates/${template.id}`)}
+          >
+            {template.name}
+          </Typography>
+        </Tooltip>
+      )
+    },
+    {id: "version", label: "Version", render: (template) => template.version},
+    {id: "description", label: "Description", render: (template) => template.description || "No description"},
+    {
+      id: "createdAt",
+      label: "Created At",
+      render: (template) => new Date(template.createdAt).toLocaleDateString()
+    },
+  ]
   const [templates, setTemplates] = useState<WorkflowTemplateSummary[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
