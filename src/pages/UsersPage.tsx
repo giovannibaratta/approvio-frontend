@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
 import {Alert} from "@mui/material"
 import {listUsers} from "../services/api"
@@ -37,9 +38,9 @@ const UsersPage: React.FC = () => {
           setUsers(response.users)
           setPagination(response.pagination)
         },
-        (errorMessage: string) => {
-          setError(errorMessage)
-          notification.showError(errorMessage)
+        (error: FrontendError) => {
+          setError(error.message)
+          notification.showError(error.message)
         }
       )
 

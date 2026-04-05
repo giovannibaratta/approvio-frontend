@@ -1,3 +1,4 @@
+import { type FrontendError } from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
 import {
   Dialog,
@@ -104,8 +105,8 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
           )
           setSearchResults([...filteredUsers])
         },
-        (errorMessage: string) => {
-          notification.showError(`Search failed: ${errorMessage}`)
+        (error: FrontendError) => {
+          notification.showError(`Search failed: ${error.message}`)
           setSearchResults([])
         }
       )
@@ -194,9 +195,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       handleEither(
         removeResult,
         () => { /* Do nothing on success */ },
-        (errorMessage: string) => {
-          setError(errorMessage)
-          notification.showError(`Failed to remove users: ${errorMessage}`)
+        (error: FrontendError) => {
+          setError(error.message)
+          notification.showError(`Failed to remove users: ${error.message}`)
           success = false
         }
       )
@@ -218,9 +219,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       handleEither(
         addResult,
         () => { /* Do nothing on success */ },
-        (errorMessage: string) => {
-          setError(errorMessage)
-          notification.showError(`Failed to add users: ${errorMessage}`)
+        (error: FrontendError) => {
+          setError(error.message)
+          notification.showError(`Failed to add users: ${error.message}`)
           success = false
         }
       )

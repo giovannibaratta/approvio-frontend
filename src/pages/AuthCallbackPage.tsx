@@ -29,8 +29,8 @@ const AuthCallbackPage: React.FC = () => {
           notification.showSuccess("Login successful!")
           navigate("/", { replace: true })
         },
-        (errorMessage) => {
-          setError(errorMessage)
+        (error) => {
+          setError(error.message)
           processingRef.current = false
         }
       )

@@ -1,3 +1,4 @@
+import { type FrontendError } from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
 import {
   Box,
@@ -74,10 +75,10 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 
             setAssignedUserIds(humanEntities)
           },
-          (errorMessage: string) => {
-            setAssignedError(errorMessage)
+          (error: FrontendError) => {
+            setAssignedError(error.message)
             setAssignedUserIds([])
-            notification.showError(`Failed to load assigned users: ${errorMessage}`)
+            notification.showError(`Failed to load assigned users: ${error.message}`)
           }
         )
 
@@ -113,10 +114,10 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
           )
           setSearchResults(filteredUsers)
         },
-        (errorMessage: string) => {
-          setSearchError(errorMessage)
+        (error: FrontendError) => {
+          setSearchError(error.message)
           setSearchResults([])
-          notification.showError(`Search failed: ${errorMessage}`)
+          notification.showError(`Search failed: ${error.message}`)
         }
       )
 

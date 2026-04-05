@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
 import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material"
 import {useNavigate} from "react-router-dom"
@@ -116,8 +117,8 @@ const CreateWorkflowTemplatePage: React.FC = () => {
         notification.showSuccess("Workflow Template created successfully!")
         navigate("/workflow-templates")
       },
-      (errorMessage: string) => {
-        addError(errorMessage)
+      (error: FrontendError) => {
+        addError(error.message)
       }
     )
 

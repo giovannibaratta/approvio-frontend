@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
 import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
@@ -64,8 +65,8 @@ const CreateSpacePage: React.FC = () => {
         notification.showSuccess("Space created successfully!")
         navigate("/spaces")
       },
-      (errorMessage: string) => {
-        addError(errorMessage)
+      (error: FrontendError) => {
+        addError(error.message)
       }
     )
 
