@@ -17,8 +17,8 @@ const ProfilePage: React.FC = () => {
           setProfile(data)
           setLoading(false)
         },
-        errMsg => {
-          setError(errMsg)
+        errorObj => {
+          setError(errorObj.message)
           setLoading(false)
         }
       )

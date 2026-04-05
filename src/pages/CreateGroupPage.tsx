@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
 import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
@@ -94,8 +95,8 @@ const CreateGroupPage: React.FC = () => {
           setActiveStep(getNextStep(activeStep))
           notification.showSuccess("Group created successfully!")
         },
-        (errorMessage: string) => {
-          addError(errorMessage)
+        (error: FrontendError) => {
+          addError(error.message)
           setGroupSuccessfullyCreated(false)
           setCreatedGroupId(undefined)
         }
@@ -135,8 +136,8 @@ const CreateGroupPage: React.FC = () => {
         notification.showSuccess(`${usersToAssign.length} users assigned successfully!`)
         navigate("/groups")
       },
-      (errorMessage: string) => {
-        addError(errorMessage)
+      (error: FrontendError) => {
+        addError(error.message)
       }
     )
 

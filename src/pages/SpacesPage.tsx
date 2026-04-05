@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
 import {Box, Alert, Button} from "@mui/material"
 import {Link as RouterLink} from "react-router-dom"
@@ -41,9 +42,9 @@ const SpacesPage: React.FC = () => {
           setSpaces(response.data)
           setPagination(response.pagination)
         },
-        (errorMessage: string) => {
-          setError(errorMessage)
-          notification.showError(errorMessage)
+        (error: FrontendError) => {
+          setError(error.message)
+          notification.showError(error.message)
         }
       )
 

@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useCallback, useEffect, useState} from "react"
 import {
   Box,
@@ -69,9 +70,9 @@ const GroupDetailsPage: React.FC = () => {
         (groupData: Group) => {
           setGroup(groupData)
         },
-        (errorMessage: string) => {
-          setErrorGroup(errorMessage)
-          notification.showError(errorMessage)
+        (error: FrontendError) => {
+          setErrorGroup(error.message)
+          notification.showError(error.message)
         }
       )
 
@@ -129,9 +130,9 @@ const GroupDetailsPage: React.FC = () => {
           )
         }
       },
-      (errorMessage: string) => {
-        setErrorMembers(errorMessage)
-        notification.showError(errorMessage)
+      (error: FrontendError) => {
+        setErrorMembers(error.message)
+        notification.showError(error.message)
         setMembers([])
         setPagination(null)
       }
@@ -161,7 +162,7 @@ const GroupDetailsPage: React.FC = () => {
         handleEither(
           result,
           (groupData: Group) => setGroup(groupData),
-          (errorMessage: string) => notification.showError(`Error refreshing group details: ${errorMessage}`)
+          (error: FrontendError) => notification.showError(`Error refreshing group details: ${error.message}`)
         )
       })
     }

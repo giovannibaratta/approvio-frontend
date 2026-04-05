@@ -1,3 +1,4 @@
+import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
 import {Box, Alert, Chip} from "@mui/material"
 import {listWorkflows} from "../services/api"
@@ -61,9 +62,9 @@ const WorkflowsPage: React.FC = () => {
           setWorkflows(response.data)
           setPagination(response.pagination)
         },
-        (errorMessage: string) => {
-          setError(errorMessage)
-          notification.showError(errorMessage)
+        (error: FrontendError) => {
+          setError(error.message)
+          notification.showError(error.message)
         }
       )
 

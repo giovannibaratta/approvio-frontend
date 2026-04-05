@@ -65,9 +65,11 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
           if (groupCache[id] === undefined) {
             const result = await getGroup(id)
             if (isLeft(result)) {
-              // Group does not exist or failed to fetch
-              setGroupCache(prev => ({...prev, [id]: false}))
-              warnings.push(`Group ID not found: ${id}`)
+              if (result.left.code === "GROUP_NOT_FOUND") {
+                // Group does not exist
+                setGroupCache(prev => ({...prev, [id]: false}))
+                warnings.push(`Group ID not found: ${id}`)
+              }
             } else {
               // Group exists
               setGroupCache(prev => ({...prev, [id]: true}))

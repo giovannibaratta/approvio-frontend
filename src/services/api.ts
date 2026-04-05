@@ -26,7 +26,10 @@ export interface ListWorkflowVotes200Response {
 const authenticator = new WebAuthenticator()
 const client = new ApprovioUserClient({endpoint: API_BASE_URL}, authenticator)
 
-type ErrorMessage = string
+export interface FrontendError {
+  code: string
+  message: string
+}
 
 interface ListUsersRequest {
   page: number
@@ -34,22 +37,30 @@ interface ListUsersRequest {
   search?: string
 }
 
-const handleApiError = (error: ApprovioError): ErrorMessage => {
-  if (isApprovioError(error)) return error.message
-  return error.message
+export const handleApiError = (error: ApprovioError): FrontendError => {
+  if (isApprovioError(error)) {
+    return {
+      code: error.code || "UNKNOWN_ERROR",
+      message: error.message
+    }
+  }
+  return {
+    code: "UNKNOWN_ERROR",
+    message: error.message
+  }
 }
 
-export async function listUsers(request: ListUsersRequest): Promise<Either<ErrorMessage, ListUsers200Response>> {
+export async function listUsers(request: ListUsersRequest): Promise<Either<FrontendError, ListUsers200Response>> {
   const result = await client.listUsers(request)()
   return mapLeft(handleApiError)(result)
 }
 
-export async function listGroups(page: number, limit: number): Promise<Either<ErrorMessage, ListGroups200Response>> {
+export async function listGroups(page: number, limit: number): Promise<Either<FrontendError, ListGroups200Response>> {
   const result = await client.listGroups({page, limit})()
   return mapLeft(handleApiError)(result)
 }
 
-export async function createGroup(groupData: GroupCreate): Promise<Either<ErrorMessage, string>> {
+export async function createGroup(groupData: GroupCreate): Promise<Either<FrontendError, string>> {
   const result = await client.createGroup(groupData)()
   return mapLeft(handleApiError)(result)
 }
@@ -58,7 +69,7 @@ export async function listGroupEntities(
   groupId: string,
   page: number,
   limit: number
-): Promise<Either<ErrorMessage, ListGroupEntities200Response>> {
+): Promise<Either<FrontendError, ListGroupEntities200Response>> {
   const result = await client.listGroupEntities(groupId, {page, limit})()
   return mapLeft(handleApiError)(result)
 }
@@ -66,17 +77,17 @@ export async function listGroupEntities(
 export async function addGroupEntities(
   groupId: string,
   payload: AddGroupEntitiesRequest
-): Promise<Either<ErrorMessage, Group>> {
+): Promise<Either<FrontendError, Group>> {
   const result = await client.addGroupEntities(groupId, payload)()
   return mapLeft(handleApiError)(result)
 }
 
-export async function getGroup(groupIdentifier: string): Promise<Either<ErrorMessage, Group>> {
+export async function getGroup(groupIdentifier: string): Promise<Either<FrontendError, Group>> {
   const result = await client.getGroup(groupIdentifier)()
   return mapLeft(handleApiError)(result)
 }
 
-export async function getUser(userId: string): Promise<Either<ErrorMessage, User>> {
+export async function getUser(userId: string): Promise<Either<FrontendError, User>> {
   const result = await client.getUser(userId)()
   return mapLeft(handleApiError)(result)
 }
@@ -84,17 +95,17 @@ export async function getUser(userId: string): Promise<Either<ErrorMessage, User
 export async function removeGroupEntities(
   groupId: string,
   payload: RemoveGroupEntitiesRequest
-): Promise<Either<string, Group>> {
+): Promise<Either<FrontendError, Group>> {
   const result = await client.removeGroupEntities(groupId, payload)()
   return mapLeft(handleApiError)(result)
 }
 
-export async function listSpaces(page: number, limit: number): Promise<Either<string, ListSpaces200Response>> {
+export async function listSpaces(page: number, limit: number): Promise<Either<FrontendError, ListSpaces200Response>> {
   const result = await client.listSpaces({page, limit})()
   return mapLeft(handleApiError)(result)
 }
 
-export async function createSpace(spaceData: SpaceCreate): Promise<Either<ErrorMessage, void>> {
+export async function createSpace(spaceData: SpaceCreate): Promise<Either<FrontendError, void>> {
   const result = await client.createSpace(spaceData)()
   return mapLeft(handleApiError)(result)
 }
@@ -102,17 +113,17 @@ export async function createSpace(spaceData: SpaceCreate): Promise<Either<ErrorM
 export async function listWorkflowTemplates(
   page: number,
   limit: number
-): Promise<Either<string, ListWorkflowTemplates200Response>> {
+): Promise<Either<FrontendError, ListWorkflowTemplates200Response>> {
   const result = await client.listWorkflowTemplates({page, limit})()
   return mapLeft(handleApiError)(result)
 }
 
-export async function listWorkflows(page: number, limit: number): Promise<Either<string, ListWorkflows200Response>> {
+export async function listWorkflows(page: number, limit: number): Promise<Either<FrontendError, ListWorkflows200Response>> {
   const result = await client.listWorkflows({page, limit})()
   return mapLeft(handleApiError)(result)
 }
 
-export async function createWorkflowTemplate(templateData: WorkflowTemplateCreate): Promise<Either<ErrorMessage, WorkflowTemplate>> {
+export async function createWorkflowTemplate(templateData: WorkflowTemplateCreate): Promise<Either<FrontendError, WorkflowTemplate>> {
   const result = await client.createWorkflowTemplate(templateData)()
   return mapLeft(handleApiError)(result)
 }
