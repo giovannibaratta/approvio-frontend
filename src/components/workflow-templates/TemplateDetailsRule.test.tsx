@@ -1,0 +1,30 @@
+import {test, expect} from "@playwright/experimental-ct-react"
+import TemplateDetailsRule from "./TemplateDetailsRule"
+import type {ApprovalRule} from "@approvio/api"
+
+test.use({viewport: {width: 500, height: 500}})
+
+test("TemplateDetailsRule shows rendered and raw view", async ({mount, page}) => {
+  const rule: ApprovalRule = {
+    type: "AND",
+    rules: [
+      {
+        type: "GROUP_REQUIREMENT",
+        groupId: "group-123",
+        minCount: 2
+      }
+    ]
+  }
+
+  const component = await mount(<TemplateDetailsRule rule={rule} />)
+
+  // Default is rendered view
+  await expect(page.getByText("Approval Rule")).toBeVisible()
+  await expect(page.getByText("ALL of the following (AND):")).toBeVisible()
+  await expect(page.getByText("Group:")).toBeVisible()
+  await expect(page.getByText("Min Approvals: 2")).toBeVisible()
+
+  // Switch to raw view
+  await component.getByLabel("Show Raw JSON").check()
+  await expect(page.getByText('"groupId": "group-123"')).toBeVisible()
+})

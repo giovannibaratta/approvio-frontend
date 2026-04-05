@@ -11,6 +11,7 @@ import WorkflowsPage from "./pages/WorkflowsPage"
 import CreateGroupPage from "./pages/CreateGroupPage"
 import CreateSpacePage from "./pages/CreateSpacePage"
 import CreateWorkflowTemplatePage from "./pages/CreateWorkflowTemplatePage"
+import WorkflowTemplateDetailsPage from "./pages/WorkflowTemplateDetailsPage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
 import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
@@ -139,6 +140,7 @@ const App: React.FC = () => {
                 <Route path="/spaces/new" element={<CreateSpacePage />} />
                 <Route path="/workflow-templates" element={<WorkflowTemplatesPage />} />
                 <Route path="/workflow-templates/new" element={<CreateWorkflowTemplatePage />} />
+                <Route path="/workflow-templates/:templateIdentifier" element={<WorkflowTemplateDetailsPage />} />
                 <Route path="/workflows" element={<WorkflowsPage />} />
               </Route>
             </Routes>
