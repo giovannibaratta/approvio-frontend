@@ -47,7 +47,16 @@ async function enableMocking() {
   const {worker} = await import("./mocks/browser")
 
   return worker.start({
-    onUnhandledRequest: "error"
+    serviceWorker: {
+      url: "/mockServiceWorker.js",
+      options: {
+        scope: "/",
+        // Reuse an existing worker if one is already registered at root
+        // to avoid conflicts in parallel testing environments.
+        findWorker: (registration: any) => registration.active?.scriptURL.includes("mockServiceWorker.js")
+      } as any
+    },
+    onUnhandledRequest: "bypass"
   })
 }
 

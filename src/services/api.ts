@@ -11,8 +11,10 @@ import {
   type ListGroupEntities200Response,
   type ListSpaces200Response,
   type ListWorkflowTemplates200Response,
+  type ListWorkflowTemplatesParams,
   type ListWorkflows200Response,
   type WorkflowTemplateCreate,
+  type WorkflowTemplateUpdate,
   type WorkflowTemplate,
   type Space
 } from "@approvio/api"
@@ -117,10 +119,9 @@ export async function createSpace(spaceData: SpaceCreate): Promise<Either<Fronte
 }
 
 export async function listWorkflowTemplates(
-  page: number,
-  limit: number
+  params: ListWorkflowTemplatesParams
 ): Promise<Either<FrontendError, ListWorkflowTemplates200Response>> {
-  const result = await client.listWorkflowTemplates({page, limit})()
+  const result = await client.listWorkflowTemplates(params)()
   return mapLeft(handleApiError)(result)
 }
 
@@ -143,5 +144,13 @@ export async function getWorkflowTemplate(
   templateIdentifier: string
 ): Promise<Either<FrontendError, WorkflowTemplate>> {
   const result = await client.getWorkflowTemplate(templateIdentifier)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function updateWorkflowTemplate(
+  templateIdentifier: string,
+  updateData: WorkflowTemplateUpdate
+): Promise<Either<FrontendError, WorkflowTemplate>> {
+  const result = await client.updateWorkflowTemplate(templateIdentifier, updateData)()
   return mapLeft(handleApiError)(result)
 }

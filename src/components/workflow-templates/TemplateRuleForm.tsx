@@ -29,6 +29,11 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
 
   // Cache to avoid refetching the same group ID
   const [groupCache, setGroupCache] = useState<Record<string, boolean>>({})
+  const groupCacheRef = React.useRef(groupCache)
+
+  useEffect(() => {
+    groupCacheRef.current = groupCache
+  }, [groupCache])
 
   useEffect(() => {
     try {
@@ -62,7 +67,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
         const warnings: string[] = []
         for (const id of foundGroupIds.slice(0, MAX_GROUP_TO_FETCH)) {
           // If we haven't checked this ID yet
-          if (groupCache[id] === undefined) {
+          if (groupCacheRef.current[id] === undefined) {
             const result = await getGroup(id)
             if (isLeft(result)) {
               if (result.left.code === "GROUP_NOT_FOUND") {
@@ -74,7 +79,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
               // Group exists
               setGroupCache(prev => ({...prev, [id]: true}))
             }
-          } else if (groupCache[id] === false) {
+          } else if (groupCacheRef.current[id] === false) {
             warnings.push(`Group ID not found: ${id}`)
           }
         }
@@ -96,7 +101,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
         setError("Invalid JSON")
       }
     }
-  }, [groupCache, ruleJson, setIsValidJson])
+  }, [ruleJson, setIsValidJson])
 
   return (
     <Box>
@@ -119,7 +124,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
         <Editor
           value={ruleJson}
           onValueChange={code => setRuleJson(code)}
-          highlight={code => Prism.highlight(code, Prism.languages.json as Prism.Grammar, "json")}
+          highlight={code => (Prism.languages.json ? Prism.highlight(code, Prism.languages.json, "json") : code)}
           padding={10}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',

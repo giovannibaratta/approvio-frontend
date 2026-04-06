@@ -1,115 +1,48 @@
-import React, {useState, useEffect} from "react"
-import {Box, Typography, Paper, Switch, FormControlLabel, Link as MuiLink} from "@mui/material"
+import React from "react"
+import {IconButton} from "@mui/material"
+import EditIcon from "@mui/icons-material/Edit"
 import {Link as RouterLink} from "react-router-dom"
 import type {ApprovalRule} from "@approvio/api"
-import {getGroup} from "../../services/api"
-import {handleEither} from "../../utils/either"
+import ApprovalRuleViewer from "./ApprovalRuleViewer"
 
+/**
+ * Props for the TemplateDetailsRule component.
+ */
 interface Props {
+  /** The nested approval rule structure to be displayed. */
   rule: ApprovalRule
+  /** The unique identifier of the workflow template, used for navigation to the edit page. */
+  templateId: string
 }
 
-const TemplateDetailsRule: React.FC<Props> = ({rule}) => {
-  const [showRaw, setShowRaw] = useState(false)
-  const [groupMap, setGroupMap] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    const fetchGroups = async () => {
-      const groupIds = new Set<string>()
-
-      const extractGroupIds = (r: ApprovalRule) => {
-        if (r.type === "GROUP_REQUIREMENT") {
-          if (r.groupId) groupIds.add(r.groupId)
-        } else if (r.type === "AND" || r.type === "OR") {
-          r.rules.forEach(extractGroupIds)
-        }
-      }
-
-      extractGroupIds(rule)
-
-      if (groupIds.size === 0) return
-
-      const map: Record<string, string> = {}
-
-      await Promise.all(
-        Array.from(groupIds).map(async (id) => {
-          const result = await getGroup(id)
-          handleEither(
-            result,
-            (groupData) => {
-              map[id] = groupData.name
-            },
-            (err) => {
-              console.error(`Failed to load group ${id} for name resolution`, err)
-            }
-          )
-        })
-      )
-
-      setGroupMap(map)
-    }
-
-    fetchGroups()
-  }, [rule])
-
-  /**
-   * Recursively parses an ApprovalRule tree and transforms it into visual React components.
-   * Resolves group IDs into human-readable group names with links.
-   */
-  const renderRule = (r: ApprovalRule): React.ReactNode => {
-    if (r.type === "GROUP_REQUIREMENT") {
-      const gName = groupMap[r.groupId] || r.groupId
-      return (
-        <Box sx={{ml: 2, mt: 1, p: 1, border: "1px solid #ddd", borderRadius: 1}}>
-          <Typography variant="body2" component="span" sx={{fontWeight: "bold", mr: 1}}>Group:</Typography>
-          <MuiLink component={RouterLink} to={`/groups/${r.groupId}`}>
-            {gName}
-          </MuiLink>
-          <Typography variant="body2" sx={{mt: 0.5}}>Min Approvals: {r.minCount}</Typography>
-        </Box>
-      )
-    }
-    if (r.type === "AND") {
-      return (
-        <Box sx={{ml: 2, mt: 1, p: 1, border: "1px solid #ddd", borderRadius: 1}}>
-          <Typography variant="body2" sx={{fontWeight: "bold"}}>ALL of the following (AND):</Typography>
-          {r.rules.map((sub: any, i: number) => <Box key={i}>{renderRule(sub)}</Box>)}
-        </Box>
-      )
-    }
-    if (r.type === "OR") {
-      return (
-        <Box sx={{ml: 2, mt: 1, p: 1, border: "1px solid #ddd", borderRadius: 1}}>
-          <Typography variant="body2" sx={{fontWeight: "bold"}}>ANY of the following (OR):</Typography>
-          {r.rules.map((sub: any, i: number) => <Box key={i}>{renderRule(sub)}</Box>)}
-        </Box>
-      )
-    }
-    return <Typography variant="body2">Unknown rule type</Typography>
-  }
+/**
+ * A management-focused component for workflow template approval rules.
+ *
+ * This component acts as a high-level wrapper that:
+ * 1. Leverages `ApprovalRuleViewer` for the visual rendering and JSON toggle.
+ * 2. Injects management features, specifically an edit icon that links to the rule modification page.
+ *
+ * It is intended for use in "Details" pages where the user has administrative privileges
+ * and may need to navigate to editing workflows.
+ */
+const TemplateDetailsRule: React.FC<Props> = ({rule, templateId}) => {
+  const editIconButton = (
+    <IconButton
+      component={RouterLink}
+      to={`/workflow-templates/${templateId}/edit-approval-rule`}
+      size="small"
+      color="primary"
+      aria-label="Edit Approval Rule"
+    >
+      <EditIcon />
+    </IconButton>
+  )
 
   return (
-    <Box>
-      <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2}}>
-        <Typography variant="h6">Approval Rule</Typography>
-        <FormControlLabel
-          control={<Switch checked={showRaw} onChange={(e) => setShowRaw(e.target.checked)} />}
-          label="Show Raw JSON"
-        />
-      </Box>
-
-      {showRaw ? (
-        <Paper variant="outlined" sx={{p: 2, bgcolor: "grey.100", overflowX: "auto"}}>
-          <pre style={{margin: 0}}>
-            <code>{JSON.stringify(rule, null, 2)}</code>
-          </pre>
-        </Paper>
-      ) : (
-        <Box sx={{p: 1}}>
-          {renderRule(rule)}
-        </Box>
-      )}
-    </Box>
+    <ApprovalRuleViewer
+      rule={rule}
+      extraHeaderContent={editIconButton}
+    />
   )
 }
 

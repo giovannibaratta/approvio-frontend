@@ -73,5 +73,102 @@ export const handlers = [
         total: 1
       }
     })
+  }),
+
+  // 5. Spaces details handler
+  http.get("*/spaces/test-space-id", () => {
+    return HttpResponse.json({
+      id: "test-space-id",
+      name: "Test Space",
+      description: "Space for testing"
+    })
+  }),
+
+  // 6. Groups details handler
+  http.get("*/groups/some-group-id", () => {
+    return HttpResponse.json({
+      id: "some-group-id",
+      name: "Test Group",
+      description: "Group for testing"
+    })
+  }),
+
+  // 7. Workflow Template Details Handler
+  http.get("*/workflow-templates/3fa85f64-5717-4562-b3fc-2c963f66afa6", () => {
+    return HttpResponse.json({
+      id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      name: "Test Template",
+      version: 1,
+      occVersion: 1,
+      description: "A test template",
+      status: "ACTIVE",
+      spaceId: "test-space-id",
+      approvalRule: {
+        type: "GROUP_REQUIREMENT",
+        groupId: "some-group-id",
+        minCount: 1
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    })
+  }),
+
+  // 8. Workflow Templates List Handler
+  http.get("*/workflow-templates", ({request}) => {
+    const url = new URL(request.url)
+    const search = url.searchParams.get("search")
+    const limit = parseInt(url.searchParams.get("limit") || "10", 10)
+    const page = parseInt(url.searchParams.get("page") || "1", 10)
+
+    // If searching for a specific template, return many versions
+    if (search === "test2" || search === "Test") {
+      const allVersions = Array.from({length: 15}, (_, i) => ({
+        id: `${search}-v${15 - i}`,
+        name: search,
+        version: (15 - i).toString(),
+        description: `Version ${15 - i} of ${search}`,
+        createdAt: new Date(Date.now() - i * 86400000).toISOString(),
+        updatedAt: new Date(Date.now() - i * 86400000).toISOString(),
+        status: "ACTIVE"
+      }))
+
+      return HttpResponse.json({
+        data: allVersions.slice((page - 1) * limit, page * limit),
+        pagination: {
+          page,
+          limit,
+          total: allVersions.length
+        }
+      })
+    }
+
+    // Default list
+    return HttpResponse.json({
+      data: [
+        {
+          id: "template-1",
+          name: "Test",
+          version: "1",
+          description: "Main test template",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          status: "ACTIVE"
+        },
+        {
+          id: "template-2",
+          name: "test2",
+          version: "1",
+          description: "Another test template",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          status: "ACTIVE"
+        }
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 2
+      }
+    })
   })
 ]

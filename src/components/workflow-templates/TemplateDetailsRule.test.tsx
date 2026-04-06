@@ -16,7 +16,7 @@ test("TemplateDetailsRule shows rendered and raw view", async ({mount, page}) =>
     ]
   }
 
-  const component = await mount(<TemplateDetailsRule rule={rule} />)
+  const component = await mount(<TemplateDetailsRule rule={rule} templateId="test-template-id" />)
 
   // Default is rendered view
   await expect(page.getByText("Approval Rule")).toBeVisible()

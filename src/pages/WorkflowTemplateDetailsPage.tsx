@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react"
-import {useParams} from "react-router-dom"
-import {Box, Typography, Paper, Alert, CircularProgress, Grid, Tooltip} from "@mui/material"
+import {useParams, Link as RouterLink} from "react-router-dom"
+import {Box, Typography, Paper, Alert, CircularProgress, Grid, Tooltip, Button} from "@mui/material"
 import SchemaIcon from "@mui/icons-material/Schema"
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows"
 import {getSpace, getWorkflowTemplate} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -81,11 +82,21 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
     <Box sx={{p: 3}}>
       {/* Top Section: Overview */}
       <Paper sx={{p: 3, mb: 3}}>
-        <Box sx={{display: "flex", alignItems: "center", mb: 2}}>
-          <SchemaIcon sx={{mr: 2, fontSize: 40, color: "primary.main"}} />
-          <Typography variant="h4" component="h1" sx={{fontWeight: "bold"}}>
-            {template.name}
-          </Typography>
+        <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2}}>
+          <Box sx={{display: "flex", alignItems: "center"}}>
+            <SchemaIcon sx={{mr: 2, fontSize: 40, color: "primary.main"}} />
+            <Typography variant="h4" component="h1" sx={{fontWeight: "bold"}}>
+              {template.name}
+            </Typography>
+          </Box>
+          <Button
+            variant="outlined"
+            startIcon={<CompareArrowsIcon />}
+            component={RouterLink}
+            to={`/workflow-templates/${template.id}/compare`}
+          >
+            Compare Versions
+          </Button>
         </Box>
 
         <Grid container spacing={2} sx={{mb: 2}}>
@@ -141,7 +152,7 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
           </Grid>
         </Grid>
 
-        <TemplateDetailsRule rule={template.approvalRule} />
+        <TemplateDetailsRule rule={template.approvalRule} templateId={template.id} />
       </Paper>
     </Box>
   )
