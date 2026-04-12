@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:mocks": "VITE_USE_MOCKS=true vite",
     "build": "tsc -b && vite build",
     "lint": "eslint --cache --fix .",
     "preview": "vite preview",
@@ -22,8 +23,8 @@
     "playwright:deps": "playwright install --with-deps"
   },
   "dependencies": {
-    "@approvio/api": "0.0.32",
-    "@approvio/ts-sdk": "0.0.10",
+    "@approvio/api": "0.0.40",
+    "@approvio/ts-sdk": "0.0.12",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
     "@mui/icons-material": "7.1.0",

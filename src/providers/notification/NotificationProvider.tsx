@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { Snackbar, Alert } from "@mui/material"
 import { NotificationContext } from "./NotificationContext"
 
@@ -11,24 +11,26 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [message, setMessage] = useState("")
   const [severity, setSeverity] = useState<"error" | "success">("error")
 
-  const showError = (message: string) => {
+  const showError = useCallback((message: string) => {
     setMessage(message)
     setSeverity("error")
     setOpen(true)
-  }
+  }, [])
 
-  const showSuccess = (message: string) => {
+  const showSuccess = useCallback((message: string) => {
     setMessage(message)
     setSeverity("success")
     setOpen(true)
-  }
+  }, [])
 
   const handleClose = () => {
     setOpen(false)
   }
 
+  const value = useMemo(() => ({ showError, showSuccess }), [showError, showSuccess])
+
   return (
-    <NotificationContext.Provider value={{ showError, showSuccess }}>
+    <NotificationContext.Provider value={value}>
       {children}
       <Snackbar
         open={open}
