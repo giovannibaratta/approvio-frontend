@@ -52,6 +52,7 @@ The project you are working on is a frontend service of the Approvio project (ht
 
 Use the following skills to assist with tasks:
 
+- **`frontend-development`**: The mandatory 4-step process: Clarify -> Plan -> Code -> Test.
 - **`code-style`**: For React/Vite/TS best practices, feature-sliced structure, and linting rules.
   - _Example_: "Review this feature module to ensure it aligns with our React functional patterns."
 - **`testing`**: For Playwright testing patterns and deciding between CT and E2E.

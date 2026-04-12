@@ -1,3 +1,11 @@
+---
+name: code-style
+description: "You are a code style expert for the Approvio Frontend project."
+risk: safe
+source: internal
+date_added: "2026-04-11"
+---
+
 # Code Style Skill
 
 Guidelines for coding standards, React-specific conventions, and file structure in the Approvio Frontend project.
@@ -13,5 +21,5 @@ Guidelines for coding standards, React-specific conventions, and file structure 
 
 ## React Constraints
 
-- **Component Decomposition**: If a page is too complex, extract components into dedicated files in `src/components/` to keep the code clean.
+- **Component Decomposition**: Use react-patterns for guidance on component decomposition.
 - **Reusability**: Prioritize creating reusable components.
