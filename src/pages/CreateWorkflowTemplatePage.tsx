@@ -1,6 +1,5 @@
 import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
-import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -12,13 +11,22 @@ import TemplateDetailsForm from "../components/workflow-templates/TemplateDetail
 import TemplateRuleForm from "../components/workflow-templates/TemplateRuleForm"
 import TemplateReview from "../components/workflow-templates/TemplateReview"
 
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader2, ArrowLeft, GitBranch, Settings2, Code, CheckCircle2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+
 enum CreateTemplateSteps {
   Details = 0,
   ApprovalRule = 1,
   Review = 2,
 }
 
-const steps = ["Details", "Approval Rule", "Review"]
+const steps = [
+  { id: CreateTemplateSteps.Details, label: "Details", icon: Settings2 },
+  { id: CreateTemplateSteps.ApprovalRule, label: "Approval Rule", icon: Code },
+  { id: CreateTemplateSteps.Review, label: "Review", icon: CheckCircle2 }
+]
 
 const CreateWorkflowTemplatePage: React.FC = () => {
   const [activeStep, setActiveStep] = useState<CreateTemplateSteps>(CreateTemplateSteps.Details)
@@ -191,67 +199,117 @@ const CreateWorkflowTemplatePage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{p: {xs: 2, md: 3}, mt: 3}}>
-        <Stepper activeStep={activeStep} sx={{pt: 3, pb: 5}}>
-          {steps.map(label => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+    <div className="mx-auto max-w-4xl space-y-6 pb-12">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={handleCancelClick} disabled={loading} className="shrink-0">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Create Workflow Template</h1>
+          <p className="text-sm text-muted-foreground">Design a new approval process and set its conditions.</p>
+        </div>
+      </div>
 
-        <React.Fragment>
+      {/* Stepper */}
+      <div className="relative mb-8 flex items-center justify-between px-4 md:px-8">
+        <div className="absolute inset-x-0 top-1/2 -z-10 h-0.5 -translate-y-1/2 bg-muted/50" />
+        {steps.map((step) => {
+          const isActive = activeStep === step.id
+          const isCompleted = activeStep > step.id
+          const Icon = step.icon
+
+          return (
+            <div key={step.id} className="flex flex-col items-center gap-2 bg-background px-2">
+              <div
+                className={`flex size-10 items-center justify-center rounded-full border-2 transition-colors
+                  ${isActive
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : isCompleted
+                      ? "border-primary bg-primary/20 text-primary"
+                      : "border-muted bg-background text-muted-foreground"
+                  }`}
+              >
+                <Icon className="size-5" />
+              </div>
+              <span className={`text-xs font-medium uppercase tracking-wider ${isActive || isCompleted ? "text-foreground" : "text-muted-foreground"}`}>
+                {step.label}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+        <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-md border border-amber-500/20 bg-amber-500/10">
+              <GitBranch className="size-5 text-amber-500" />
+            </div>
+            <div>
+              <CardTitle className="text-lg">
+                {steps[activeStep]?.label}
+              </CardTitle>
+              <CardDescription>
+                {activeStep === CreateTemplateSteps.Details && "Configure basic information and defaults."}
+                {activeStep === CreateTemplateSteps.ApprovalRule && "Define the JSON logic for approval conditions."}
+                {activeStep === CreateTemplateSteps.Review && "Verify template configuration before creation."}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
           {getStepContent(activeStep)}
-          <Box sx={{mt: 3}}>
-            <ErrorList errors={errors} />
-          </Box>
-          <Box sx={{display: "flex", justifyContent: "space-between", mt: 3}}>
-            <Button variant="contained" color="error" onClick={handleCancelClick} disabled={loading}>
-              Cancel
-            </Button>
-            <Box>
-              {activeStep !== 0 && (
-                <Button onClick={handleBack} sx={{mr: 1}} disabled={loading}>
-                  Back
-                </Button>
-              )}
-              {activeStep === steps.length - 1 ? (
-                <Button variant="contained" onClick={handleCreate} disabled={loading}>
-                  {loading ? <CircularProgress size={24} color="inherit" /> : "Create Template"}
-                </Button>
-              ) : (
-                <Button variant="contained" onClick={handleNext} disabled={isNextDisabled()}>
-                  Next
-                </Button>
-              )}
-            </Box>
-          </Box>
-        </React.Fragment>
-      </Paper>
+          {errors.length > 0 && (
+            <div className="mt-6">
+              <ErrorList errors={errors} />
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex items-center justify-between border-t border-border/40 bg-muted/20 py-4">
+          <Button variant="ghost" onClick={handleCancelClick} disabled={loading} className="text-muted-foreground hover:text-foreground">
+            Cancel
+          </Button>
 
-      <Dialog
-        open={cancelDialogOpen}
-        onClose={handleCancelClose}
-        aria-labelledby="cancel-dialog-title"
-        aria-describedby="cancel-dialog-description"
-      >
-        <DialogTitle id="cancel-dialog-title">Discard unsaved changes?</DialogTitle>
+          <div className="flex gap-3">
+            {activeStep > 0 && (
+              <Button variant="outline" onClick={handleBack} disabled={loading}>
+                Back
+              </Button>
+            )}
+
+            {activeStep === steps.length - 1 ? (
+              <Button onClick={handleCreate} disabled={loading} className="min-w-[140px]">
+                {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+                {loading ? "Creating..." : "Create Template"}
+              </Button>
+            ) : (
+              <Button onClick={handleNext} disabled={isNextDisabled()}>
+                Next Step
+              </Button>
+            )}
+          </div>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={cancelDialogOpen} onOpenChange={(open) => !open && handleCancelClose()}>
         <DialogContent>
-          <DialogContentText id="cancel-dialog-description">
-            Are you sure you want to cancel? Any unsaved changes you have made will be lost.
-          </DialogContentText>
+          <DialogHeader>
+            <DialogTitle>Discard unsaved changes?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel? Any unsaved changes you have made will be lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={handleCancelClose}>
+              Keep Editing
+            </Button>
+            <Button variant="destructive" onClick={handleCancelConfirm}>
+              Discard Changes
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelClose} color="primary">
-            Keep Editing
-          </Button>
-          <Button onClick={handleCancelConfirm} color="error">
-            Discard Changes
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Container>
+    </div>
   )
 }
 

@@ -1,5 +1,6 @@
 import React from "react"
-import {Box, Typography, Alert} from "@mui/material"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {AlertCircle} from "lucide-react"
 
 export interface ErrorEntry {
   message: string
@@ -11,26 +12,26 @@ interface ErrorListProps {
 }
 
 const ErrorList: React.FC<ErrorListProps> = ({errors}) => {
-  if (errors.length === 0) return (<></>)
+  if (errors.length === 0) return <></>
 
   // Limit to the 3 most recent errors
   const recentErrors = errors.slice(0, 3)
 
   return (
-    <Box sx={{mb: 2}}>
-      <Alert severity="error">
-        <Typography variant="body2" component="div">
-          {" "}
-          {/* Use component="div" to allow line breaks */}
-          {recentErrors.map((err, index) => (
-            <React.Fragment key={index}>
-              <strong>[{err.timestamp}]</strong> {err.message}
-              {index < recentErrors.length - 1 && <br />} {/* Add a line break after each error except the last */}
-            </React.Fragment>
-          ))}
-        </Typography>
+    <div className="mb-4">
+      <Alert variant="destructive">
+        <AlertCircle className="size-4" />
+        <AlertDescription className="font-mono text-xs">
+          <div className="mt-1 flex flex-col gap-1">
+            {recentErrors.map((err, index) => (
+              <span key={index}>
+                <span className="opacity-50">[{err.timestamp}]</span> {err.message}
+              </span>
+            ))}
+          </div>
+        </AlertDescription>
       </Alert>
-    </Box>
+    </div>
   )
 }
 

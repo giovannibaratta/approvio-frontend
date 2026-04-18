@@ -20,11 +20,11 @@ test("TemplateDetailsRule shows rendered and raw view", async ({mount, page}) =>
 
   // Default is rendered view
   await expect(page.getByText("Approval Rule")).toBeVisible()
-  await expect(page.getByText("ALL of the following (AND):")).toBeVisible()
-  await expect(page.getByText("Group:")).toBeVisible()
-  await expect(page.getByText("Min Approvals: 2")).toBeVisible()
+  await expect(page.getByText("ALL of the following (AND)")).toBeVisible()
+  await expect(page.getByText("Required Group")).toBeVisible()
+  await expect(page.getByText("2", {exact: true})).toBeVisible()
 
   // Switch to raw view
-  await component.getByLabel("Show Raw JSON").check()
+  await component.getByRole("switch", {name: "Raw JSON"}).click()
   await expect(page.getByText('"groupId": "group-123"')).toBeVisible()
 })

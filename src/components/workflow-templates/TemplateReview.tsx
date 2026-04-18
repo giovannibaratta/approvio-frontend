@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
-import {Box, Typography, Paper, Grid} from "@mui/material"
 import {listSpaces} from "../../services/api"
 import {handleEither} from "../../utils/either"
+import { FileJson, Layers, Settings2, Clock, AlignLeft } from "lucide-react"
 
 interface TemplateReviewProps {
   name: string
@@ -43,35 +43,62 @@ const TemplateReview: React.FC<TemplateReviewProps> = ({
   }, [spaceId])
 
   return (
-    <Box>
-      <Typography variant="h6" sx={{mb: 2}}>Review Details</Typography>
-      <Grid container spacing={2}>
-        <Grid size={{xs: 12, sm: 6}}>
-          <Typography variant="subtitle2" color="textSecondary">Name</Typography>
-          <Typography variant="body1">{name}</Typography>
-        </Grid>
-        <Grid size={{xs: 12, sm: 6}}>
-          <Typography variant="subtitle2" color="textSecondary">Space</Typography>
-          <Typography variant="body1">{spaceName}</Typography>
-        </Grid>
-        <Grid size={{xs: 12}}>
-          <Typography variant="subtitle2" color="textSecondary">Description</Typography>
-          <Typography variant="body1">{description || "No description provided."}</Typography>
-        </Grid>
-        <Grid size={{xs: 12}}>
-          <Typography variant="subtitle2" color="textSecondary">Default Expires In (Hours)</Typography>
-          <Typography variant="body1">{defaultExpiresInHours ?? "DEFAULT"}</Typography>
-        </Grid>
-        <Grid size={{xs: 12}}>
-          <Typography variant="subtitle2" color="textSecondary" sx={{mb: 1}}>Approval Rule</Typography>
-          <Paper variant="outlined" sx={{p: 2, bgcolor: "grey.100", overflowX: "auto"}}>
-            <pre style={{margin: 0}}>
-              <code>{ruleJson}</code>
-            </pre>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <div className="rounded-md border border-border/40 bg-muted/20 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Settings2 className="size-4 text-muted-foreground" />
+              <p className="text-sm font-medium text-muted-foreground">Template Name</p>
+            </div>
+            <p className="text-base font-semibold">{name}</p>
+          </div>
+
+          <div className="rounded-md border border-border/40 bg-muted/20 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Layers className="size-4 text-muted-foreground" />
+              <p className="text-sm font-medium text-muted-foreground">Space</p>
+            </div>
+            <p className="text-base font-medium">{spaceName}</p>
+          </div>
+
+          <div className="rounded-md border border-border/40 bg-muted/20 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Clock className="size-4 text-muted-foreground" />
+              <p className="text-sm font-medium text-muted-foreground">Default Expiry</p>
+            </div>
+            <p className="font-mono text-base font-medium">
+              {defaultExpiresInHours !== null ? `${defaultExpiresInHours}h` : "System Default"}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col rounded-md border border-border/40 bg-muted/20 p-4">
+          <div className="mb-2 flex items-center gap-2">
+            <AlignLeft className="size-4 text-muted-foreground" />
+            <p className="text-sm font-medium text-muted-foreground">Description</p>
+          </div>
+          <p className="flex-1 text-sm leading-relaxed text-foreground/80">
+            {description || <span className="italic opacity-50">No description provided.</span>}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="mb-2 flex items-center gap-2">
+          <FileJson className="size-4 text-muted-foreground" />
+          <h4 className="text-sm font-medium text-muted-foreground">Approval Rule Configuration</h4>
+        </div>
+        <div className="relative overflow-x-auto rounded-md border border-border/50 bg-muted/30 p-4">
+          <div className="absolute right-0 top-0 select-none p-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground opacity-50">
+            JSON
+          </div>
+          <pre className="font-mono text-xs text-muted-foreground">
+            <code>{ruleJson}</code>
+          </pre>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -27,8 +27,8 @@ export function DataTableTestWrapper() {
       total={2}
       page={0}
       rowsPerPage={10}
-      onPageChange={() => {}}
-      onRowsPerPageChange={() => {}}
+      onPageChange={() => undefined}
+      onRowsPerPageChange={() => undefined}
     />
   )
 }
@@ -43,8 +43,8 @@ export function DataTableLoadingWrapper() {
       total={0}
       page={0}
       rowsPerPage={10}
-      onPageChange={() => {}}
-      onRowsPerPageChange={() => {}}
+      onPageChange={() => undefined}
+      onRowsPerPageChange={() => undefined}
     />
   )
 }
@@ -59,8 +59,8 @@ export function DataTableExpandableWrapper() {
       total={2}
       page={0}
       rowsPerPage={10}
-      onPageChange={() => {}}
-      onRowsPerPageChange={() => {}}
+      onPageChange={() => undefined}
+      onRowsPerPageChange={() => undefined}
       expandableRow={row => <div data-testid={`expanded-${row.id}`}>Expanded {row.name}</div>}
     />
   )
@@ -86,5 +86,5 @@ export function DataSubTableWrapper() {
 }
 
 export function DataSubTableLoadingWrapper() {
-  return <DataSubTable columns={mockColumns} data={mockData} hasMore={true} loadingMore={true} onShowMore={() => {}} />
+  return <DataSubTable columns={mockColumns} data={mockData} hasMore={true} loadingMore={true} onShowMore={() => undefined} />
 }

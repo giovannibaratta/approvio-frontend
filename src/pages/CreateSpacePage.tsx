@@ -1,6 +1,5 @@
 import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
-import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -8,19 +7,11 @@ import SpaceDetailsForm from "../components/spaces/SpaceDetailsForm"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
 import type {SpaceCreate} from "@approvio/api"
 import {createSpace} from "../services/api"
-
-enum CreateSpaceSteps {
-  CreateSpace = "CreateSpace",
-}
-
-const stepOrder: CreateSpaceSteps[] = [CreateSpaceSteps.CreateSpace]
-
-const stepTitles: Record<CreateSpaceSteps, string> = {
-  [CreateSpaceSteps.CreateSpace]: "Create Space",
-}
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader2, ArrowLeft, Layers } from "lucide-react"
 
 const CreateSpacePage: React.FC = () => {
-  const [activeStep] = useState<CreateSpaceSteps>(CreateSpaceSteps.CreateSpace)
   const [spaceName, setSpaceName] = useState("")
   const [spaceDescription, setSpaceDescription] = useState("")
   const [loading, setLoading] = useState(false)
@@ -78,17 +69,30 @@ const CreateSpacePage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{p: {xs: 2, md: 3}, mt: 3}}>
-        <Stepper activeStep={stepOrder.indexOf(activeStep)} sx={{pt: 3, pb: 5}}>
-          {Object.values(CreateSpaceSteps).map(step => (
-            <Step key={step}>
-              <StepLabel>{stepTitles[step]}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={handleCancel} disabled={loading} className="shrink-0">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Create Space</h1>
+          <p className="text-sm text-muted-foreground">Establish a new isolated environment for workflows.</p>
+        </div>
+      </div>
 
-        <React.Fragment>
+      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+        <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-md border border-purple-500/20 bg-purple-500/10">
+              <Layers className="size-5 text-purple-500" />
+            </div>
+            <div>
+              <CardTitle className="text-lg">Space Details</CardTitle>
+              <CardDescription>Configure the basic information for your new space.</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
           <SpaceDetailsForm
             spaceName={spaceName}
             setSpaceName={setSpaceName}
@@ -98,20 +102,23 @@ const CreateSpacePage: React.FC = () => {
             spaceNameError={spaceNameError}
             setSpaceNameError={setSpaceNameError}
           />
-          <Box sx={{mt: 3}}>
-            <ErrorList errors={errors} />
-          </Box>
-          <Box sx={{display: "flex", justifyContent: "flex-end", mt: 3}}>
-            <Button onClick={handleCancel} sx={{mr: 1}} disabled={loading}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleCreate} disabled={loading || !canCreateSpace}>
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Create Space"}
-            </Button>
-          </Box>
-        </React.Fragment>
-      </Paper>
-    </Container>
+          {errors.length > 0 && (
+            <div className="mt-6">
+              <ErrorList errors={errors} />
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-end gap-3 border-t border-border/40 bg-muted/20 py-4">
+          <Button variant="outline" onClick={handleCancel} disabled={loading}>
+            Cancel
+          </Button>
+          <Button onClick={handleCreate} disabled={loading || !canCreateSpace} className="min-w-[120px]">
+            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {loading ? "Creating..." : "Create Space"}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   )
 }
 

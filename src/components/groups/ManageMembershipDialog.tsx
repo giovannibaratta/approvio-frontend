@@ -1,32 +1,6 @@
 import { type FrontendError } from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  TextField,
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CircularProgress,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  debounce,
-  Chip,
-  ButtonGroup
-} from "@mui/material"
-
-import {
   listUsers,
   addGroupEntities,
   removeGroupEntities,
@@ -39,6 +13,16 @@ import type {
 } from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, AlertCircle, Plus, Minus, Undo2, Users } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { debounce } from "../../utils/debounce"
+
 
 import type { MemberDetails } from "@/models/group-details"
 
@@ -254,7 +238,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       <span>
         {parts.map((part, index) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <Chip key={index} label={part} color="primary" size="small" />
+            <span key={index} className="rounded-sm bg-emerald-500/20 px-0.5 font-semibold text-emerald-700">
+              {part}
+            </span>
           ) : (
             part
           )
@@ -264,169 +250,200 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Manage Membership - {groupName}</DialogTitle>
-      <DialogContent sx={{overflow: "visible"}}>
-        {error && (
-          <Alert severity="error" sx={{mb: 2}}>
-            {error}
-          </Alert>
-        )}
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-[700px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Users className="size-5 text-muted-foreground" />
+            Manage Membership
+          </DialogTitle>
+          <DialogDescription>
+            Add or remove users from the <span className="font-semibold text-foreground">{groupName}</span> group.
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Search Section */}
-        <Box sx={{mb: 3}}>
-          <TextField
-            fullWidth
-            label="Search users by name or email"
-            variant="outlined"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            disabled={loading}
-            inputRef={searchInputRef}
-            autoComplete="off"
-            slotProps={{
-              input: {
-                endAdornment: loadingSearch ? <CircularProgress size={20} /> : null
-              }
-            }}
-          />
-
-          {searchResults.length > 0 && (
-            <Paper sx={{mt: 1, maxHeight: 200, overflow: "auto"}}>
-              <List dense>
-                {searchResults.map(user => {
-                  const isUserCurrentlyMember = currentMembers.some(
-                    (member) => member.entity.entityId === user.id && member.entity.entityType === "human"
-                  )
-                  const isPendingAdd = draftMembers.some(member => member.id === user.id && member.isNew && !member.isRemoved)
-                  const isPendingRemove = draftMembers.some(member => member.id === user.id && !member.isNew && member.isRemoved)
-
-                  return (
-                    <ListItem key={user.id} component="div" sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                      <ListItemText primary={highlightMatch(user.displayName, searchQuery)} secondary={highlightMatch(user.email, searchQuery)} />
-                      {(isUserCurrentlyMember && !isPendingRemove) ? (
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          onClick={() => handleRemoveMember(user)}
-                        >
-                          Remove Member
-                        </Button>
-                      ) : isPendingRemove ? (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => handleUndoRemove(user.id)}
-                        >
-                          Undo Remove
-                        </Button>
-                      ) : isPendingAdd ? (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => handleRemoveMember(user)}
-                        >
-                          Undo Add
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleAddUser(user)}
-                        >
-                          Add Member
-                        </Button>
-                      )}
-                    </ListItem>
-                  )
-                })}
-              </List>
-            </Paper>
+        <div className="flex-1 space-y-6 overflow-y-auto pr-2">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="size-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-        </Box>
 
-        {/* Pending Changes Section */}
-        <Typography variant="h6" gutterBottom>
-          Pending Changes
-        </Typography>
+          {/* Search Section */}
+          <div className="space-y-4">
+            <div className="relative">
+              <Input
+                ref={searchInputRef}
+                placeholder="Search users by name or email..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                disabled={loading}
+                autoComplete="off"
+                className="pr-10"
+              />
+              {loadingSearch && (
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                </div>
+              )}
+            </div>
 
-        {pendingChanges.length === 0 ? (
-          <Typography color="text.secondary">No pending changes.</Typography>
-        ) : (
-          <TableContainer component={Paper} variant="outlined">
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {pendingChanges.map(member => (
-                  <TableRow
-                    key={member.id}
-                    sx={{
-                      opacity: member.isRemoved ? 0.5 : 1,
-                      backgroundColor: member.isNew && !member.isRemoved ? "action.hover" : "inherit"
-                    }}
-                  >
-                    <TableCell>
-                      <Typography variant="body2" sx={{textDecoration: member.isRemoved ? "line-through" : "none"}}>
-                        {member.displayName}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{textDecoration: member.isRemoved ? "line-through" : "none"}}
+            {searchResults.length > 0 && (
+              <div className="overflow-hidden rounded-md border border-border/50 bg-background/50 backdrop-blur-sm">
+                <ScrollArea className="max-h-[250px]">
+                  <div className="p-1">
+                    {searchResults.map(user => {
+                      const isUserCurrentlyMember = currentMembers.some(
+                        (member) => member.entity.entityId === user.id && member.entity.entityType === "human"
+                      )
+                      const isPendingAdd = draftMembers.some(member => member.id === user.id && member.isNew && !member.isRemoved)
+                      const isPendingRemove = draftMembers.some(member => member.id === user.id && !member.isNew && member.isRemoved)
+
+                      return (
+                        <div key={user.id} className="flex items-center justify-between rounded-sm border-b border-border/40 p-3 transition-colors last:border-0 hover:bg-muted/50">
+                          <div className="flex flex-col overflow-hidden">
+                            <span className="truncate text-sm font-medium">
+                              {highlightMatch(user.displayName, searchQuery)}
+                            </span>
+                            <span className="truncate font-mono text-xs text-muted-foreground">
+                              {highlightMatch(user.email, searchQuery)}
+                            </span>
+                          </div>
+                          <div className="ml-4 shrink-0">
+                            {(isUserCurrentlyMember && !isPendingRemove) ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveMember(user)}
+                                className="h-8 border-destructive/20 text-destructive hover:bg-destructive/10"
+                              >
+                                <Minus className="mr-1.5 size-3.5" />
+                                Remove
+                              </Button>
+                            ) : isPendingRemove ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleUndoRemove(user.id)}
+                                className="h-8"
+                              >
+                                <Undo2 className="mr-1.5 size-3.5" />
+                                Undo
+                              </Button>
+                            ) : isPendingAdd ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveMember(user)}
+                                className="h-8"
+                              >
+                                <Undo2 className="mr-1.5 size-3.5" />
+                                Undo Add
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleAddUser(user)}
+                                className="h-8 border-primary/20 text-primary hover:bg-primary/10"
+                              >
+                                <Plus className="mr-1.5 size-3.5" />
+                                Add
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+          </div>
+
+          {/* Pending Changes Section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold tracking-tight">Pending Changes</h4>
+              {pendingChanges.length > 0 && (
+                <Badge variant="secondary" className="font-mono text-xs">{pendingChanges.length}</Badge>
+              )}
+            </div>
+
+            {pendingChanges.length === 0 ? (
+              <div className="flex items-center justify-center rounded-md border border-dashed border-border/60 p-6">
+                <p className="text-center text-sm text-muted-foreground">No pending changes.</p>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-md border border-border/50">
+                <Table>
+                  <TableHeader className="bg-muted/30">
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingChanges.map(member => (
+                      <TableRow
+                        key={member.id}
+                        className={member.isNew && !member.isRemoved ? "bg-emerald-500/5 hover:bg-emerald-500/10" : member.isRemoved ? "bg-destructive/5 hover:bg-destructive/10" : ""}
                       >
-                        {member.email}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {member.isNew && !member.isRemoved && (
-                        <Chip label="To Be Added" size="small" color="success" variant="outlined" />
-                      )}
-                      {member.isRemoved && (
-                        <Chip label="To Be Removed" size="small" color="error" variant="outlined" />
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      <ButtonGroup size="small">
-                        <Button
-                            variant="outlined"
+                        <TableCell className={member.isRemoved ? "opacity-50" : ""}>
+                          <div className="flex flex-col">
+                            <span className={`text-sm font-medium ${member.isRemoved ? "line-through" : ""}`}>
+                              {member.displayName}
+                            </span>
+                            <span className={`font-mono text-xs text-muted-foreground ${member.isRemoved ? "line-through" : ""}`}>
+                              {member.email}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {member.isNew && !member.isRemoved && (
+                            <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600">To Be Added</Badge>
+                          )}
+                          {member.isRemoved && (
+                            <Badge variant="outline" className="border-destructive/20 bg-destructive/10 text-destructive">To Be Removed</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleUndoRemove(member.id)}
                             disabled={loading}
-                            size="small"
+                            className="h-8 text-muted-foreground hover:text-foreground"
                           >
+                            <Undo2 className="mr-2 size-4" />
                             Undo
                           </Button>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter className="mt-4 border-t border-border/40 pt-4">
+          <Button variant="outline" onClick={handleClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveChanges}
+            disabled={loading || pendingChanges.length === 0}
+            className="min-w-[140px]"
+          >
+            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {loading ? "Saving..." : `Save Changes (${pendingChanges.length})`}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSaveChanges}
-          variant="contained"
-          disabled={loading || pendingChanges.length === 0}
-        >
-          {loading ? <CircularProgress size={20} /> : `Save Changes (${pendingChanges.length})`}
-        </Button>
-      </DialogActions>
     </Dialog>
   )
 }

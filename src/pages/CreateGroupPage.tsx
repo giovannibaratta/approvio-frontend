@@ -1,6 +1,5 @@
 import { type FrontendError } from "../services/api"
 import React, {useState} from "react"
-import {Box, Stepper, Step, StepLabel, Button, Paper, Container, CircularProgress} from "@mui/material"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
@@ -9,6 +8,9 @@ import AssignUsersStep from "../components/groups/AssignUsersStep"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
 import type { GroupCreate, UserSummary } from "@approvio/api"
 import {createGroup, addGroupEntities} from "../services/api"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Loader2, ArrowLeft, Users, UserPlus } from "lucide-react"
 
 enum CreateGroupSteps {
   CreateGroup = "CreateGroup",
@@ -172,48 +174,86 @@ const CreateGroupPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="md">
-      <Paper sx={{p: {xs: 2, md: 3}, mt: 3}}>
-        <Stepper activeStep={stepOrder.indexOf(activeStep)} sx={{pt: 3, pb: 5}}>
-          {
-            Object.values(CreateGroupSteps).map(step => (
-              <Step
-                key={step}
-                completed={isStepCompleted(activeStep, step)}
-              >
-                <StepLabel>{stepTitles[step]}</StepLabel>
-              </Step>
-            ))
-          }
-        </Stepper>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/groups")} disabled={loading} className="shrink-0">
+          <ArrowLeft className="size-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Create Group</h1>
+          <p className="text-sm text-muted-foreground">Set up a new group for managing access and approvals.</p>
+        </div>
+      </div>
 
-        <React.Fragment>
+      {/* Stepper */}
+      <div className="relative mb-8 flex items-center justify-between px-8 md:px-16">
+        <div className="absolute inset-x-0 top-1/2 -z-10 h-0.5 -translate-y-1/2 bg-muted/50" />
+        {stepOrder.map((step) => {
+          const isActive = activeStep === step
+          const isCompleted = isStepCompleted(activeStep, step)
+
+          return (
+            <div key={step} className="flex flex-col items-center gap-2 bg-background px-2">
+              <div
+                className={`flex size-10 items-center justify-center rounded-full border-2 transition-colors
+                  ${isActive
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : isCompleted
+                      ? "border-primary bg-primary/20 text-primary"
+                      : "border-muted bg-background text-muted-foreground"
+                  }`}
+              >
+                {step === CreateGroupSteps.CreateGroup ? <Users className="size-5" /> : <UserPlus className="size-5" />}
+              </div>
+              <span className={`text-xs font-medium uppercase tracking-wider ${isActive || isCompleted ? "text-foreground" : "text-muted-foreground"}`}>
+                {stepTitles[step]}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+        <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-md border border-blue-500/20 bg-blue-500/10">
+              {activeStep === CreateGroupSteps.CreateGroup ? <Users className="size-5 text-blue-500" /> : <UserPlus className="size-5 text-blue-500" />}
+            </div>
+            <div>
+              <CardTitle className="text-lg">{stepTitles[activeStep]}</CardTitle>
+              <CardDescription>
+                {activeStep === CreateGroupSteps.CreateGroup
+                  ? "Define the group's name and description."
+                  : "Add members to the new group."}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
           {getStepContent(activeStep)}
-          <Box sx={{mt: 3}}>
-            <ErrorList errors={errors} />
-          </Box>
-          <Box sx={{display: "flex", justifyContent: "flex-end", mt: 3}}>
-            {activeStep === CreateGroupSteps.AssignUsers && (
-              <Button onClick={handleSkipUserAssignment} sx={{mr: 1}} disabled={loading}>
-                Skip
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              onClick={activeStep === CreateGroupSteps.AssignUsers ? handleAssignUsers : handleNext}
-              disabled={
-                loading ||
-                !canAdvanceToNextStep[activeStep]
-              }
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : advanceButtonText[activeStep]}
+          {errors.length > 0 && (
+            <div className="mt-6">
+              <ErrorList errors={errors} />
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-end gap-3 border-t border-border/40 bg-muted/20 py-4">
+          {activeStep === CreateGroupSteps.AssignUsers && (
+            <Button variant="outline" onClick={handleSkipUserAssignment} disabled={loading}>
+              Skip
             </Button>
-          </Box>
-        </React.Fragment>
-      </Paper>
-    </Container>
+          )}
+          <Button
+            onClick={activeStep === CreateGroupSteps.AssignUsers ? handleAssignUsers : handleNext}
+            disabled={loading || !canAdvanceToNextStep[activeStep]}
+            className="min-w-[120px]"
+          >
+            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {loading ? "Processing..." : advanceButtonText[activeStep]}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   )
 }
 

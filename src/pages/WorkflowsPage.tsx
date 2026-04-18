@@ -1,41 +1,27 @@
 import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
-import {Box, Alert, Chip} from "@mui/material"
 import {listWorkflows} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Workflow, Pagination, ListWorkflows200Response} from "@approvio/api"
-import {DataTable, type Column} from "../components/DataTable"
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "APPROVED": return "success"
-    case "REJECTED": return "error"
-    case "CANCELED": return "default"
-    case "EVALUATION_IN_PROGRESS": return "info"
-    case "EXPIRED": return "warning"
-    default: return "default"
-  }
-}
+import { DataTable, type Column } from "../components/DataTable"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+import { StatusBadge } from "../components/common/StatusBadge"
+import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
 
 const columns: Column<Workflow>[] = [
-  {id: "name", label: "Name", render: (workflow) => workflow.name},
+  {id: "name", label: "Name", render: (workflow) => <span className={TYPOGRAPHY.LABEL}>{workflow.name}</span>},
   {
     id: "status",
     label: "Status",
-    render: (workflow) => (
-      <Chip
-        label={workflow.status.replace(/_/g, " ")}
-        color={getStatusColor(workflow.status) as any}
-        size="small"
-      />
-    )
+    render: (workflow) => <StatusBadge status={workflow.status as any} />
   },
-  {id: "description", label: "Description", render: (workflow) => workflow.description || "No description"},
+  {id: "description", label: "Description", render: (workflow) => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{workflow.description || "No description"}</span>},
   {
     id: "createdAt",
     label: "Created At",
-    render: (workflow) => new Date(workflow.createdAt).toLocaleDateString()
+    render: (workflow) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(workflow.createdAt).toLocaleDateString()}</span>
   },
 ]
 
@@ -85,14 +71,15 @@ const WorkflowsPage: React.FC = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{m: 2}}>
-        {error}
+      <Alert variant="destructive" className="m-4">
+        <AlertCircle className="size-4" />
+        <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
   }
 
   return (
-    <Box>
+    <div className={LAYOUT.SECTION_SPACING}>
       <DataTable
         title="Workflows"
         columns={columns}
@@ -104,7 +91,7 @@ const WorkflowsPage: React.FC = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Box>
+    </div>
   )
 }
 

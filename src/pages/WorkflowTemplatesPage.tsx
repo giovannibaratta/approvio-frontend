@@ -1,6 +1,5 @@
 import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
-import {Box, Alert, Button, Tooltip, Typography, FormControlLabel, Switch, CircularProgress, Chip} from "@mui/material"
 import {Link as RouterLink, useNavigate} from "react-router-dom"
 import {listWorkflowTemplates} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
@@ -12,6 +11,12 @@ import {
   WorkflowTemplateStatus
 } from "@approvio/api"
 import {DataTable, DataSubTable, type Column} from "../components/DataTable"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, Plus, AlertCircle } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 /**
  * Shared column configuration used by both the main table and the expanded versions list.
@@ -23,40 +28,45 @@ const SHARED_COLUMNS: Column<WorkflowTemplateSummary>[] = [
     label: "Name",
     width: "30%",
     render: template => (
-      <Tooltip title={`Click to view details for ${template.name}`} placement="top-start">
-        <Typography variant="body2" sx={{fontWeight: "medium", color: "primary.main", cursor: "pointer"}}>
-          {template.name}
-        </Typography>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <span className="cursor-pointer text-left font-medium text-primary transition-colors hover:text-primary/80 focus:outline-none">
+              {template.name}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent align="start">
+            <p>Click to view details for {template.name}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     )
   },
-  {id: "version", label: "Version", width: "10%", render: template => template.version},
+  {id: "version", label: "Version", width: "10%", render: template => <span className="font-mono text-sm">v{template.version}</span>},
   {
     id: "status",
     label: "Status",
     width: "15%",
     render: template => {
-      const colorMap: Record<string, "success" | "warning" | "error" | "default"> = {
-        ACTIVE: "success",
-        PENDING_DEPRECATION: "warning",
-        DEPRECATED: "error"
+      const baseClasses = "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+      switch (template.status) {
+        case "ACTIVE":
+          return <span className={`${baseClasses} border-emerald-500/20 bg-emerald-500/10 text-emerald-600`}>Active</span>
+        case "PENDING_DEPRECATION":
+          return <span className={`${baseClasses} border-amber-500/20 bg-amber-500/10 text-amber-600`}>Deprecating</span>
+        case "DEPRECATED":
+          return <span className={`${baseClasses} border-destructive/20 bg-destructive/10 text-destructive`}>Deprecated</span>
+        default:
+          return <span className={`${baseClasses} border-border bg-muted/50 text-muted-foreground`}>{String(template.status).replace(/_/g, " ")}</span>
       }
-      return (
-        <Chip
-          label={template.status.replace(/_/g, " ")}
-          size="small"
-          color={colorMap[template.status] || "default"}
-          variant="outlined"
-        />
-      )
     }
   },
-  {id: "description", label: "Description", width: "30%", render: template => template.description || "No description"},
+  {id: "description", label: "Description", width: "30%", render: template => <span className="text-sm text-muted-foreground">{template.description || "No description"}</span>},
   {
     id: "createdAt",
     label: "Created At",
     width: "20%",
-    render: template => new Date(template.createdAt).toLocaleDateString()
+    render: template => <span className="font-mono text-sm text-muted-foreground">{new Date(template.createdAt).toLocaleDateString()}</span>
   }
 ]
 
@@ -113,16 +123,19 @@ function ExpandedVersionsTable({templateName, currentTemplateId}: {templateName:
 
   if (loading) {
     return (
-      <Box sx={{display: "flex", justifyContent: "center", p: 2}}>
-        <CircularProgress size={24} />
-      </Box>
+      <div className="flex justify-center p-4">
+        <Loader2 className="size-5 animate-spin text-muted-foreground" />
+      </div>
     )
   }
   if (error) {
     return (
-      <Alert severity="error" sx={{m: 1}}>
-        {error}
-      </Alert>
+      <div className="p-2">
+        <Alert variant="destructive" className="px-3 py-2">
+          <AlertCircle className="size-4" />
+          <AlertDescription className="text-xs">{error}</AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
@@ -195,28 +208,39 @@ const WorkflowTemplatesPage: React.FC = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{m: 2}}>
-        {error}
+      <Alert variant="destructive" className="m-4">
+        <AlertCircle className="size-4" />
+        <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
   }
 
-  return (
-    <Box>
-      <Box sx={{display: "flex", justifyContent: "flex-end", mr: 2, mt: 2}}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={showAllVersions}
-              onChange={e => {
-                setShowAllVersions(e.target.checked)
-                setPage(0)
-              }}
-            />
-          }
-          label="Show all latest templates"
+  const headerAction = (
+    <div className="flex items-center gap-6">
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="show-all"
+          checked={showAllVersions}
+          onCheckedChange={(checked) => {
+            setShowAllVersions(checked)
+            setPage(0)
+          }}
         />
-      </Box>
+        <Label htmlFor="show-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          Show all latest
+        </Label>
+      </div>
+      <Button asChild>
+        <RouterLink to="/workflow-templates/new">
+          <Plus className="mr-2 size-4" />
+          Create Template
+        </RouterLink>
+      </Button>
+    </div>
+  )
+
+  return (
+    <div className="space-y-4">
       <DataTable
         title="Workflow Templates"
         columns={SHARED_COLUMNS.map(col =>
@@ -224,9 +248,20 @@ const WorkflowTemplatesPage: React.FC = () => {
             ? {
                 ...col,
                 render: (template: WorkflowTemplateSummary) => (
-                  <Box onClick={() => navigate(`/workflow-templates/${template.id}`)} sx={{cursor: "pointer"}}>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        navigate(`/workflow-templates/${template.id}`)
+                      }
+                    }}
+                    onClick={() => navigate(`/workflow-templates/${template.id}`)}
+                    className="cursor-pointer"
+                  >
                     {col.render(template)}
-                  </Box>
+                  </div>
                 )
               }
             : col
@@ -242,13 +277,9 @@ const WorkflowTemplatesPage: React.FC = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        headerAction={
-          <Button variant="contained" component={RouterLink} to="/workflow-templates/new">
-            Create Template
-          </Button>
-        }
+        headerAction={headerAction}
       />
-    </Box>
+    </div>
   )
 }
 

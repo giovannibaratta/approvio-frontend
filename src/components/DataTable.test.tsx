@@ -20,7 +20,7 @@ test.describe("DataTable", () => {
   test("shows loading state", async ({mount}) => {
     const component = await mount(<DataTableLoadingWrapper />)
 
-    await expect(component.locator(".MuiCircularProgress-root")).toBeVisible()
+    await expect(component.locator(".animate-spin")).toBeVisible()
     await expect(component).not.toContainText("Item A")
   })
 
@@ -46,12 +46,7 @@ test.describe("DataSubTable", () => {
     const component = await mount(<DataSubTableWrapper />)
 
     await expect(component).toContainText("Item A")
-    await expect(
-      component
-        .locator("svg[data-testid='SubdirectoryArrowRightIcon']")
-        .or(component.locator(".MuiSvgIcon-root"))
-        .first()
-    ).toBeVisible()
+    await expect(component.locator(".lucide-corner-down-right").first()).toBeVisible()
 
     const showMoreButton = component.getByRole("button", {name: "Show more versions"})
     await expect(showMoreButton).toBeVisible()
