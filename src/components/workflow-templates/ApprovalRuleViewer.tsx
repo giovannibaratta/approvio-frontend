@@ -43,7 +43,7 @@ const ApprovalRuleViewer: React.FC<Props> = ({rule, title = "Approval Rule", ext
           <Switch
             id="show-raw-json"
             checked={showRaw}
-            onCheckedChange={setShowRaw}
+            onCheckedChange={(checked) => setShowRaw(checked)}
             className="ml-2"
           />
         </div>
