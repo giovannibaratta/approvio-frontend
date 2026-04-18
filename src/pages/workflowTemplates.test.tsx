@@ -32,29 +32,31 @@ test("CreateWorkflowTemplatePage allows navigation, validation, and cancellation
   await expect(page.getByText("Discard unsaved changes?")).toBeHidden()
 
   // Test 2: Fill out form and navigate
-  await component.getByLabel("Template Name").fill("My Template")
+  await component.getByLabel("Template Name *").fill("My Template")
   // Select space from autocomplete
-  await component.getByLabel("Space").click()
+  await component.getByRole("combobox", {name: "Space *"}).click()
   await page.getByRole("option", {name: "Test Space"}).click()
 
-  await component.getByRole("button", {name: "Next"}).click()
+  await component.getByRole("button", {name: "Next Step"}).click()
 
   // Step 2: Approval Rule
-  await expect(page.getByText("Approval Rule in JSON")).toBeVisible()
+  await expect(page.getByText("Provide the Approval Rule in JSON format.")).toBeVisible()
   // Wait for simple code editor to be visible, it renders as a textarea inside a container
   await component.locator("textarea").fill('{ "type": "GROUP_REQUIREMENT", "minCount": 1, "groupId": "123" }')
 
-  await component.getByRole("button", {name: "Next"}).click()
+  await component.getByRole("button", {name: "Next Step"}).click()
 
   // Step 3: Review & Create
-  await expect(page.getByText("Review Details")).toBeVisible()
+  await expect(page.getByText("Verify template configuration before creation.")).toBeVisible()
 
   // Test back button
   await component.getByRole("button", {name: "Back"}).click()
-  await expect(page.getByText("Approval Rule in JSON")).toBeVisible()
-  await component.getByRole("button", {name: "Next"}).click()
+  await expect(page.getByText("Provide the Approval Rule in JSON format.")).toBeVisible()
+  await component.getByRole("button", {name: "Next Step"}).click()
 
   // Submit
   await component.getByRole("button", {name: "Create Template"}).click()
-  expect(createCalled).toBe(true)
+
+  // Wait for the API call to complete and navigate
+  await expect.poll(() => createCalled).toBe(true)
 })

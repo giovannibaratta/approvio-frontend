@@ -1,15 +1,17 @@
 import { type FrontendError } from "../services/api"
 import React, {useEffect, useState} from "react"
-import {Alert} from "@mui/material"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 import {listUsers} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {ListUsers200Response, Pagination, UserSummary} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
+import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
 
 const columns: Column<UserSummary>[] = [
-  {id: "name", label: "Name", render: (user) => user.displayName},
-  {id: "email", label: "Email", render: (user) => user.email},
+  {id: "name", label: "Name", render: (user) => <span className={TYPOGRAPHY.LABEL}>{user.displayName}</span>},
+  {id: "email", label: "Email", render: (user) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{user.email}</span>},
 ]
 
 const UsersPage: React.FC = () => {
@@ -61,24 +63,27 @@ const UsersPage: React.FC = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{m: 2}}>
-        {error}
+      <Alert variant="destructive" className="m-4">
+        <AlertCircle className="size-4" />
+        <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
   }
 
   return (
-    <DataTable
-      title="Users"
-      columns={columns}
-      data={users}
-      loading={loading}
-      total={pagination?.total || 0}
-      page={page}
-      rowsPerPage={rowsPerPage}
-      onPageChange={handleChangePage}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
+    <div className={LAYOUT.SECTION_SPACING}>
+      <DataTable
+        title="Users"
+        columns={columns}
+        data={users}
+        loading={loading}
+        total={pagination?.total || 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </div>
   )
 }
 

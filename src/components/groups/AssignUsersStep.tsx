@@ -1,33 +1,17 @@
 import { type FrontendError } from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
-import {
-  Box,
-  Typography,
-  TextField,
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CircularProgress,
-  Alert,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  debounce,
-  ListItemIcon
-} from "@mui/material"
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline"
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
-
 import {listUsers, listGroupEntities} from "../../services/api"
 import type { UserSummary, ListUsers200Response } from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { CheckCircle2, PlusCircle, Trash2, Loader2, AlertCircle } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { debounce } from "../../utils/debounce"
+
 
 interface AssignUsersStepProps {
   groupName: string
@@ -201,7 +185,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
       <span>
         {parts.map((part, index) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <span key={index} style={{fontWeight: "bold", backgroundColor: "lightblue"}}>
+            <span key={index} className="rounded-sm bg-emerald-500/20 px-0.5 font-semibold text-emerald-700">
               {part}
             </span>
           ) : (
@@ -217,137 +201,161 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
   }, [selectedUsers, onSelectedUsersChange])
 
   return (
-    <Box sx={{mt: 3, p: 2}}>
-      <Typography variant="h6" gutterBottom>
-        {groupSuccessfullyCreated ? `Assign Users to "${groupName}"` : "User Assignment"}
-      </Typography>
+    <div className="space-y-6 pt-4">
+      <div>
+        <h3 className="text-lg font-medium">
+          {groupSuccessfullyCreated ? `Assign Users to "${groupName}"` : "User Assignment"}
+        </h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Search and add users to this group.
+        </p>
+      </div>
 
       {!groupSuccessfullyCreated && !loading && (
-        <Typography color="error.main" sx={{mb: 2}}>
-          Group creation was not successful. Cannot assign users.
-        </Typography>
+        <Alert variant="destructive">
+          <AlertCircle className="size-4" />
+          <AlertDescription>
+            Group creation was not successful. Cannot assign users.
+          </AlertDescription>
+        </Alert>
       )}
 
       {groupSuccessfullyCreated && (
-        <>
-          <TextField
-            fullWidth
-            label="Search users by name or email"
-            variant="outlined"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            sx={{mb: 2}}
-            disabled={loadingSearch || loadingAssigned || loading}
-            inputRef={searchInputRef}
-            autoComplete="off"
-            InputProps={{
-              endAdornment: loadingSearch ? <CircularProgress color="inherit" size={20} /> : null
-            }}
-          />
+        <div className="space-y-4">
+          <div className="relative">
+            <Input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search users by name or email..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              disabled={loadingSearch || loadingAssigned || loading}
+              className="pr-10"
+              autoComplete="off"
+            />
+            {loadingSearch && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <Loader2 className="size-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
+          </div>
 
           {assignedError && (
-            <Alert severity="error" sx={{mb: 2}}>
-              {assignedError}
+            <Alert variant="destructive">
+              <AlertCircle className="size-4" />
+              <AlertDescription>{assignedError}</AlertDescription>
             </Alert>
           )}
           {searchError && (
-            <Alert severity="error" sx={{mb: 2}}>
-              {searchError}
+            <Alert variant="destructive">
+              <AlertCircle className="size-4" />
+              <AlertDescription>{searchError}</AlertDescription>
             </Alert>
           )}
 
           {!loadingSearch && searchResults.length > 0 && searchQuery.length > 0 && (
-            <Paper sx={{maxHeight: 200, overflow: "auto", mb: 2}}>
-              <List dense>
-                {searchResults.map(user => (
-                  <ListItem
-                    key={user.id}
-                    onClick={() => handleToggleUser(user)}
-                    sx={{
-                      cursor: isUserPermanentlyAssigned(user) ? "default" : "pointer",
-                      opacity: isUserPermanentlyAssigned(user) ? 0.6 : 1
-                    }}
-                  >
-                    <ListItemIcon>
-                      {isUserSelected(user) ? (
-                        <CheckCircleOutlineIcon color="primary" />
-                      ) : isUserPermanentlyAssigned(user) ? (
-                        <CheckCircleOutlineIcon color="disabled" />
-                      ) : (
-                        <AddCircleOutlineIcon />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={highlightMatch(user.displayName, searchQuery)}
-                      secondary={highlightMatch(user.email, searchQuery)}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
+            <div className="overflow-hidden rounded-md border border-border/50 bg-background/50 backdrop-blur-sm">
+              <ScrollArea className="max-h-[200px]">
+                <div className="p-1">
+                  {searchResults.map(user => (
+                    <div
+                      key={user.id}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          handleToggleUser(user)
+                        }
+                      }}
+                      onClick={() => handleToggleUser(user)}
+                      className={`flex items-center gap-3 rounded-sm p-2 transition-colors ${
+                        isUserPermanentlyAssigned(user)
+                          ? "cursor-default opacity-60"
+                          : "cursor-pointer hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className="flex shrink-0 items-center justify-center">
+                        {isUserSelected(user) ? (
+                          <CheckCircle2 className="size-5 text-primary" />
+                        ) : isUserPermanentlyAssigned(user) ? (
+                          <CheckCircle2 className="size-5 text-muted-foreground" />
+                        ) : (
+                          <PlusCircle className="size-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="truncate text-sm font-medium">
+                          {highlightMatch(user.displayName, searchQuery)}
+                        </span>
+                        <span className="truncate font-mono text-xs text-muted-foreground">
+                          {highlightMatch(user.email, searchQuery)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
           )}
 
           {searchQuery.length > 0 && !loadingSearch && searchResults.length === 0 && (
-            <Typography color="text.secondary" sx={{mb: 2}}>
+            <p className="py-4 text-center text-sm text-muted-foreground">
               No users found matching &quot;{searchQuery}&quot;
-            </Typography>
+            </p>
           )}
 
           {selectedUsers.length > 0 && (
-            <Paper sx={{p: 2, mb: 2}}>
-              <Typography variant="subtitle1" gutterBottom>
-                Selected Users ({selectedUsers.length})
-              </Typography>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>User</TableCell>
-                      <TableCell align="center">Action</TableCell>
+            <div className="overflow-hidden rounded-md border border-border/50 bg-background">
+              <div className="flex items-center justify-between border-b border-border/50 bg-muted/20 px-4 py-2">
+                <span className="text-sm font-medium">Selected Users</span>
+                <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                  {selectedUsers.length}
+                </span>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead>User</TableHead>
+                    <TableHead className="w-[100px] text-center">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedUsers.map(user => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">{user.displayName}</span>
+                          <span className="font-mono text-xs text-muted-foreground">{user.email}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => handleDeselectUser(user)}
+                          title="Remove user"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {selectedUsers.map(user => (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" sx={{fontWeight: "medium"}}>
-                              {user.displayName}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {user.email}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                        <TableCell align="center">
-                          <IconButton
-                            onClick={() => handleDeselectUser(user)}
-                            size="small"
-                            color="error"
-                            title="Remove user"
-                          >
-                            <RemoveCircleOutlineIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
 
           {loadingAssigned && (
-            <Box sx={{display: "flex", justifyContent: "center", p: 2}}>
-              <CircularProgress size={24} />
-              <Typography variant="body2" sx={{ml: 2}}>
-                Loading assigned users...
-              </Typography>
-            </Box>
+            <div className="flex items-center justify-center p-4 text-muted-foreground">
+              <Loader2 className="mr-2 size-5 animate-spin" />
+              <span className="text-sm">Loading assigned users...</span>
+            </div>
           )}
-        </>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
 

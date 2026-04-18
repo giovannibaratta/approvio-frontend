@@ -1,5 +1,7 @@
 import React from "react"
-import {Box, TextField} from "@mui/material"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 interface SpaceDetailsFormProps {
   spaceName: string
@@ -30,39 +32,37 @@ const SpaceDetailsForm: React.FC<SpaceDetailsFormProps> = ({
   }
 
   return (
-    <Box component="form" noValidate autoComplete="off">
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="spaceName"
-        label="Space Name"
-        name="spaceName"
-        value={spaceName}
-        onChange={handleSpaceNameChange}
-        disabled={disableComponents}
-        error={!!spaceNameError}
-        helperText={spaceNameError}
-        slotProps={{
-          htmlInput: {maxLength: 255}
-        }}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        id="spaceDescription"
-        label="Space Description (Optional)"
-        name="spaceDescription"
-        multiline
-        rows={3}
-        value={spaceDescription}
-        onChange={e => setSpaceDescription(e.target.value)}
-        disabled={disableComponents}
-        slotProps={{
-          htmlInput: {maxLength: 2048}
-        }}
-      />
-    </Box>
+    <form noValidate autoComplete="off" className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="spaceName" className={spaceNameError ? "text-destructive" : ""}>Space Name <span className="text-destructive">*</span></Label>
+        <Input
+          id="spaceName"
+          name="spaceName"
+          placeholder="e.g. Engineering, Marketing"
+          value={spaceName}
+          onChange={handleSpaceNameChange}
+          disabled={disableComponents}
+          className={spaceNameError ? "border-destructive focus-visible:ring-destructive" : ""}
+          maxLength={255}
+        />
+        {spaceNameError && (
+          <p className="mt-1 text-xs font-medium text-destructive">{spaceNameError}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="spaceDescription">Space Description <span className="font-normal text-muted-foreground">(Optional)</span></Label>
+        <Textarea
+          id="spaceDescription"
+          name="spaceDescription"
+          placeholder="Briefly describe the purpose of this space..."
+          rows={3}
+          value={spaceDescription}
+          onChange={e => setSpaceDescription(e.target.value)}
+          disabled={disableComponents}
+          maxLength={2048}
+        />
+      </div>
+    </form>
   )
 }
 

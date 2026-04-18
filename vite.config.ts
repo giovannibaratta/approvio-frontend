@@ -23,7 +23,8 @@ export default defineConfig(({mode}) => {
     resolve: {
       preserveSymlinks: true,
       alias: [
-        { find: /^fp-ts\/(.*)\.js$/, replacement: "fp-ts/$1" }
+        {find: /^fp-ts\/(.*)\.js$/, replacement: "fp-ts/$1"},
+        {find: /^@\//, replacement: `${path.resolve(__dirname, "src")}/`}
       ]
     },
     server: {

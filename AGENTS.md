@@ -22,6 +22,7 @@ The project you are working on is a frontend service of the Approvio project (ht
 
 - `.agents/skills/`: Definitions for specific AI agent capabilities.
 - `docs/ADR/`: Architecture Decision Records.
+- `docs/styling-architecture.md`: Documentation for the utility-first styling architecture.
 - `tests/e2e/`: End-to-end test suites.
 - `playwright/`: Playwright component testing cache and extra setup.
 - `playwright.config.ts` & `playwright-ct.config.ts`: Configuration for E2E and Component Testing.

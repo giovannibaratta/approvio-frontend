@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from "react"
-import {Box, Typography, Paper, Alert} from "@mui/material"
 import Editor from "react-simple-code-editor"
 import Prism from "prismjs"
 import "prismjs/components/prism-json"
 import "prismjs/themes/prism.css"
 import {getGroup} from "../../services/api"
 import {isLeft} from "fp-ts/Either"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertTriangle, Info, FileJson } from "lucide-react"
 
 interface TemplateRuleFormProps {
   ruleJson: string
@@ -104,50 +105,74 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
   }, [ruleJson, setIsValidJson])
 
   return (
-    <Box>
-      <Typography variant="body1" sx={{mb: 1}}>
-        Provide the Approval Rule in JSON format.
-      </Typography>
-      <Typography variant="caption" color="textSecondary" sx={{mb: 2, display: "block"}}>
-        Hint: You can use rules like: <code>{"{ \"type\": \"GROUP_REQUIREMENT\", \"minCount\": 1, \"groupId\": \"uuid\" }"}</code>
-      </Typography>
-      <Paper
-        variant="outlined"
-        sx={{
-          borderColor: error ? "error.main" : "grey.400",
-          p: 1,
-          bgcolor: disableComponents ? "action.disabledBackground" : "background.paper",
-          pointerEvents: disableComponents ? "none" : "auto",
-          opacity: disableComponents ? 0.6 : 1
-        }}
-      >
-        <Editor
-          value={ruleJson}
-          onValueChange={code => setRuleJson(code)}
-          highlight={code => (Prism.languages.json ? Prism.highlight(code, Prism.languages.json, "json") : code)}
-          padding={10}
-          style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 14,
-            minHeight: "200px",
-          }}
-        />
-      </Paper>
-      {error && (
-        <Typography color="error" variant="caption" sx={{mt: 1, display: "block"}}>
-          {error}
-        </Typography>
-      )}
+    <div className="space-y-4">
+      <div className="rounded-md border border-border/50 bg-muted/50 p-4 text-sm">
+        <div className="flex items-start gap-3">
+          <Info className="mt-0.5 size-5 shrink-0 text-blue-500" />
+          <div className="space-y-2">
+            <p className="font-medium">Provide the Approval Rule in JSON format.</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Define the conditions that must be met for a workflow to be approved. Example:
+            </p>
+            <pre className="overflow-x-auto rounded-md border border-border/40 bg-background p-2 font-mono text-[11px] text-muted-foreground">
+{`{
+  "type": "GROUP_REQUIREMENT",
+  "minCount": 1,
+  "groupId": "uuid-of-group"
+}`}
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="mb-1 flex items-center gap-2">
+          <FileJson className="size-4 text-muted-foreground" />
+          <span className="text-sm font-medium">Rule Configuration</span>
+        </div>
+        <div
+          className={`rounded-md border ${
+            error ? "border-destructive" : "border-border/50"
+          } relative overflow-hidden bg-muted/20 ${
+            disableComponents ? "pointer-events-none opacity-60" : ""
+          }`}
+        >
+          <div className="absolute right-0 top-0 select-none p-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground opacity-50">
+            JSON
+          </div>
+          <Editor
+            value={ruleJson}
+            onValueChange={code => setRuleJson(code)}
+            highlight={code => (Prism.languages.json ? Prism.highlight(code, Prism.languages.json, "json") : code)}
+            padding={16}
+            style={{
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+              fontSize: 13,
+              minHeight: "250px",
+              backgroundColor: "transparent",
+            }}
+            textareaClassName="focus:outline-none"
+          />
+        </div>
+        {error && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-destructive">
+            <AlertTriangle className="size-3" />
+            {error}
+          </p>
+        )}
+      </div>
+
       {groupWarnings.length > 0 && !error && (
-        <Box sx={{mt: 2}}>
+        <div className="mt-4 space-y-2">
           {groupWarnings.map((warn, idx) => (
-            <Alert key={idx} severity="warning" sx={{mb: 1}}>
-              {warn}
+            <Alert key={idx} variant="destructive" className="border-amber-500/30 bg-amber-500/10 text-amber-600">
+              <AlertTriangle className="size-4 text-amber-600" />
+              <AlertDescription>{warn}</AlertDescription>
             </Alert>
           ))}
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
 

@@ -5,6 +5,7 @@ import eslintPluginReactHooks from "eslint-plugin-react-hooks"
 import eslintPluginJsxA11y from "eslint-plugin-jsx-a11y"
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh"
 import eslintConfigPrettier from "eslint-config-prettier"
+import eslintPluginTailwindcss from "eslint-plugin-tailwindcss"
 
 export default tseslint.config(
   {
@@ -31,13 +32,15 @@ export default tseslint.config(
       react: eslintPluginReact,
       "react-hooks": eslintPluginReactHooks,
       "jsx-a11y": eslintPluginJsxA11y,
-      "react-refresh": eslintPluginReactRefresh
+      "react-refresh": eslintPluginReactRefresh,
+      tailwindcss: eslintPluginTailwindcss
     },
     rules: {
       ...tseslint.configs.recommended.rules,
       ...eslintPluginReact.configs.recommended.rules,
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginJsxA11y.configs.recommended.rules,
+      ...eslintPluginTailwindcss.configs.recommended.rules,
       ...eslintConfigPrettier.rules,
       "prettier/prettier": "off",
       "block-scoped-var": "error",
@@ -73,6 +76,9 @@ export default tseslint.config(
     settings: {
       react: {
         version: "detect"
+      },
+      tailwindcss: {
+        whitelist: ["toaster", "cn-toast"]
       }
     }
   }

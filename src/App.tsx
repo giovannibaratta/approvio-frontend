@@ -16,7 +16,6 @@ import WorkflowTemplateDetailsPage from "./pages/WorkflowTemplateDetailsPage"
 import WorkflowTemplateEditRulePage from "./pages/WorkflowTemplateEditRulePage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
-import {Box, AppBar, Toolbar, Typography, Container, Link as MuiLink, Button, Divider} from "@mui/material"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
 import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
 import {getEntityInfo} from "./services/auth"
@@ -54,80 +53,67 @@ const App: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", height: "100vh"}}>
-        <Typography variant="h6" color="textSecondary">
-          Loading...
-        </Typography>
-      </Box>
+      <div className="flex h-screen items-center justify-center bg-background text-foreground">
+        <p className="animate-pulse text-muted-foreground">Initializing...</p>
+      </div>
     )
   }
 
   return (
     <NotificationProvider>
       <Router>
-        <Box sx={{display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: "background.default"}}>
-          <AppBar position="sticky">
-            <Container maxWidth="lg">
-              <Toolbar sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <MuiLink
-                  component={RouterLink}
-                  to={isAuthenticated ? "/" : "/login"}
-                  sx={{
-                    typography: "h6",
-                    fontWeight: "bold",
-                    color: "common.white",
-                    textDecoration: "none",
-                    "&:hover": {color: "primary.light"}
-                  }}
-                >
-                  Approvio Frontend
-                </MuiLink>
-                <Box sx={{display: "flex", alignItems: "center"}}>
-                  {isAuthenticated && (
-                    <>
-                      <Button component={RouterLink} to="/users" sx={{color: "common.white", mr: 1}}>
-                        Users
-                      </Button>
-                      <Button component={RouterLink} to="/groups" sx={{color: "common.white", mr: 1}}>
-                        Groups
-                      </Button>
-                      <Button component={RouterLink} to="/spaces" sx={{color: "common.white", mr: 1}}>
-                        Spaces
-                      </Button>
-                      <Button component={RouterLink} to="/workflow-templates" sx={{color: "common.white", mr: 1}}>
-                        Templates
-                      </Button>
-                      <Button component={RouterLink} to="/workflows" sx={{color: "common.white", mr: 2}}>
-                        Workflows
-                      </Button>
-                      <Divider orientation="vertical" flexItem sx={{bgcolor: "primary.light", mr: 2}} />
-                    </>
-                  )}
-                  {isAuthenticated && (
-                    <>
-                      <Button component={RouterLink} to="/me" sx={{color: "common.white", mr: 1}}>
-                        Profile
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={handleLogout}
-                        sx={{
-                          ml: 1,
-                          color: "common.white",
-                          borderColor: "common.white",
-                          "&:hover": {borderColor: "primary.light", color: "primary.light"}
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    </>
-                  )}
-                </Box>
-              </Toolbar>
-            </Container>
-          </AppBar>
+        <div className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased selection:bg-emerald-500/30">
+          <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+              <RouterLink
+                to={isAuthenticated ? "/" : "/login"}
+                className="flex items-center gap-2 font-semibold tracking-tight transition-colors hover:text-emerald-500"
+              >
+                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500">
+                  <span className="font-mono text-xs font-bold text-white">A</span>
+                </div>
+                <span>Approvio</span>
+              </RouterLink>
 
-          <Container component="main" maxWidth="lg" sx={{flexGrow: 1, p: 3}}>
+              <nav className="flex items-center gap-6">
+                {isAuthenticated && (
+                  <>
+                    <RouterLink to="/users" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Users
+                    </RouterLink>
+                    <RouterLink to="/groups" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Groups
+                    </RouterLink>
+                    <RouterLink to="/spaces" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Spaces
+                    </RouterLink>
+                    <RouterLink to="/workflow-templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Templates
+                    </RouterLink>
+                    <RouterLink to="/workflows" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Workflows
+                    </RouterLink>
+                    <div className="h-4 w-px bg-border/50" />
+                  </>
+                )}
+                {isAuthenticated && (
+                  <div className="flex items-center gap-4">
+                    <RouterLink to="/me" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                      Profile
+                    </RouterLink>
+                    <button
+                      onClick={handleLogout}
+                      className="rounded-md border border-border/50 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted/50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </nav>
+            </div>
+          </header>
+
+          <main className="container mx-auto max-w-7xl flex-1 p-4 md:p-6 lg:p-8">
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/auth/callback" element={<AuthCallbackPage />} />
@@ -148,21 +134,17 @@ const App: React.FC = () => {
                 <Route path="/workflows" element={<WorkflowsPage />} />
               </Route>
             </Routes>
-          </Container>
+          </main>
 
-          <Box
-            component="footer"
-            sx={{
-              bgcolor: "secondary.dark",
-              color: "common.white",
-              textAlign: "center",
-              p: 3,
-              mt: "auto"
-            }}
-          >
-            <Typography variant="body2">&copy; {new Date().getFullYear()} Approvio. All rights reserved.</Typography>
-          </Box>
-        </Box>
+          <footer className="border-t border-border/40 py-6 md:py-0">
+            <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-xs text-muted-foreground md:h-16 md:flex-row">
+              <p>&copy; {new Date().getFullYear()} Approvio. Building trust through verified workflows.</p>
+              <div className="flex gap-4">
+                <span className="font-mono text-[10px] opacity-50">v0.1.0-alpha</span>
+              </div>
+            </div>
+          </footer>
+        </div>
       </Router>
     </NotificationProvider>
   )

@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from "react"
 import {useParams, Link as RouterLink} from "react-router-dom"
-import {Box, Typography, Paper, Alert, CircularProgress, Grid, Tooltip, Button} from "@mui/material"
-import SchemaIcon from "@mui/icons-material/Schema"
-import CompareArrowsIcon from "@mui/icons-material/CompareArrows"
 import {getSpace, getWorkflowTemplate} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Space, WorkflowTemplate} from "@approvio/api"
 import TemplateDetailsRule from "../components/workflow-templates/TemplateDetailsRule"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, ArrowLeftRight, FileJson, LayoutGrid, Clock, Calendar, Edit3, AlignLeft } from "lucide-react"
 
 const WorkflowTemplateDetailsPage: React.FC = () => {
   const {templateIdentifier} = useParams<{templateIdentifier: string}>()
@@ -56,105 +57,115 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", height: "80vh"}}>
-        <CircularProgress />
-      </Box>
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
     )
   }
 
   if (error) {
     return (
-      <Alert severity="error" sx={{m: 2}}>
-        {error}
+      <Alert variant="destructive" className="m-4">
+        <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
   }
 
   if (!template) {
     return (
-      <Alert severity="warning" sx={{m: 2}}>
-        Workflow Template not found.
+      <Alert className="m-4 border-amber-500/50 bg-amber-500/10">
+        <AlertDescription className="text-amber-600">Workflow Template not found.</AlertDescription>
       </Alert>
     )
   }
 
   return (
-    <Box sx={{p: 3}}>
+    <div className="mx-auto max-w-6xl space-y-6">
       {/* Top Section: Overview */}
-      <Paper sx={{p: 3, mb: 3}}>
-        <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2}}>
-          <Box sx={{display: "flex", alignItems: "center"}}>
-            <SchemaIcon sx={{mr: 2, fontSize: 40, color: "primary.main"}} />
-            <Typography variant="h4" component="h1" sx={{fontWeight: "bold"}}>
-              {template.name}
-            </Typography>
-          </Box>
+      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+        <CardHeader className="flex flex-col items-start justify-between gap-4 pb-6 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <div className="flex size-12 items-center justify-center rounded-xl border border-purple-500/20 bg-purple-500/10">
+              <FileJson className="size-6 text-purple-500" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-semibold tracking-tight">{template.name}</CardTitle>
+              <CardDescription className="mt-1 flex items-center gap-2 text-base text-muted-foreground">
+                <span className="rounded-sm border border-border/50 bg-muted px-1.5 py-0.5 font-mono text-xs">v{template.version}</span>
+                <span>{template.status.replace(/_/g, " ")}</span>
+              </CardDescription>
+            </div>
+          </div>
           <Button
-            variant="outlined"
-            startIcon={<CompareArrowsIcon />}
-            component={RouterLink}
-            to={`/workflow-templates/${template.id}/compare`}
+            asChild
+            variant="outline"
           >
-            Compare Versions
+            <RouterLink to={`/workflow-templates/${template.id}/compare`}>
+              <ArrowLeftRight className="mr-2 size-4" />
+              Compare Versions
+            </RouterLink>
           </Button>
-        </Box>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <LayoutGrid className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium text-muted-foreground">Space</p>
+              </div>
+              <p className="truncate text-lg font-medium">{spaceName || "Loading..."}</p>
+            </div>
 
-        <Grid container spacing={2} sx={{mb: 2}}>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Version
-              </Box>
-            </Typography>
-            <Typography variant="body1">{template.version}</Typography>
-          </Grid>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Space
-              </Box>
-            </Typography>
-            <Typography variant="body1">{spaceName || "Loading..."}</Typography>
-          </Grid>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Created
-              </Box>
-            </Typography>
-            <Tooltip title={new Date(template.createdAt).toLocaleString()} placement="top-start" enterDelay={500}>
-              <Typography variant="body1">{new Date(template.createdAt).toLocaleDateString()}</Typography>
-            </Tooltip>
-          </Grid>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Last Update
-              </Box>
-            </Typography>
-            <Tooltip title={new Date(template.updatedAt).toLocaleString()} placement="top-start" enterDelay={500}>
-              <Typography variant="body1">{new Date(template.updatedAt).toLocaleDateString()}</Typography>
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </Paper>
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Calendar className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium text-muted-foreground">Created</p>
+              </div>
+              <p className="text-lg font-medium">{new Date(template.createdAt).toLocaleDateString()}</p>
+            </div>
+
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Edit3 className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium text-muted-foreground">Last Update</p>
+              </div>
+              <p className="text-lg font-medium">{new Date(template.updatedAt).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Details Section */}
-      <Paper sx={{p: 3}}>
-        <Grid container spacing={2} sx={{mb: 3}}>
-          <Grid size={{xs: 12}}>
-            <Typography variant="subtitle2" color="textSecondary">Description</Typography>
-            <Typography variant="body1">{template.description || "No description provided."}</Typography>
-          </Grid>
-          <Grid size={{xs: 12}}>
-            <Typography variant="subtitle2" color="textSecondary">Default Expires In (Hours)</Typography>
-            <Typography variant="body1">{template.defaultExpiresInHours ?? "DEFAULT"}</Typography>
-          </Grid>
-        </Grid>
+      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+        <CardContent className="space-y-8 pt-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col rounded-md border border-border/40 bg-muted/20 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <AlignLeft className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium text-muted-foreground">Description</p>
+              </div>
+              <p className="flex-1 text-sm leading-relaxed text-foreground/80">
+                {template.description || <span className="italic opacity-50">No description provided.</span>}
+              </p>
+            </div>
 
-        <TemplateDetailsRule rule={template.approvalRule} templateId={template.id} />
-      </Paper>
-    </Box>
+            <div className="rounded-md border border-border/40 bg-muted/20 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Clock className="size-4 text-muted-foreground" />
+                <p className="text-sm font-medium text-muted-foreground">Default Expiry</p>
+              </div>
+              <p className="mt-4 font-mono text-base font-medium">
+                {template.defaultExpiresInHours !== null ? `${template.defaultExpiresInHours}h` : "System Default"}
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t border-border/40 pt-4">
+            <TemplateDetailsRule rule={template.approvalRule} templateId={template.id} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

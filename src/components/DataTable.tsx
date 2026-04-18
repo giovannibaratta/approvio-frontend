@@ -3,21 +3,16 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
+  TableHeader,
   TableRow,
-  TablePagination,
-  Paper,
-  CircularProgress,
-  Box,
-  Typography,
-  IconButton,
-  Collapse,
-  Button
-} from "@mui/material"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight"
+} from "@/components/ui/table"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ChevronDown, ChevronRight, CornerDownRight, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
+import { PaginationUI } from "./common/PaginationUI"
 
 export interface Column<T> {
   id: string
@@ -72,31 +67,33 @@ function ExpandableRow<T extends { id: string }>({
 
   return (
     <React.Fragment>
-      <TableRow hover sx={isExpandable ? { "& > *": { borderBottom: "unset" } } : { "&:last-child td, &:last-child th": { border: 0 } }}>
+      <TableRow className={isExpandable ? "border-b-0" : ""}>
         {isExpandable && (
-          <TableCell sx={{width: 44, whiteSpace: "nowrap", pr: 0}}>
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)} type="button">
-              {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowRightIcon />}
-            </IconButton>
+          <TableCell className="w-[44px] whitespace-nowrap pr-0">
+            <button
+              aria-label="expand row"
+              onClick={() => setOpen(!open)}
+              type="button"
+              className="rounded-md p-1 transition-colors hover:bg-muted"
+            >
+              {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+            </button>
           </TableCell>
         )}
         {columns.map((column) => (
-          <TableCell key={column.id} sx={{width: column.width}}>{column.render(row)}</TableCell>
+          <TableCell key={column.id} style={{width: column.width}}>{column.render(row)}</TableCell>
         ))}
-        {actions && <TableCell align="right" sx={{width: 0, whiteSpace: "nowrap"}}>{actions(row)}</TableCell>}
+        {actions && <TableCell className="whitespace-nowrap text-right">{actions(row)}</TableCell>}
       </TableRow>
-      {isExpandable && (
-        <TableRow sx={{bgcolor: disableExpansionPadding ? "inherit" : "inherit"}}>
+      {isExpandable && open && (
+        <TableRow className="bg-muted/30 hover:bg-muted/30">
           <TableCell
-            style={{ paddingBottom: 0, paddingTop: 0, borderBottom: disableExpansionPadding ? "unset" : undefined }}
             colSpan={columns.length + (actions ? 2 : 1)}
-            sx={{px: disableExpansionPadding ? 0 : 2}}
+            className={`p-0 ${disableExpansionPadding ? "" : "px-4 pb-4"}`}
           >
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: disableExpansionPadding ? 0 : 1 }}>
-                {expandableRow!(row)}
-              </Box>
-            </Collapse>
+            <div className={disableExpansionPadding ? "" : "mt-2"}>
+              {expandableRow!(row)}
+            </div>
           </TableCell>
         </TableRow>
       )}
@@ -119,83 +116,74 @@ export function DataTable<T extends { id: string }>({
   expandableRow,
   disableExpansionPadding,
 }: DataTableProps<T>) {
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    onPageChange(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onRowsPerPageChange(parseInt(event.target.value, 10))
-  }
 
   return (
-    <Paper sx={{ m: 2, p: 2, borderRadius: 2, boxShadow: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h5" component="h1" fontWeight="bold">
-          {title}
-        </Typography>
-        {headerAction && <Box>{headerAction}</Box>}
-      </Box>
-
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer>
-          <Table stickyHeader aria-label={`${title} table`} sx={{tableLayout: "fixed"}}>
-            <TableHead>
-              <TableRow>
-                {expandableRow && <TableCell sx={{bgcolor: "background.default", width: 44, pr: 0}} />}
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    sx={{ fontWeight: "bold", bgcolor: "background.default", width: column.width }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-                {actions && (
-                  <TableCell align="right" sx={{ fontWeight: "bold", bgcolor: "background.default", width: 0, whiteSpace: "nowrap" }}>
-                    Actions
-                  </TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row) => (
-                <ExpandableRow
-                  key={row.id}
-                  row={row}
-                  columns={columns}
-                  actions={actions}
-                  expandableRow={expandableRow}
-                  disableExpansionPadding={disableExpansionPadding}
-                />
-              ))}
-              {data.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={columns.length + (actions ? 1 : 0) + (expandableRow ? 1 : 0)} align="center" sx={{ py: 3 }}>
-                    <Typography color="text.secondary">No data available</Typography>
-                  </TableCell>
+    <Card className="w-full">
+      <CardHeader className={cn(LAYOUT.FLEX_BETWEEN, "flex-row pb-4")}>
+        <CardTitle className={TYPOGRAPHY.TITLE}>{title}</CardTitle>
+        {headerAction && <div>{headerAction}</div>}
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex justify-center p-8">
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <Table style={{tableLayout: "fixed"}}>
+              <TableHeader>
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                  {expandableRow && <TableHead className="w-[44px] pr-0" />}
+                  {columns.map((column) => (
+                    <TableHead
+                      key={column.id}
+                      className="font-semibold text-foreground"
+                      style={{width: column.width}}
+                    >
+                      {column.label}
+                    </TableHead>
+                  ))}
+                  {actions && (
+                    <TableHead className="whitespace-nowrap text-right font-semibold text-foreground">
+                      Actions
+                    </TableHead>
+                  )}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+              </TableHeader>
+              <TableBody>
+                {data.map((row) => (
+                  <ExpandableRow
+                    key={row.id}
+                    row={row}
+                    columns={columns}
+                    actions={actions}
+                    expandableRow={expandableRow}
+                    disableExpansionPadding={disableExpansionPadding}
+                  />
+                ))}
+                {data.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={columns.length + (actions ? 1 : 0) + (expandableRow ? 1 : 0)} className="h-24 text-center">
+                      <p className={TYPOGRAPHY.DESCRIPTION_SM}>No data available</p>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
 
-      {total > 0 && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={total}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      )}
-    </Paper>
+        {total > 0 && (
+          <PaginationUI
+            total={total}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -224,31 +212,32 @@ export function DataSubTable<T extends { id: string }>({
   noDataMessage = "No other versions found."
 }: DataSubTableProps<T>) {
   return (
-    <Box sx={{backgroundColor: "action.hover", borderTop: "1px solid", borderColor: "divider"}}>
+    <div className="border-t border-border bg-muted/10">
       {data.length === 0 ? (
-        <Typography variant="body2" sx={{p: 2, color: "text.secondary"}}>
+        <p className="p-4 text-sm text-muted-foreground">
           {noDataMessage}
-        </Typography>
+        </p>
       ) : (
         <>
-          <Table size="small" sx={{tableLayout: "fixed"}}>
+          <Table style={{tableLayout: "fixed"}}>
             <TableBody>
               {data.map((row) => (
-                <TableRow key={row.id} hover sx={{ "& > *": { borderBottom: "unset" } }}>
-                  <TableCell sx={{width: 44, pr: 0}} /> {/* Toggle spacer for alignment */}
+                <TableRow
+                  key={row.id}
+                  className={`border-b-0 ${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}`}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  <TableCell className="w-[44px] pr-0" /> {/* Toggle spacer for alignment */}
                   {columns.map((column) => (
-                    <TableCell key={column.id} sx={{width: column.width, py: 1.5}}>
-                      <Box sx={{display: "flex", alignItems: "center"}}>
+                    <TableCell key={column.id} style={{width: column.width}} className="py-3">
+                      <div className="flex items-center">
                         {column.id === columns[0]?.id && (
-                          <SubdirectoryArrowRightIcon sx={{fontSize: 18, mr: 1, color: "text.disabled"}} />
+                          <CornerDownRight className="mr-2 size-4 text-muted-foreground/50" />
                         )}
-                        <Box
-                          onClick={() => onRowClick?.(row)}
-                          sx={{cursor: onRowClick ? "pointer" : "default", width: "100%"}}
-                        >
+                        <div className="w-full">
                           {column.render(row)}
-                        </Box>
-                      </Box>
+                        </div>
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>
@@ -256,21 +245,24 @@ export function DataSubTable<T extends { id: string }>({
             </TableBody>
           </Table>
           {hasMore && (
-            <Box sx={{display: "flex", justifyContent: "center", py: 1}}>
+            <div className="flex justify-center border-t border-border/50 py-2">
               <Button
-                size="small"
-                variant="text"
-                onClick={onShowMore}
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onShowMore()
+                }}
                 disabled={loadingMore}
-                startIcon={loadingMore ? <CircularProgress size={14} /> : null}
-                sx={{fontSize: "0.75rem", textTransform: "none"}}
+                className="text-xs text-muted-foreground hover:text-foreground"
               >
+                {loadingMore && <Loader2 className="mr-2 size-3 animate-spin" />}
                 {loadingMore ? "Loading..." : "Show more versions"}
               </Button>
-            </Box>
+            </div>
           )}
         </>
       )}
-    </Box>
+    </div>
   )
 }

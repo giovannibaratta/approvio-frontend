@@ -1,24 +1,5 @@
 import { type FrontendError } from "../services/api"
 import React, {useCallback, useEffect, useState} from "react"
-import {
-  Box,
-  Typography,
-  Paper,
-  CircularProgress,
-  Alert,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Button,
-  Grid,
-  Tooltip,
-  Skeleton
-} from "@mui/material"
-import GroupIcon from "@mui/icons-material/Group"
 import {useParams} from "react-router-dom"
 import {
   getGroup,
@@ -33,6 +14,16 @@ import { useNotification } from "../providers/notification/NotificationContext"
 import type { Group, ListGroupEntities200Response, Pagination } from "@approvio/api"
 import type { User } from "@approvio/api"
 import type { GroupMembership } from "@approvio/api"
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Users, Loader2, Calendar, Edit3, Settings } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
+import { PaginationUI } from "../components/common/PaginationUI"
 
 interface MemberDetails extends GroupMembership {
   userDetails?: User
@@ -145,12 +136,8 @@ const GroupDetailsPage: React.FC = () => {
     fetchGroupMembers()
   }, [groupIdentifier, page, rowsPerPage, fetchGroupMembers])
 
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
+  const handleChangeRowsPerPage = (newRowsPerPage: number) => {
+    setRowsPerPage(newRowsPerPage)
     setPage(0) // Reset to first page
   }
 
@@ -170,155 +157,144 @@ const GroupDetailsPage: React.FC = () => {
 
   if (loadingGroup) {
     return (
-      <Box sx={{display: "flex", justifyContent: "center", alignItems: "center", height: "80vh"}}>
-        <CircularProgress />
-      </Box>
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
     )
   }
 
   if (errorGroup) {
     return (
-      <Alert severity="error" sx={{m: 2}}>
-        {errorGroup}
+      <Alert variant="destructive" className="m-4">
+        <AlertDescription>{errorGroup}</AlertDescription>
       </Alert>
     )
   }
 
   if (!group) {
     return (
-      <Alert severity="warning" sx={{m: 2}}>
-        Group not found.
+      <Alert className="m-4 border-amber-500/50 bg-amber-500/10">
+        <AlertDescription className="text-amber-600">Group not found.</AlertDescription>
       </Alert>
     )
   }
 
   return (
-    <Box sx={{p: 3}}>
+    <div className={cn(LAYOUT.PAGE_WIDTH, LAYOUT.SECTION_SPACING)}>
       {/* Top Section: Group Details */}
-      <Paper sx={{p: 3, mb: 3}}>
-        <Box sx={{display: "flex", alignItems: "center", mb: 2}}>
-          <GroupIcon sx={{mr: 2, fontSize: 40, color: "primary.main"}} />
-          <Typography variant="h4" component="h1" sx={{fontWeight: "bold"}}>
-            {group.name}
-          </Typography>
-        </Box>
+      <Card className={LAYOUT.BACKDROP_CARD}>
+        <CardHeader className="flex flex-row items-center gap-4 pb-6">
+          <div className="flex size-12 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
+            <Users className="size-6 text-blue-500" />
+          </div>
+          <div>
+            <CardTitle className={TYPOGRAPHY.TITLE_LG}>{group.name}</CardTitle>
+            <CardDescription className={cn("mt-1", TYPOGRAPHY.DESCRIPTION_BASE)}>
+              {group.description || "No description available"}
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Users className="size-4 text-muted-foreground" />
+                <p className={TYPOGRAPHY.LABEL_MUTED}>Entities</p>
+              </div>
+              <p className={TYPOGRAPHY.TITLE_LG}>{group.entitiesCount}</p>
+            </div>
 
-        <Grid container spacing={2} sx={{mb: 2}}>
-          <Grid size={{xs: 12}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Description
-              </Box>
-            </Typography>
-            <Typography variant="body1">{group.description || "No description available"}</Typography>
-          </Grid>
-        </Grid>
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Calendar className="size-4 text-muted-foreground" />
+                <p className={TYPOGRAPHY.LABEL_MUTED}>Created</p>
+              </div>
+              <p className={TYPOGRAPHY.LABEL}>{new Date(group.createdAt).toLocaleDateString()}</p>
+            </div>
 
-        <Grid container spacing={2}>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Entities
-              </Box>
-            </Typography>
-            <Typography variant="body1">{group.entitiesCount}</Typography>
-          </Grid>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Created
-              </Box>
-            </Typography>
-            <Tooltip title={new Date(group.createdAt).toLocaleString()} placement="top-start" enterDelay={500}>
-              <Typography variant="body1">{new Date(group.createdAt).toLocaleDateString()}</Typography>
-            </Tooltip>
-          </Grid>
-          <Grid size={{xs: 12, sm: 6}}>
-            <Typography variant="subtitle1" component="div" color="text.secondary" sx={{fontWeight: "bold", mb: 0.5}}>
-              <Box sx={{borderBottom: "1px solid rgba(0, 0, 0, 0.12)", pb: 0.5, display: "inline-block"}}>
-                Last Update
-              </Box>
-            </Typography>
-            <Tooltip title={new Date(group.updatedAt).toLocaleString()} placement="top-start" enterDelay={500}>
-              <Typography variant="body1">{new Date(group.updatedAt).toLocaleDateString()}</Typography>
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </Paper>
+            <div className="rounded-md border border-border/40 bg-muted/30 p-4">
+              <div className="mb-2 flex items-center gap-2">
+                <Edit3 className="size-4 text-muted-foreground" />
+                <p className={TYPOGRAPHY.LABEL_MUTED}>Last Update</p>
+              </div>
+              <p className={TYPOGRAPHY.LABEL}>{new Date(group.updatedAt).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Bottom Section: Members Table */}
-      <Paper>
-        <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", p: 2}}>
-          <Typography variant="h6">Members</Typography>
-          <Button variant="contained" onClick={() => setManageMembershipDialogOpen(true)}>
+      <Card className={LAYOUT.BACKDROP_CARD}>
+        <CardHeader className={LAYOUT.FLEX_BETWEEN}>
+          <CardTitle className={TYPOGRAPHY.TITLE}>Members</CardTitle>
+          <Button onClick={() => setManageMembershipDialogOpen(true)} variant="outline">
+            <Settings className="mr-2 size-4" />
             Manage Membership
           </Button>
-        </Box>
+        </CardHeader>
 
-        {errorMembers && (
-          <Alert severity="error" sx={{mb: 2}}>
-            {errorMembers}
-          </Alert>
-        )}
+        <CardContent>
+          {errorMembers && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errorMembers}</AlertDescription>
+            </Alert>
+          )}
 
-        {loadingMembers ? (
-          <Box sx={{p: 2}}>
-            {Array.from({length: 3}).map((_, index) => (
-              <Skeleton key={index} variant="rectangular" height={40} sx={{mb: 1}} />
-            ))}
-          </Box>
-        ) : (
-          <>
-            <TableContainer>
+          {loadingMembers ? (
+            <div className="space-y-2">
+              {Array.from({length: 3}).map((_, index) => (
+                <Skeleton key={index} className="h-12 w-full" />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-md border border-border/50">
               <Table>
-                <TableHead>
+                <TableHeader className="bg-muted/50">
                   <TableRow>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
                   </TableRow>
-                </TableHead>
+                </TableHeader>
                 <TableBody>
                   {members.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} align="center">
-                        <Typography color="text.secondary">No members found</Typography>
+                      <TableCell colSpan={3} className="h-24 text-center">
+                        <p className={TYPOGRAPHY.DESCRIPTION_SM}>No members found</p>
                       </TableCell>
                     </TableRow>
                   ) : (
                     members.map(member => (
                       <TableRow key={`${member.entity.entityType}-${member.entity.entityId}`}>
                         <TableCell>
-                          <Typography variant="body2" sx={{textTransform: "capitalize"}}>
+                          <span className="inline-flex items-center rounded-full border bg-muted/50 px-2.5 py-0.5 text-xs font-semibold capitalize">
                             {member.entity.entityType === "human" ? "User" : "Unknown"}
-                          </Typography>
+                          </span>
                         </TableCell>
                         <TableCell>
                           {member.entity.entityType === "human" ? (
                             member.loadingUserDetails ? (
-                              <Skeleton variant="text" width={120} />
+                              <Skeleton className="h-4 w-[120px]" />
                             ) : (
-                              <Typography variant="body2">
+                              <span className={TYPOGRAPHY.LABEL}>
                                 {member.userDetails?.displayName || "Unknown User"}
-                              </Typography>
+                              </span>
                             )
                           ) : (
-                            <Typography variant="body2">{member.entity.entityId}</Typography>
+                            <span className={TYPOGRAPHY.MONO_SM}>{member.entity.entityId}</span>
                           )}
                         </TableCell>
                         <TableCell>
                           {member.entity.entityType === "human" ? (
                             member.loadingUserDetails ? (
-                              <Skeleton variant="text" width={150} />
+                              <Skeleton className="h-4 w-[150px]" />
                             ) : (
-                              <Typography variant="body2" color="text.secondary">
+                              <span className={TYPOGRAPHY.MONO_SM_MUTED}>
                                 {member.userDetails?.email || "Unknown Email"}
-                              </Typography>
+                              </span>
                             )
                           ) : (
-                            <Typography variant="body2" color="text.secondary">
-                              N/A
-                            </Typography>
+                            <span className={TYPOGRAPHY.DESCRIPTION_SM}>N/A</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -326,21 +302,20 @@ const GroupDetailsPage: React.FC = () => {
                   )}
                 </TableBody>
               </Table>
-            </TableContainer>
-            {pagination && (
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={pagination.total}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            )}
-          </>
-        )}
-      </Paper>
+
+              {pagination && pagination.total > 0 && (
+                <PaginationUI
+                  total={pagination.total}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  onPageChange={setPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <ManageMembershipDialog
         open={manageMembershipDialogOpen}
@@ -350,7 +325,7 @@ const GroupDetailsPage: React.FC = () => {
         currentMembers={members}
         onMembersUpdated={handleMembersUpdated}
       />
-    </Box>
+    </div>
   )
 }
 
