@@ -37,7 +37,7 @@ __metadata:
   dependencies:
     "@approvio/api": "npm:0.0.40"
     "@approvio/ts-sdk": "npm:0.0.12"
-    "@base-ui/react": "npm:^1.3.0"
+    "@base-ui/react": "npm:^1.4.0"
     "@fontsource-variable/geist": "npm:^5.2.8"
     "@playwright/experimental-ct-react": "npm:^1.58.2"
     "@playwright/test": "npm:^1.58.2"
@@ -524,7 +524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.28.6":
+"@babel/runtime@npm:^7.29.2":
   version: 7.29.2
   resolution: "@babel/runtime@npm:7.29.2"
   checksum: 10/f55ba4052aa0255055b34371a145fbe69c29b37b49eaea14805b095bfb4153701486416e89392fd27ec8abafa53868be86e960b9f8f959fff91f2c8ac2a14b02
@@ -603,32 +603,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@base-ui/react@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@base-ui/react@npm:1.3.0"
+"@base-ui/react@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@base-ui/react@npm:1.4.0"
   dependencies:
-    "@babel/runtime": "npm:^7.28.6"
-    "@base-ui/utils": "npm:0.2.6"
+    "@babel/runtime": "npm:^7.29.2"
+    "@base-ui/utils": "npm:0.2.7"
     "@floating-ui/react-dom": "npm:^2.1.8"
     "@floating-ui/utils": "npm:^0.2.11"
-    tabbable: "npm:^6.4.0"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
+    "@date-fns/tz": ^1.2.0
     "@types/react": ^17 || ^18 || ^19
+    date-fns: ^4.0.0
     react: ^17 || ^18 || ^19
     react-dom: ^17 || ^18 || ^19
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/0774d2c00421472ef1426c91dd326943d0d1d904ea8b591ca5b58f3629d3c82cb7e2f91ea67bfdc3f684d1aaf2325e3f85b6025aec1da4ef227a31d2d0f1d597
+  checksum: 10/f0291d30dfb59952da00db4fcde6bf5dbd9741de3febf3e258cd3250e6f8b3ec6cbdc34db580020ede14619482fe932fa024185f569fad4c2c43a4a85fed82e0
   languageName: node
   linkType: hard
 
-"@base-ui/utils@npm:0.2.6":
-  version: 0.2.6
-  resolution: "@base-ui/utils@npm:0.2.6"
+"@base-ui/utils@npm:0.2.7":
+  version: 0.2.7
+  resolution: "@base-ui/utils@npm:0.2.7"
   dependencies:
-    "@babel/runtime": "npm:^7.28.6"
+    "@babel/runtime": "npm:^7.29.2"
     "@floating-ui/utils": "npm:^0.2.11"
     reselect: "npm:^5.1.1"
     use-sync-external-store: "npm:^1.6.0"
@@ -639,7 +640,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/328ac34c13012e1e520e9289d02d1c540f608ef83f34ca8e347a6a5376810ab744afaca1d1f8e993a848d3a8b35f569cd960aa9ebe9517eaa0eed37546acfa6d
+  checksum: 10/1c343506714b0db79711bc4200cc22a5c773f6958495acb06ad1a787131f6b5d93629b1e68f3b79c64738e5c3dd618b40ec60bfed1d939810beba5be491c075a
   languageName: node
   linkType: hard
 
@@ -7201,13 +7202,6 @@ __metadata:
   dependencies:
     "@pkgr/core": "npm:^0.2.9"
   checksum: 10/2f51978bfed81aaf0b093f596709a72c49b17909020f42b43c5549f9c0fe18b1fe29f82e41ef771172d729b32e9ce82900a85d2b87fa14d59f886d4df8d7a329
-  languageName: node
-  linkType: hard
-
-"tabbable@npm:^6.4.0":
-  version: 6.4.0
-  resolution: "tabbable@npm:6.4.0"
-  checksum: 10/0fe8fada2d97bd02058af2e0176bddca26b1100c069e0a096ac19ad8ef61bd0b4f0cf05e1dd68229b8f1cb6fe6bf4c34d50a5f4a3e26b150a92f89b7dc0a4916
   languageName: node
   linkType: hard
 

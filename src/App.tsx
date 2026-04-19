@@ -14,6 +14,7 @@ import CompareWorkflowTemplatePage from "./pages/CompareWorkflowTemplatePage"
 import CreateWorkflowTemplatePage from "./pages/CreateWorkflowTemplatePage"
 import WorkflowTemplateDetailsPage from "./pages/WorkflowTemplateDetailsPage"
 import WorkflowTemplateEditRulePage from "./pages/WorkflowTemplateEditRulePage"
+import CreateWorkflowPage from "./pages/CreateWorkflowPage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
@@ -132,6 +133,7 @@ const App: React.FC = () => {
                 <Route path="/workflow-templates/:templateIdentifier/compare" element={<CompareWorkflowTemplatePage />} />
                 <Route path="/workflow-templates/:templateIdentifier" element={<WorkflowTemplateDetailsPage />} />
                 <Route path="/workflows" element={<WorkflowsPage />} />
+                <Route path="/workflows/new" element={<CreateWorkflowPage />} />
               </Route>
             </Routes>
           </main>
