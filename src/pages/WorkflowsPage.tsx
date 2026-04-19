@@ -9,6 +9,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { StatusBadge } from "../components/common/StatusBadge"
 import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 const columns: Column<Workflow>[] = [
   {id: "name", label: "Name", render: (workflow) => <span className={TYPOGRAPHY.LABEL}>{workflow.name}</span>},
@@ -34,6 +37,7 @@ const WorkflowsPage: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
 
   const notification = useNotification()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -82,6 +86,11 @@ const WorkflowsPage: React.FC = () => {
     <div className={LAYOUT.SECTION_SPACING}>
       <DataTable
         title="Workflows"
+        headerAction={
+          <Button onClick={() => navigate("/workflows/new")}>
+            <Plus className="mr-2 size-4" /> Create Workflow
+          </Button>
+        }
         columns={columns}
         data={workflows}
         loading={loading}
