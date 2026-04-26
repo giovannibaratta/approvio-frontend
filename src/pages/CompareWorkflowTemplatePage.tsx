@@ -138,7 +138,13 @@ const CompareWorkflowTemplatePage: React.FC = () => {
         <div className="w-[280px]">
           <Select value={selectedVersionId} onValueChange={(val) => setSelectedVersionId(val || "")}>
             <SelectTrigger>
-              <SelectValue placeholder="Select a version to compare" />
+              <SelectValue placeholder="Select a version to compare">
+                {selectedVersionId ? (
+                  otherVersions.find(v => v.id === selectedVersionId)
+                  ? `v${otherVersions.find(v => v.id === selectedVersionId)?.version} - ${new Date(otherVersions.find(v => v.id === selectedVersionId)!.createdAt).toLocaleDateString()}`
+                  : null
+                ) : null}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {otherVersions.length === 0 ? (

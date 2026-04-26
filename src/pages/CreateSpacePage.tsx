@@ -7,9 +7,8 @@ import SpaceDetailsForm from "../components/spaces/SpaceDetailsForm"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
 import type {SpaceCreate} from "@approvio/api"
 import {createSpace} from "../services/api"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Loader2, ArrowLeft, Layers } from "lucide-react"
+import MultiStepFormLayout from "@/components/common/MultiStepFormLayout"
+import { Layers } from "lucide-react"
 
 const CreateSpacePage: React.FC = () => {
   const [spaceName, setSpaceName] = useState("")
@@ -69,56 +68,36 @@ const CreateSpacePage: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={handleCancel} disabled={loading} className="shrink-0">
-          <ArrowLeft className="size-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Create Space</h1>
-          <p className="text-sm text-muted-foreground">Establish a new isolated environment for workflows.</p>
+    <MultiStepFormLayout
+      pageTitle="Create Space"
+      pageDescription="Create a logical space to group Workflow templates"
+      cardIcon={Layers}
+      cardIconColorClass="text-purple-500"
+      cardIconBgClass="border-purple-500/20 bg-purple-500/10"
+      cardTitle="Space Details"
+      cardDescription="Configure the basic information for your new space."
+      onCancelClick={handleCancel}
+      showCancelConfirmDialog={false}
+      onPrimaryClick={handleCreate}
+      primaryButtonText="Create Space"
+      isPrimaryLoading={loading}
+      isPrimaryDisabled={!canCreateSpace}
+    >
+      <SpaceDetailsForm
+        spaceName={spaceName}
+        setSpaceName={setSpaceName}
+        spaceDescription={spaceDescription}
+        setSpaceDescription={setSpaceDescription}
+        disableComponents={loading}
+        spaceNameError={spaceNameError}
+        setSpaceNameError={setSpaceNameError}
+      />
+      {errors.length > 0 && (
+        <div className="mt-6">
+          <ErrorList errors={errors} />
         </div>
-      </div>
-
-      <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
-        <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-md border border-purple-500/20 bg-purple-500/10">
-              <Layers className="size-5 text-purple-500" />
-            </div>
-            <div>
-              <CardTitle className="text-lg">Space Details</CardTitle>
-              <CardDescription>Configure the basic information for your new space.</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <SpaceDetailsForm
-            spaceName={spaceName}
-            setSpaceName={setSpaceName}
-            spaceDescription={spaceDescription}
-            setSpaceDescription={setSpaceDescription}
-            disableComponents={loading}
-            spaceNameError={spaceNameError}
-            setSpaceNameError={setSpaceNameError}
-          />
-          {errors.length > 0 && (
-            <div className="mt-6">
-              <ErrorList errors={errors} />
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-end gap-3 border-t border-border/40 bg-muted/20 py-4">
-          <Button variant="outline" onClick={handleCancel} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreate} disabled={loading || !canCreateSpace} className="min-w-[120px]">
-            {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {loading ? "Creating..." : "Create Space"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+      )}
+    </MultiStepFormLayout>
   )
 }
 

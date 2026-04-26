@@ -169,7 +169,9 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
             disabled={disableComponents || loadingSpaces}
           >
             <SelectTrigger id="space-select" className={(!spaceId && !disableComponents) ? "border-destructive focus:ring-destructive" : ""}>
-              <SelectValue placeholder={loadingSpaces ? "Loading spaces..." : "Select a space"} />
+              <SelectValue placeholder={loadingSpaces ? "Loading spaces..." : "Select a space"}>
+                {spaces.find(s => s.id === spaceId)?.name}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {spaces.map((space) => (
