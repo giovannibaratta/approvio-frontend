@@ -170,5 +170,56 @@ export const handlers = [
         total: 2
       }
     })
+  }),
+
+  // 9. Workflows List Handler
+  http.get("*/workflows", () => {
+    return HttpResponse.json({
+      data: [
+        {
+          id: "workflow-1",
+          name: "Software Release v1.2",
+          description: "Release approval for v1.2",
+          status: "PENDING",
+          workflowTemplateId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1
+      }
+    })
+  }),
+
+  // 10. Workflow Details Handler
+  http.get("*/workflows/workflow-1", () => {
+    return HttpResponse.json({
+      id: "workflow-1",
+      name: "Software Release v1.2",
+      description: "Release approval for v1.2",
+      status: "PENDING",
+      workflowTemplateId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+  }),
+
+  // 11. Workflow Votes Handler
+  http.get("*/workflows/workflow-1/votes", () => {
+    return HttpResponse.json({
+      votes: [
+        {
+          voterId: "1",
+          voterType: "user",
+          voteType: "APPROVE",
+          reason: "Looks good to me",
+          votedForGroups: ["some-group-id"],
+          timestamp: new Date().toISOString()
+        }
+      ]
+    })
   })
 ]

@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import type {ApprovalRule} from "@approvio/api"
-import ApprovalRuleRenderer from "./ApprovalRuleRenderer"
+import ApprovalRuleRenderer from "../shared/ApprovalRuleRenderer"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { FileJson, GitBranch } from "lucide-react"

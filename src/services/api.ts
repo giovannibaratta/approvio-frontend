@@ -17,7 +17,9 @@ import {
   type WorkflowTemplateUpdate,
   type WorkflowTemplate,
   type Space,
-  type WorkflowCreate
+  type WorkflowCreate,
+  type Workflow,
+  type AgentGet200Response
 } from "@approvio/api"
 import {type Either, mapLeft} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -134,6 +136,20 @@ export async function listWorkflows(
   return mapLeft(handleApiError)(result)
 }
 
+export async function getWorkflow(
+  workflowId: string
+): Promise<Either<FrontendError, Workflow>> {
+  const result = await client.getWorkflow(workflowId)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listWorkflowVotes(
+  workflowId: string
+): Promise<Either<FrontendError, ListWorkflowVotes200Response>> {
+  const result = await client.listVotes(workflowId)()
+  return mapLeft(handleApiError)(result)
+}
+
 export async function createWorkflow(workflowData: WorkflowCreate): Promise<Either<FrontendError, void>> {
   const result = await client.createWorkflow(workflowData)()
   return mapLeft(handleApiError)(result)
@@ -158,5 +174,10 @@ export async function updateWorkflowTemplate(
   updateData: WorkflowTemplateUpdate
 ): Promise<Either<FrontendError, WorkflowTemplate>> {
   const result = await client.updateWorkflowTemplate(templateIdentifier, updateData)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function getAgent(agentId: string): Promise<Either<FrontendError, AgentGet200Response>> {
+  const result = await client.getAgent(agentId)()
   return mapLeft(handleApiError)(result)
 }
