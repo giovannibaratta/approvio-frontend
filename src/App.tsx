@@ -17,6 +17,7 @@ import WorkflowTemplateEditRulePage from "./pages/WorkflowTemplateEditRulePage"
 import CreateWorkflowPage from "./pages/CreateWorkflowPage"
 import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
+import WorkflowDetailsPage from "./pages/WorkflowDetailsPage"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
 import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
 import {getEntityInfo} from "./services/auth"
@@ -134,6 +135,7 @@ const App: React.FC = () => {
                 <Route path="/workflow-templates/:templateIdentifier" element={<WorkflowTemplateDetailsPage />} />
                 <Route path="/workflows" element={<WorkflowsPage />} />
                 <Route path="/workflows/new" element={<CreateWorkflowPage />} />
+                <Route path="/workflows/:workflowId" element={<WorkflowDetailsPage />} />
               </Route>
             </Routes>
           </main>

@@ -13,21 +13,6 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-const columns: Column<Workflow>[] = [
-  {id: "name", label: "Name", render: (workflow) => <span className={TYPOGRAPHY.LABEL}>{workflow.name}</span>},
-  {
-    id: "status",
-    label: "Status",
-    render: (workflow) => <StatusBadge status={workflow.status as any} />
-  },
-  {id: "description", label: "Description", render: (workflow) => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{workflow.description || "No description"}</span>},
-  {
-    id: "createdAt",
-    label: "Created At",
-    render: (workflow) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(workflow.createdAt).toLocaleDateString()}</span>
-  },
-]
-
 const WorkflowsPage: React.FC = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [pagination, setPagination] = useState<Pagination | null>(null)
@@ -38,6 +23,40 @@ const WorkflowsPage: React.FC = () => {
 
   const notification = useNotification()
   const navigate = useNavigate()
+
+  const columns: Column<Workflow>[] = [
+    {
+      id: "name",
+      label: "Name",
+      render: (workflow) => (
+        <div
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              navigate(`/workflows/${workflow.id}`)
+            }
+          }}
+          onClick={() => navigate(`/workflows/${workflow.id}`)}
+          className="cursor-pointer font-medium text-primary hover:underline"
+        >
+          <span className={TYPOGRAPHY.LABEL}>{workflow.name}</span>
+        </div>
+      )
+    },
+    {
+      id: "status",
+      label: "Status",
+      render: (workflow) => <StatusBadge status={workflow.status as any} />
+    },
+    {id: "description", label: "Description", render: (workflow) => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{workflow.description || "No description"}</span>},
+    {
+      id: "createdAt",
+      label: "Created At",
+      render: (workflow) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(workflow.createdAt).toLocaleDateString()}</span>
+    },
+  ]
 
   useEffect(() => {
     const fetchWorkflows = async () => {
