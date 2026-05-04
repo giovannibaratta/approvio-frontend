@@ -49,3 +49,4 @@ dist-ssr
 /playwright/.auth/
 
 TODO
+playwright/screenshots/login-success.png

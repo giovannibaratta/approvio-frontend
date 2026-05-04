@@ -1,6 +1,12 @@
 import {http, HttpResponse} from "msw"
 
 export const handlers = [
+  // 0. Auth Login Handler (Mock SSO flow for E2E testing)
+  http.get("*/mock/auth/web/login", () => {
+    // Simulates the backend redirecting back to the application callback URL
+    return HttpResponse.redirect("/auth/callback", 302)
+  }),
+
   // 1. Auth Info Handler
   http.get("*/auth/info", () => {
     return HttpResponse.json({
