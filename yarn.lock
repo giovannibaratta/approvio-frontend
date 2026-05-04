@@ -75,7 +75,7 @@ __metadata:
     lucide-react: "npm:^1.8.0"
     msw: "npm:^2.12.10"
     next-themes: "npm:^0.4.6"
-    postcss: "npm:^8.5.9"
+    postcss: "npm:^8.5.10"
     prettier: "npm:3.3.3"
     prismjs: "npm:^1.30.0"
     react: "npm:19.1.0"
@@ -90,7 +90,7 @@ __metadata:
     tw-animate-css: "npm:^1.4.0"
     typescript: "npm:5.8.3"
     typescript-eslint: "npm:8.33.0"
-    vite: "npm:6.3.5"
+    vite: "npm:^6.4.2"
   languageName: unknown
   linkType: soft
 
@@ -6078,7 +6078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.47, postcss@npm:^8.5.6, postcss@npm:^8.5.9":
+"postcss@npm:^8.4.47, postcss@npm:^8.5.6":
   version: 8.5.9
   resolution: "postcss@npm:8.5.9"
   dependencies:
@@ -6086,6 +6086,17 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10/b34661c6efca87f7bf747c6c943435e4bfef7617a238c3719103e607c605d16720682fb121b7ebd4f7f748228dfdf8711b82f7ffed80a5c4a9249c070ed5fd87
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.5.10":
+  version: 8.5.13
+  resolution: "postcss@npm:8.5.13"
+  dependencies:
+    nanoid: "npm:^3.3.11"
+    picocolors: "npm:^1.1.1"
+    source-map-js: "npm:^1.2.1"
+  checksum: 10/4763873c0a39a6f71fc552d0046fedb80dca889ed0b85e36217285f754a3bd003a906f6088feb266b1f53b0ad20483a475dce4cc1c756f05e27940c51e40ebd8
   languageName: node
   linkType: hard
 
@@ -7698,61 +7709,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:6.3.5":
-  version: 6.3.5
-  resolution: "vite@npm:6.3.5"
-  dependencies:
-    esbuild: "npm:^0.25.0"
-    fdir: "npm:^6.4.4"
-    fsevents: "npm:~2.3.3"
-    picomatch: "npm:^4.0.2"
-    postcss: "npm:^8.5.3"
-    rollup: "npm:^4.34.9"
-    tinyglobby: "npm:^0.2.13"
-  peerDependencies:
-    "@types/node": ^18.0.0 || ^20.0.0 || >=22.0.0
-    jiti: ">=1.21.0"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    sass-embedded: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.16.0
-    tsx: ^4.8.1
-    yaml: ^2.4.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    jiti:
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    sass-embedded:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-    tsx:
-      optional: true
-    yaml:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 10/7bc3a1c5ef79413ad70daeeaf69b76cd1218d16aa18ed8ee08d74648ef17284f4a17c11f5cf42b573b6dc5e3d5f115110b67b1d23c2c699cfe404757764a634a
-  languageName: node
-  linkType: hard
-
 "vite@npm:^6.4.1":
   version: 6.4.1
   resolution: "vite@npm:6.4.1"
@@ -7805,6 +7761,61 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10/ea2083b6b1d1c9e85a13d6797ae989aa1dbc27a5c054319c71141934bf3f8dba8d54b510618040f95751148da63787f28f043df7458a194c81f8b6d8a2d32844
+  languageName: node
+  linkType: hard
+
+"vite@npm:^6.4.2":
+  version: 6.4.2
+  resolution: "vite@npm:6.4.2"
+  dependencies:
+    esbuild: "npm:^0.25.0"
+    fdir: "npm:^6.4.4"
+    fsevents: "npm:~2.3.3"
+    picomatch: "npm:^4.0.2"
+    postcss: "npm:^8.5.3"
+    rollup: "npm:^4.34.9"
+    tinyglobby: "npm:^0.2.13"
+  peerDependencies:
+    "@types/node": ^18.0.0 || ^20.0.0 || >=22.0.0
+    jiti: ">=1.21.0"
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    sass-embedded: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.16.0
+    tsx: ^4.8.1
+    yaml: ^2.4.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    jiti:
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    sass-embedded:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+    tsx:
+      optional: true
+    yaml:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 10/d6622843fb367065c2459c8d972d1f0d302844bdb329602c4bfb3c149607744f74fbfcbb3d170a4f58fa494012ad74a88e3a63df236845840d50475b89786796
   languageName: node
   linkType: hard
 
