@@ -14,6 +14,7 @@ The project you are working on is a frontend service of the Approvio project (ht
 - **Testing (Playwright):**
   - Use **E2E Testing** (`tests/e2e/`) for full pages, user flows, and integrations.
   - Use **Component Testing** (via Playwright CT) for small, isolated UI components.
+  - Use the `sso-testing` skill for information on how the mocked SSO login flow works during testing.
     </project_context>
 
 ## Directory Structure
@@ -60,3 +61,5 @@ Use the following skills to assist with tasks:
   - _Example_: "Implement a Component Test for the `UserCard` and an E2E test for the login flow."
 - **`api-integration`**: For safely consuming `approvio-ts-sdk`.
   - _Example_: "Implement data fetching for the groups page using `approvio-ts-sdk` and standard loading/error states."
+- **`sso-testing`**: For expert guidance on mocking and testing the external SSO authentication flow.
+  - _Example_: "Implement a mock for the SSO login flow in my new E2E test."

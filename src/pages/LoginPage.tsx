@@ -1,7 +1,7 @@
 import React from "react"
 import {Link as RouterLink} from "react-router-dom"
 import {useAppSelector} from "../store/hooks"
-import { API_BASE_URL } from "../constants"
+import { AUTH_LOGIN_URL } from "../constants"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Shield } from "lucide-react"
@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
           <CardFooter className="flex justify-center pb-8">
             {!isAuthenticated ? (
               <Button asChild size="lg" className="w-full bg-emerald-600 px-8 text-white hover:bg-emerald-700 sm:w-auto">
-                <a href={`${API_BASE_URL}/auth/web/login`}>
+                <a href={AUTH_LOGIN_URL}>
                   Login with SSO
                 </a>
               </Button>
