@@ -5,6 +5,9 @@ import {Textarea} from "@/components/ui/textarea"
 import type {WorkflowTemplateSummary} from "@approvio/api"
 import WorkflowTemplateSelector from "./WorkflowTemplateSelector"
 
+const WORKFLOW_NAME_MAX_LENGTH = 255
+const WORKFLOW_DESCRIPTION_MAX_LENGTH = 2048
+
 interface WorkflowDetailsFormProps {
   name: string
   setName: (val: string) => void
@@ -63,6 +66,7 @@ export const WorkflowDetailsForm: React.FC<WorkflowDetailsFormProps> = ({
           id="name"
           placeholder="e.g. Q3 Server Upgrade Request"
           value={name}
+          maxLength={WORKFLOW_NAME_MAX_LENGTH}
           onChange={e => {
             setName(e.target.value)
             if (setNameError) setNameError(null)
@@ -79,6 +83,7 @@ export const WorkflowDetailsForm: React.FC<WorkflowDetailsFormProps> = ({
           id="description"
           placeholder="Optional context or purpose for this workflow..."
           value={description}
+          maxLength={WORKFLOW_DESCRIPTION_MAX_LENGTH}
           onChange={e => setDescription(e.target.value)}
           disabled={disabled}
           className="min-h-[100px] resize-none"

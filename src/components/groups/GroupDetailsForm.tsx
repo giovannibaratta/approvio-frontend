@@ -3,6 +3,9 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Textarea} from "@/components/ui/textarea"
 
+const GROUP_NAME_MAX_LENGTH = 255
+const GROUP_DESCRIPTION_MAX_LENGTH = 2048
+
 interface GroupDetailsFormProps {
   groupName: string
   setGroupName: (name: string) => void
@@ -40,6 +43,7 @@ const GroupDetailsForm: React.FC<GroupDetailsFormProps> = ({
           name="groupName"
           placeholder="e.g. Engineering Leadership"
           value={groupName}
+          maxLength={GROUP_NAME_MAX_LENGTH}
           onChange={handleGroupNameChange}
           disabled={disableComponents}
           className={groupNameError ? "border-destructive focus-visible:ring-destructive" : ""}
@@ -56,6 +60,7 @@ const GroupDetailsForm: React.FC<GroupDetailsFormProps> = ({
           placeholder="Briefly describe the responsibilities of this group..."
           rows={3}
           value={groupDescription}
+          maxLength={GROUP_DESCRIPTION_MAX_LENGTH}
           onChange={e => setGroupDescription(e.target.value)}
           disabled={disableComponents}
         />
