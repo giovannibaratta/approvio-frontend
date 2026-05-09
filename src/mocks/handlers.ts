@@ -189,7 +189,7 @@ export const handlers = [
           status: "PENDING",
           workflowTemplateId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }
       ],
       pagination: {
@@ -209,7 +209,7 @@ export const handlers = [
       status: "PENDING",
       workflowTemplateId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     })
   }),
 

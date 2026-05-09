@@ -7,8 +7,7 @@ import "./index.css"
 
 // Conditionally start MSW in development and test mode
 async function enableMocking() {
-  if (import.meta.env.VITE_USE_MOCKS !== "true")
-    return
+  if (import.meta.env.VITE_USE_MOCKS !== "true") return
 
   console.log("Mock Service Worker is enabled. Starting worker...")
 

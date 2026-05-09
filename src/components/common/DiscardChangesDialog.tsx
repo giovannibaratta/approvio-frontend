@@ -1,13 +1,6 @@
 import React from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter} from "@/components/ui/dialog"
+import {Button} from "@/components/ui/button"
 
 interface DiscardChangesDialogProps {
   open: boolean
@@ -16,12 +9,7 @@ interface DiscardChangesDialogProps {
   onConfirm: () => void
 }
 
-const DiscardChangesDialog: React.FC<DiscardChangesDialogProps> = ({
-  open,
-  onOpenChange,
-  onCancel,
-  onConfirm,
-}) => {
+const DiscardChangesDialog: React.FC<DiscardChangesDialogProps> = ({open, onOpenChange, onCancel, onConfirm}) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>

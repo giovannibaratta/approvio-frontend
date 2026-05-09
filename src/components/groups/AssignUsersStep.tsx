@@ -1,17 +1,16 @@
-import { type FrontendError } from "../../services/api"
+import {type FrontendError} from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
 import {listUsers, listGroupEntities} from "../../services/api"
-import type { UserSummary, ListUsers200Response } from "@approvio/api"
+import type {UserSummary, ListUsers200Response} from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2, PlusCircle, Trash2, Loader2, AlertCircle } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { debounce } from "../../utils/debounce"
-
+import {Input} from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {ScrollArea} from "@/components/ui/scroll-area"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {CheckCircle2, PlusCircle, Trash2, Loader2, AlertCircle} from "lucide-react"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {debounce} from "../../utils/debounce"
 
 interface AssignUsersStepProps {
   groupName: string
@@ -51,11 +50,10 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
 
         handleEither(
           result,
-          async (response) => {
-            const humanEntities = response.entities.filter(
-              entity => entity.entity.entityType === "human"
-            ).map(entity => entity.entity.entityId)
-
+          async response => {
+            const humanEntities = response.entities
+              .filter(entity => entity.entity.entityType === "human")
+              .map(entity => entity.entity.entityId)
 
             setAssignedUserIds(humanEntities)
           },
@@ -110,10 +108,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
     [assignedUserIds, selectedUsers, notification]
   )
 
-  const debouncedSearch = useMemo(
-    () => debounce(performSearch, 300),
-    [performSearch]
-  )
+  const debouncedSearch = useMemo(() => debounce(performSearch, 300), [performSearch])
 
   useEffect(() => {
     if (groupSuccessfullyCreated && searchQuery.length > 0) {
@@ -206,17 +201,13 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
         <h3 className="text-lg font-medium">
           {groupSuccessfullyCreated ? `Assign Users to "${groupName}"` : "User Assignment"}
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Search and add users to this group.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">Search and add users to this group.</p>
       </div>
 
       {!groupSuccessfullyCreated && !loading && (
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
-          <AlertDescription>
-            Group creation was not successful. Cannot assign users.
-          </AlertDescription>
+          <AlertDescription>Group creation was not successful. Cannot assign users.</AlertDescription>
         </Alert>
       )}
 
@@ -262,7 +253,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
                       key={user.id}
                       role="button"
                       tabIndex={0}
-                      onKeyDown={(e) => {
+                      onKeyDown={e => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault()
                           handleToggleUser(user)

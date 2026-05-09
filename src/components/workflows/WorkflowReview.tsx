@@ -1,6 +1,6 @@
 import React from "react"
-import type { WorkflowTemplateSummary } from "@approvio/api"
-import { FileText, AlignLeft, GitBranch } from "lucide-react"
+import type {WorkflowTemplateSummary} from "@approvio/api"
+import {FileText, AlignLeft, GitBranch} from "lucide-react"
 
 interface WorkflowReviewProps {
   name: string
@@ -8,11 +8,7 @@ interface WorkflowReviewProps {
   template: WorkflowTemplateSummary | null
 }
 
-export const WorkflowReview: React.FC<WorkflowReviewProps> = ({
-  name,
-  description,
-  template
-}) => {
+export const WorkflowReview: React.FC<WorkflowReviewProps> = ({name, description, template}) => {
   return (
     <div className="space-y-6">
       <div className="rounded-lg border border-border/50 bg-muted/30 p-4">
@@ -51,9 +47,7 @@ export const WorkflowReview: React.FC<WorkflowReviewProps> = ({
                 <div className="rounded-md border border-border/50 bg-background p-3">
                   <div className="font-medium text-foreground">{template.name}</div>
                   {template.description && (
-                    <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                      {template.description}
-                    </div>
+                    <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{template.description}</div>
                   )}
                 </div>
               ) : (

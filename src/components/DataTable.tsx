@@ -1,18 +1,11 @@
-import React, { useState } from "react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronRight, CornerDownRight, Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
-import { PaginationUI } from "./common/PaginationUI"
+import React, {useState} from "react"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {ChevronDown, ChevronRight, CornerDownRight, Loader2} from "lucide-react"
+import {cn} from "@/lib/utils"
+import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
+import {PaginationUI} from "./common/PaginationUI"
 
 export interface Column<T> {
   id: string
@@ -49,12 +42,12 @@ export interface DataTableProps<T> {
 /**
  * Internal component that manages the expansion state and rendering of a single row.
  */
-function ExpandableRow<T extends { id: string }>({
+function ExpandableRow<T extends {id: string}>({
   row,
   columns,
   actions,
   expandableRow,
-  disableExpansionPadding,
+  disableExpansionPadding
 }: {
   row: T
   columns: Column<T>[]
@@ -80,8 +73,10 @@ function ExpandableRow<T extends { id: string }>({
             </button>
           </TableCell>
         )}
-        {columns.map((column) => (
-          <TableCell key={column.id} style={{width: column.width}}>{column.render(row)}</TableCell>
+        {columns.map(column => (
+          <TableCell key={column.id} style={{width: column.width}}>
+            {column.render(row)}
+          </TableCell>
         ))}
         {actions && <TableCell className="whitespace-nowrap text-right">{actions(row)}</TableCell>}
       </TableRow>
@@ -91,9 +86,7 @@ function ExpandableRow<T extends { id: string }>({
             colSpan={columns.length + (actions ? 2 : 1)}
             className={`p-0 ${disableExpansionPadding ? "" : "px-4 pb-4"}`}
           >
-            <div className={disableExpansionPadding ? "" : "mt-2"}>
-              {expandableRow!(row)}
-            </div>
+            <div className={disableExpansionPadding ? "" : "mt-2"}>{expandableRow!(row)}</div>
           </TableCell>
         </TableRow>
       )}
@@ -101,7 +94,7 @@ function ExpandableRow<T extends { id: string }>({
   )
 }
 
-export function DataTable<T extends { id: string }>({
+export function DataTable<T extends {id: string}>({
   title,
   columns,
   data,
@@ -114,9 +107,8 @@ export function DataTable<T extends { id: string }>({
   actions,
   headerAction,
   expandableRow,
-  disableExpansionPadding,
+  disableExpansionPadding
 }: DataTableProps<T>) {
-
   return (
     <Card className="w-full">
       <CardHeader className={cn(LAYOUT.FLEX_BETWEEN, "flex-row pb-4")}>
@@ -134,12 +126,8 @@ export function DataTable<T extends { id: string }>({
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
                   {expandableRow && <TableHead className="w-[44px] pr-0" />}
-                  {columns.map((column) => (
-                    <TableHead
-                      key={column.id}
-                      className="font-semibold text-foreground"
-                      style={{width: column.width}}
-                    >
+                  {columns.map(column => (
+                    <TableHead key={column.id} className="font-semibold text-foreground" style={{width: column.width}}>
                       {column.label}
                     </TableHead>
                   ))}
@@ -151,7 +139,7 @@ export function DataTable<T extends { id: string }>({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((row) => (
+                {data.map(row => (
                   <ExpandableRow
                     key={row.id}
                     row={row}
@@ -163,7 +151,10 @@ export function DataTable<T extends { id: string }>({
                 ))}
                 {data.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={columns.length + (actions ? 1 : 0) + (expandableRow ? 1 : 0)} className="h-24 text-center">
+                    <TableCell
+                      colSpan={columns.length + (actions ? 1 : 0) + (expandableRow ? 1 : 0)}
+                      className="h-24 text-center"
+                    >
                       <p className={TYPOGRAPHY.DESCRIPTION_SM}>No data available</p>
                     </TableCell>
                   </TableRow>
@@ -202,7 +193,7 @@ export interface DataSubTableProps<T> {
  * It renders rows that perfectly align with the parent table's columns and
  * includes visual indentation.
  */
-export function DataSubTable<T extends { id: string }>({
+export function DataSubTable<T extends {id: string}>({
   columns,
   data,
   hasMore,
@@ -214,29 +205,25 @@ export function DataSubTable<T extends { id: string }>({
   return (
     <div className="border-t border-border bg-muted/10">
       {data.length === 0 ? (
-        <p className="p-4 text-sm text-muted-foreground">
-          {noDataMessage}
-        </p>
+        <p className="p-4 text-sm text-muted-foreground">{noDataMessage}</p>
       ) : (
         <>
           <Table style={{tableLayout: "fixed"}}>
             <TableBody>
-              {data.map((row) => (
+              {data.map(row => (
                 <TableRow
                   key={row.id}
                   className={`border-b-0 ${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}`}
                   onClick={() => onRowClick?.(row)}
                 >
                   <TableCell className="w-[44px] pr-0" /> {/* Toggle spacer for alignment */}
-                  {columns.map((column) => (
+                  {columns.map(column => (
                     <TableCell key={column.id} style={{width: column.width}} className="py-3">
                       <div className="flex items-center">
                         {column.id === columns[0]?.id && (
                           <CornerDownRight className="mr-2 size-4 text-muted-foreground/50" />
                         )}
-                        <div className="w-full">
-                          {column.render(row)}
-                        </div>
+                        <div className="w-full">{column.render(row)}</div>
                       </div>
                     </TableCell>
                   ))}
@@ -249,7 +236,7 @@ export function DataSubTable<T extends { id: string }>({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   onShowMore()
                 }}

@@ -14,15 +14,13 @@ test("CreateWorkflowTemplatePage allows navigation, validation, and cancellation
   await page.route("**/workflow-templates*", async route => {
     if (route.request().method() === "POST") {
       createCalled = true
-      await route.fulfill({ status: 200, body: JSON.stringify({id: "new-id"}) })
+      await route.fulfill({status: 200, body: JSON.stringify({id: "new-id"})})
     } else {
       await route.fallback()
     }
   })
 
-  const component = await mount(
-    <CreateWorkflowTemplatePage />
-  )
+  const component = await mount(<CreateWorkflowTemplatePage />)
   await expect(component).toBeVisible()
 
   // Test 1: Cancel Dialog

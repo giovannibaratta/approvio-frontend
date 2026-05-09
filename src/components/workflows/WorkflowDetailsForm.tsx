@@ -1,8 +1,8 @@
 import React from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import type { WorkflowTemplateSummary } from "@approvio/api"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Textarea} from "@/components/ui/textarea"
+import type {WorkflowTemplateSummary} from "@approvio/api"
 import WorkflowTemplateSelector from "./WorkflowTemplateSelector"
 
 interface WorkflowDetailsFormProps {
@@ -63,7 +63,7 @@ export const WorkflowDetailsForm: React.FC<WorkflowDetailsFormProps> = ({
           id="name"
           placeholder="e.g. Q3 Server Upgrade Request"
           value={name}
-          onChange={(e) => {
+          onChange={e => {
             setName(e.target.value)
             if (setNameError) setNameError(null)
           }}
@@ -79,7 +79,7 @@ export const WorkflowDetailsForm: React.FC<WorkflowDetailsFormProps> = ({
           id="description"
           placeholder="Optional context or purpose for this workflow..."
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
           disabled={disabled}
           className="min-h-[100px] resize-none"
         />

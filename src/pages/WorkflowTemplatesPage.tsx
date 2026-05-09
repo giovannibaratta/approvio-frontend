@@ -11,12 +11,12 @@ import {
   WorkflowTemplateStatus
 } from "@approvio/api"
 import {DataTable, DataSubTable, type Column} from "../components/DataTable"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Plus, AlertCircle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {Button} from "@/components/ui/button"
+import {Switch} from "@/components/ui/switch"
+import {Label} from "@/components/ui/label"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Loader2, Plus, AlertCircle} from "lucide-react"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 
 /**
  * Shared column configuration used by both the main table and the expanded versions list.
@@ -42,31 +42,60 @@ const SHARED_COLUMNS: Column<WorkflowTemplateSummary>[] = [
       </TooltipProvider>
     )
   },
-  {id: "version", label: "Version", width: "10%", render: template => <span className="font-mono text-sm">v{template.version}</span>},
+  {
+    id: "version",
+    label: "Version",
+    width: "10%",
+    render: template => <span className="font-mono text-sm">v{template.version}</span>
+  },
   {
     id: "status",
     label: "Status",
     width: "15%",
     render: template => {
-      const baseClasses = "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+      const baseClasses =
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
       switch (template.status) {
         case "ACTIVE":
-          return <span className={`${baseClasses} border-emerald-500/20 bg-emerald-500/10 text-emerald-600`}>Active</span>
+          return (
+            <span className={`${baseClasses} border-emerald-500/20 bg-emerald-500/10 text-emerald-600`}>Active</span>
+          )
         case "PENDING_DEPRECATION":
-          return <span className={`${baseClasses} border-amber-500/20 bg-amber-500/10 text-amber-600`}>Deprecating</span>
+          return (
+            <span className={`${baseClasses} border-amber-500/20 bg-amber-500/10 text-amber-600`}>Deprecating</span>
+          )
         case "DEPRECATED":
-          return <span className={`${baseClasses} border-destructive/20 bg-destructive/10 text-destructive`}>Deprecated</span>
+          return (
+            <span className={`${baseClasses} border-destructive/20 bg-destructive/10 text-destructive`}>
+              Deprecated
+            </span>
+          )
         default:
-          return <span className={`${baseClasses} border-border bg-muted/50 text-muted-foreground`}>{String(template.status).replace(/_/g, " ")}</span>
+          return (
+            <span className={`${baseClasses} border-border bg-muted/50 text-muted-foreground`}>
+              {String(template.status).replace(/_/g, " ")}
+            </span>
+          )
       }
     }
   },
-  {id: "description", label: "Description", width: "30%", render: template => <span className="text-sm text-muted-foreground">{template.description || "No description"}</span>},
+  {
+    id: "description",
+    label: "Description",
+    width: "30%",
+    render: template => (
+      <span className="text-sm text-muted-foreground">{template.description || "No description"}</span>
+    )
+  },
   {
     id: "createdAt",
     label: "Created At",
     width: "20%",
-    render: template => <span className="font-mono text-sm text-muted-foreground">{new Date(template.createdAt).toLocaleDateString()}</span>
+    render: template => (
+      <span className="font-mono text-sm text-muted-foreground">
+        {new Date(template.createdAt).toLocaleDateString()}
+      </span>
+    )
   }
 ]
 
@@ -221,12 +250,15 @@ const WorkflowTemplatesPage: React.FC = () => {
         <Switch
           id="show-all"
           checked={showAllVersions}
-          onCheckedChange={(checked) => {
+          onCheckedChange={checked => {
             setShowAllVersions(checked)
             setPage(0)
           }}
         />
-        <Label htmlFor="show-all" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <Label
+          htmlFor="show-all"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           Show all latest
         </Label>
       </div>
@@ -251,7 +283,7 @@ const WorkflowTemplatesPage: React.FC = () => {
                   <div
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault()
                         navigate(`/workflow-templates/${template.id}`)

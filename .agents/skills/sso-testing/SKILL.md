@@ -25,11 +25,11 @@ In E2E tests, we avoid navigating to a real backend to prevent leaving the Vite 
 ### Implementation Example
 
 ```typescript
-import { test, expect } from "@playwright/test"
+import {test, expect} from "@playwright/test"
 
-test("login flow", async ({ page }) => {
+test("login flow", async ({page}) => {
   // Intercept the mock SSO login URL
-  await page.route("**/mock/auth/web/login", async (route) => {
+  await page.route("**/mock/auth/web/login", async route => {
     // Note: WebKit does not support fulfill() with a 302 status directly.
     // Instead, return an HTML payload that executes a client-side redirect.
     await route.fulfill({
@@ -41,7 +41,7 @@ test("login flow", async ({ page }) => {
 
   // Start login
   await page.goto("/login")
-  await page.getByRole("link", { name: "Login with SSO" }).click()
+  await page.getByRole("link", {name: "Login with SSO"}).click()
 
   // Verify successful authentication
   await expect(page).toHaveURL(/.*\/$/)

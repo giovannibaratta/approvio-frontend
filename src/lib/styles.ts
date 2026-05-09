@@ -11,7 +11,7 @@ export const TYPOGRAPHY = {
   MONO_SM: "font-mono text-sm",
   MONO_SM_MUTED: "font-mono text-sm text-muted-foreground",
   LABEL: "text-sm font-medium",
-  LABEL_MUTED: "text-sm font-medium text-muted-foreground",
+  LABEL_MUTED: "text-sm font-medium text-muted-foreground"
 }
 
 export const LAYOUT = {
@@ -21,5 +21,5 @@ export const LAYOUT = {
   FLEX_END: "flex items-center justify-end",
   SECTION_SPACING: "space-y-4",
   PAGE_WIDTH: "mx-auto max-w-6xl",
-  BACKDROP_CARD: "border-border/50 bg-background/50 backdrop-blur-sm",
+  BACKDROP_CARD: "border-border/50 bg-background/50 backdrop-blur-sm"
 }

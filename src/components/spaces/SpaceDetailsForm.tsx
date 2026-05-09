@@ -1,7 +1,7 @@
 import React from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Textarea} from "@/components/ui/textarea"
 
 interface SpaceDetailsFormProps {
   spaceName: string
@@ -34,7 +34,9 @@ const SpaceDetailsForm: React.FC<SpaceDetailsFormProps> = ({
   return (
     <form noValidate autoComplete="off" className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="spaceName" className={spaceNameError ? "text-destructive" : ""}>Space Name <span className="text-destructive">*</span></Label>
+        <Label htmlFor="spaceName" className={spaceNameError ? "text-destructive" : ""}>
+          Space Name <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="spaceName"
           name="spaceName"
@@ -45,12 +47,12 @@ const SpaceDetailsForm: React.FC<SpaceDetailsFormProps> = ({
           className={spaceNameError ? "border-destructive focus-visible:ring-destructive" : ""}
           maxLength={255}
         />
-        {spaceNameError && (
-          <p className="mt-1 text-xs font-medium text-destructive">{spaceNameError}</p>
-        )}
+        {spaceNameError && <p className="mt-1 text-xs font-medium text-destructive">{spaceNameError}</p>}
       </div>
       <div className="space-y-2">
-        <Label htmlFor="spaceDescription">Space Description <span className="font-normal text-muted-foreground">(Optional)</span></Label>
+        <Label htmlFor="spaceDescription">
+          Space Description <span className="font-normal text-muted-foreground">(Optional)</span>
+        </Label>
         <Textarea
           id="spaceDescription"
           name="spaceDescription"

@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from "react"
-import { useNavigate, Link as RouterLink } from "react-router-dom"
-import { useAppDispatch } from "../store/hooks"
-import { setAuthenticated } from "../store/authSlice"
-import { getEntityInfo } from "../services/auth"
-import { handleEither } from "../utils/either"
-import { useNotification } from "../providers/notification/NotificationContext"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Loader2, AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
-import { cn } from "@/lib/utils"
+import React, {useEffect, useRef, useState} from "react"
+import {useNavigate, Link as RouterLink} from "react-router-dom"
+import {useAppDispatch} from "../store/hooks"
+import {setAuthenticated} from "../store/authSlice"
+import {getEntityInfo} from "../services/auth"
+import {handleEither} from "../utils/either"
+import {useNotification} from "../providers/notification/NotificationContext"
+import {Card, CardContent} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Loader2, AlertCircle} from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
+import {cn} from "@/lib/utils"
 
 const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate()
@@ -32,9 +32,9 @@ const AuthCallbackPage: React.FC = () => {
         () => {
           dispatch(setAuthenticated(true))
           notification.showSuccess("Login successful!")
-          navigate("/", { replace: true })
+          navigate("/", {replace: true})
         },
-        (error) => {
+        error => {
           setError(error.message)
           processingRef.current = false
         }
@@ -66,9 +66,7 @@ const AuthCallbackPage: React.FC = () => {
                 </Alert>
               </div>
               <Button asChild className="w-full">
-                <RouterLink to="/login">
-                  Return to Login
-                </RouterLink>
+                <RouterLink to="/login">Return to Login</RouterLink>
               </Button>
             </div>
           )}

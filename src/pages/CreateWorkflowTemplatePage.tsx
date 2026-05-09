@@ -10,19 +10,19 @@ import TemplateDetailsForm from "@/components/workflow-templates/TemplateDetails
 import TemplateRuleForm from "@/components/workflow-templates/TemplateRuleForm"
 import TemplateReview from "@/components/workflow-templates/TemplateReview"
 
-import MultiStepFormLayout, { type StepDefinition } from "@/components/common/MultiStepFormLayout"
-import { GitBranch, Settings2, Code, CheckCircle2 } from "lucide-react"
+import MultiStepFormLayout, {type StepDefinition} from "@/components/common/MultiStepFormLayout"
+import {GitBranch, Settings2, Code, CheckCircle2} from "lucide-react"
 
 enum CreateTemplateSteps {
   Details = 0,
   ApprovalRule = 1,
-  Review = 2,
+  Review = 2
 }
 
 const steps: StepDefinition[] = [
-  { id: CreateTemplateSteps.Details, label: "Details", icon: Settings2 },
-  { id: CreateTemplateSteps.ApprovalRule, label: "Approval Rule", icon: Code },
-  { id: CreateTemplateSteps.Review, label: "Review", icon: CheckCircle2 }
+  {id: CreateTemplateSteps.Details, label: "Details", icon: Settings2},
+  {id: CreateTemplateSteps.ApprovalRule, label: "Approval Rule", icon: Code},
+  {id: CreateTemplateSteps.Review, label: "Review", icon: CheckCircle2}
 ]
 
 const CreateWorkflowTemplatePage: React.FC = () => {
@@ -99,9 +99,9 @@ const CreateWorkflowTemplatePage: React.FC = () => {
     }
 
     if (!spaceId) {
-       addError("Space ID is missing.")
-       setLoading(false)
-       return
+      addError("Space ID is missing.")
+      setLoading(false)
+      return
     }
 
     const payload: WorkflowTemplateCreate = {
@@ -109,7 +109,7 @@ const CreateWorkflowTemplatePage: React.FC = () => {
       description,
       spaceId,
       defaultExpiresInHours: defaultExpiresInHours ?? undefined,
-      approvalRule: parsedRule,
+      approvalRule: parsedRule
     }
 
     const result = await createWorkflowTemplate(payload)
@@ -193,9 +193,11 @@ const CreateWorkflowTemplatePage: React.FC = () => {
       cardIconBgClass="border-amber-500/20 bg-amber-500/10"
       cardTitle={steps[activeStep]?.label || ""}
       cardDescription={
-        activeStep === CreateTemplateSteps.Details ? "Configure basic information and defaults." :
-        activeStep === CreateTemplateSteps.ApprovalRule ? "Define the JSON logic for approval conditions." :
-        "Verify template configuration before creation."
+        activeStep === CreateTemplateSteps.Details
+          ? "Configure basic information and defaults."
+          : activeStep === CreateTemplateSteps.ApprovalRule
+            ? "Define the JSON logic for approval conditions."
+            : "Verify template configuration before creation."
       }
       steps={steps}
       activeStepIndex={activeStep}

@@ -4,7 +4,7 @@ test("can navigate to create space page and create a space", async ({page}) => {
   await page.goto("/spaces")
 
   // Wait for the table to load
-  await expect(page.getByText("Spaces", { exact: true }).first()).toBeVisible({ timeout: 10000 })
+  await expect(page.getByText("Spaces", {exact: true}).first()).toBeVisible({timeout: 10000})
 
   // Click Create Space button
   const createButton = page.getByRole("link", {name: "Create Space"})
@@ -14,7 +14,9 @@ test("can navigate to create space page and create a space", async ({page}) => {
   // Verify we are on the create space page
   await expect(page).toHaveURL("/spaces/new")
   // Using heading to be more specific and avoid ambiguity with the button/step label
-  await expect(page.getByRole("heading", {name: "Create Space", exact: false}).or(page.getByText("Create Space").first())).toBeVisible()
+  await expect(
+    page.getByRole("heading", {name: "Create Space", exact: false}).or(page.getByText("Create Space").first())
+  ).toBeVisible()
 
   // Fill the form
   await page.getByLabel("Space Name *").fill("New Awesome Space")

@@ -1,9 +1,9 @@
 import React from "react"
-import { Link as RouterLink } from "react-router-dom"
-import type { ApprovalRule, WorkflowVote } from "@approvio/api"
-import { Users, Layers, CheckCircle2 } from "lucide-react"
-import { useApprovalRuleGroups } from "../../hooks/useApprovalRuleGroups"
-import { isRuleSatisfied } from "../../utils/rules"
+import {Link as RouterLink} from "react-router-dom"
+import type {ApprovalRule, WorkflowVote} from "@approvio/api"
+import {Users, Layers, CheckCircle2} from "lucide-react"
+import {useApprovalRuleGroups} from "../../hooks/useApprovalRuleGroups"
+import {isRuleSatisfied} from "../../utils/rules"
 
 interface Props {
   rule: ApprovalRule
@@ -14,7 +14,7 @@ interface Props {
  * A unified component that renders the visual tree structure of an Approval Rule.
  * If votes are provided, it also shows the satisfaction status of each rule.
  */
-const ApprovalRuleRenderer: React.FC<Props> = ({ rule, votes }) => {
+const ApprovalRuleRenderer: React.FC<Props> = ({rule, votes}) => {
   const groupMap = useApprovalRuleGroups(rule)
 
   const renderRule = (r: ApprovalRule, depth: number = 0): React.ReactNode => {
@@ -28,45 +28,48 @@ const ApprovalRuleRenderer: React.FC<Props> = ({ rule, votes }) => {
       const gName = groupMap[r.groupId] || r.groupId
 
       // Dynamic colors based on satisfaction (if votes provided)
-      const borderColor = showStatus
-        ? (satisfied ? "border-emerald-500/50" : "border-border/50")
-        : "border-border/50"
+      const borderColor = showStatus ? (satisfied ? "border-emerald-500/50" : "border-border/50") : "border-border/50"
 
-      const bgColor = showStatus
-        ? (satisfied ? "bg-emerald-500/5" : "bg-background/50")
-        : "bg-background/50"
+      const bgColor = showStatus ? (satisfied ? "bg-emerald-500/5" : "bg-background/50") : "bg-background/50"
 
       return (
         <div className={`mt-3 ${paddingLeft} relative`}>
           {!isRoot && <div className="absolute left-1.5 top-3 h-px w-4 bg-border/60" />}
           {!isRoot && <div className="absolute -top-4 bottom-auto left-1.5 h-7 w-px bg-border/60" />}
 
-          <div className={`flex items-center justify-between rounded-md border ${borderColor} ${bgColor} p-3 shadow-sm transition-colors hover:bg-muted/30`}>
+          <div
+            className={`flex items-center justify-between rounded-md border ${borderColor} ${bgColor} p-3 shadow-sm transition-colors hover:bg-muted/30`}
+          >
             <div className="flex items-center gap-3">
-              <div className={`flex size-8 shrink-0 items-center justify-center rounded-md border ${
-                showStatus && satisfied
-                  ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500"
-                  : "border-blue-500/20 bg-blue-500/10 text-blue-500"
-              }`}>
+              <div
+                className={`flex size-8 shrink-0 items-center justify-center rounded-md border ${
+                  showStatus && satisfied
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-500"
+                    : "border-blue-500/20 bg-blue-500/10 text-blue-500"
+                }`}
+              >
                 {showStatus && satisfied ? <CheckCircle2 className="size-4" /> : <Users className="size-4" />}
               </div>
               <div className="flex flex-col">
-                <span className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">Required Group</span>
-                <RouterLink
-                  to={`/groups/${r.groupId}`}
-                  className="text-sm font-semibold text-primary hover:underline"
-                >
+                <span className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Required Group
+                </span>
+                <RouterLink to={`/groups/${r.groupId}`} className="text-sm font-semibold text-primary hover:underline">
                   {gName}
                 </RouterLink>
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <span className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">Min Approvals</span>
-              <span className={`inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                showStatus && satisfied
-                  ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600"
-                  : "border-blue-500/20 bg-blue-500/10 text-blue-600"
-              }`}>
+              <span className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Min Approvals
+              </span>
+              <span
+                className={`inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                  showStatus && satisfied
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600"
+                    : "border-blue-500/20 bg-blue-500/10 text-blue-600"
+                }`}
+              >
                 {r.minCount}
               </span>
             </div>
@@ -97,7 +100,9 @@ const ApprovalRuleRenderer: React.FC<Props> = ({ rule, votes }) => {
             <div className="mb-2 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Layers className="size-4 text-muted-foreground" />
-                <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${badgeClass}`}>
+                <span
+                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${badgeClass}`}
+                >
                   {label}
                 </span>
               </div>
@@ -112,9 +117,7 @@ const ApprovalRuleRenderer: React.FC<Props> = ({ rule, votes }) => {
 
             <div className="flex flex-col">
               {r.rules.map((sub: any, i: number) => (
-                <React.Fragment key={i}>
-                  {renderRule(sub, depth + 1)}
-                </React.Fragment>
+                <React.Fragment key={i}>{renderRule(sub, depth + 1)}</React.Fragment>
               ))}
             </div>
           </div>
@@ -129,11 +132,7 @@ const ApprovalRuleRenderer: React.FC<Props> = ({ rule, votes }) => {
     )
   }
 
-  return (
-    <div className="p-1">
-      {renderRule(rule)}
-    </div>
-  )
+  return <div className="p-1">{renderRule(rule)}</div>
 }
 
 export default ApprovalRuleRenderer

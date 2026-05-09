@@ -1,4 +1,4 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useState} from "react"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
@@ -8,7 +8,7 @@ import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
 import type {SpaceCreate} from "@approvio/api"
 import {createSpace} from "../services/api"
 import MultiStepFormLayout from "@/components/common/MultiStepFormLayout"
-import { Layers } from "lucide-react"
+import {Layers} from "lucide-react"
 
 const CreateSpacePage: React.FC = () => {
   const [spaceName, setSpaceName] = useState("")

@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { getWorkflow, getWorkflowTemplate, listWorkflowVotes, getUser, getAgent } from "../services/api"
-import { useNotification } from "../providers/notification/NotificationContext"
-import { handleEither } from "../utils/either"
-import type { Workflow, WorkflowTemplate, WorkflowVote } from "@approvio/api"
+import React, {useEffect, useState} from "react"
+import {useParams} from "react-router-dom"
+import {getWorkflow, getWorkflowTemplate, listWorkflowVotes, getUser, getAgent} from "../services/api"
+import {useNotification} from "../providers/notification/NotificationContext"
+import {handleEither} from "../utils/either"
+import type {Workflow, WorkflowTemplate, WorkflowVote} from "@approvio/api"
 import ApprovalRuleRenderer from "../components/shared/ApprovalRuleRenderer"
-import { WorkflowVotePanel } from "../components/workflows/WorkflowVotePanel"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Activity, GitCommit, Clock, Calendar, FileText, Info } from "lucide-react"
-import { StatusBadge } from "../components/common/StatusBadge"
-import { DataTable, type Column } from "../components/DataTable"
-import { TYPOGRAPHY } from "@/lib/styles"
+import {WorkflowVotePanel} from "../components/workflows/WorkflowVotePanel"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Loader2, Activity, GitCommit, Clock, Calendar, FileText, Info} from "lucide-react"
+import {StatusBadge} from "../components/common/StatusBadge"
+import {DataTable, type Column} from "../components/DataTable"
+import {TYPOGRAPHY} from "@/lib/styles"
 
 // We must assign an id to each vote for the DataTable
-type VoteTableRow = WorkflowVote & { id: string; voterName?: string }
+type VoteTableRow = WorkflowVote & {id: string; voterName?: string}
 
 const voteColumns: Column<VoteTableRow>[] = [
   {
     id: "voterId",
     label: "Voter Entity",
     width: "250px",
-    render: (vote) => (
+    render: vote => (
       <div className="flex flex-col truncate">
         <span className={`${TYPOGRAPHY.LABEL} truncate`} title={vote.voterName || vote.voterId}>
           {vote.voterName || vote.voterId}
@@ -34,10 +34,11 @@ const voteColumns: Column<VoteTableRow>[] = [
     id: "voteType",
     label: "Decision",
     width: "120px",
-    render: (vote) => {
+    render: vote => {
       let badgeColor = "bg-muted text-muted-foreground"
       if (vote.voteType === "APPROVE") badgeColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 border"
-      if (vote.voteType === "VETO" || vote.voteType === "REJECT") badgeColor = "bg-destructive/10 text-destructive border-destructive/20 border"
+      if (vote.voteType === "VETO" || vote.voteType === "REJECT")
+        badgeColor = "bg-destructive/10 text-destructive border-destructive/20 border"
       if (vote.voteType === "WITHDRAW") badgeColor = "bg-amber-500/10 text-amber-600 border-amber-500/20 border"
 
       return (
@@ -51,18 +52,18 @@ const voteColumns: Column<VoteTableRow>[] = [
     id: "reason",
     label: "Reason / Comment",
     width: "300px",
-    render: (vote) => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{vote.reason || "—"}</span>
+    render: vote => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{vote.reason || "—"}</span>
   },
   {
     id: "timestamp",
     label: "Timestamp",
     width: "180px",
-    render: (vote) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(vote.timestamp).toLocaleString()}</span>
+    render: vote => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(vote.timestamp).toLocaleString()}</span>
   }
 ]
 
 const WorkflowDetailsPage: React.FC = () => {
-  const { workflowId } = useParams<{ workflowId: string }>()
+  const {workflowId} = useParams<{workflowId: string}>()
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
   const [template, setTemplate] = useState<WorkflowTemplate | null>(null)
   const [votes, setVotes] = useState<VoteTableRow[]>([])
@@ -76,26 +77,40 @@ const WorkflowDetailsPage: React.FC = () => {
     const votesResult = await listWorkflowVotes(wfId)
     await handleEither(
       votesResult,
-      async (vRes) => {
+      async vRes => {
         const rawVotes = vRes.votes
-        const votesWithId = rawVotes.map((v, i) => ({ ...v, id: `vote-${i}` }))
+        const votesWithId = rawVotes.map((v, i) => ({...v, id: `vote-${i}`}))
 
         // Resolve names
-        const resolvedVotes = await Promise.all(votesWithId.map(async (vote) => {
-          let name = vote.voterId
-          if (vote.voterType === "human") {
-            const userRes = await getUser(vote.voterId)
-            handleEither(userRes, (u) => { name = u.displayName }, (err) => console.error(`Failed to resolve user ${vote.voterId}`, err))
-          } else if (vote.voterType === "agent") {
-            const agentRes = await getAgent(vote.voterId)
-            handleEither(agentRes, (a) => { name = a.agentName }, (err) => console.error(`Failed to resolve agent ${vote.voterId}`, err))
-          }
-          return { ...vote, voterName: name }
-        }))
+        const resolvedVotes = await Promise.all(
+          votesWithId.map(async vote => {
+            let name = vote.voterId
+            if (vote.voterType === "human") {
+              const userRes = await getUser(vote.voterId)
+              handleEither(
+                userRes,
+                u => {
+                  name = u.displayName
+                },
+                err => console.error(`Failed to resolve user ${vote.voterId}`, err)
+              )
+            } else if (vote.voterType === "agent") {
+              const agentRes = await getAgent(vote.voterId)
+              handleEither(
+                agentRes,
+                a => {
+                  name = a.agentName
+                },
+                err => console.error(`Failed to resolve agent ${vote.voterId}`, err)
+              )
+            }
+            return {...vote, voterName: name}
+          })
+        )
 
         setVotes(resolvedVotes)
       },
-      (err) => console.error("Failed to fetch votes", err)
+      err => console.error("Failed to fetch votes", err)
     )
   }
 
@@ -118,15 +133,15 @@ const WorkflowDetailsPage: React.FC = () => {
             const tplResult = await getWorkflowTemplate(wfData.workflowTemplateId)
             handleEither(
               tplResult,
-              (tpl) => setTemplate(tpl),
-              (err) => console.error("Failed to fetch template", err)
+              tpl => setTemplate(tpl),
+              err => console.error("Failed to fetch template", err)
             )
           }
 
           // Fetch votes
           await fetchVotes(workflowId)
         },
-        (err) => {
+        err => {
           setError(err.message)
           notification.showError(err.message)
         }
@@ -180,11 +195,11 @@ const WorkflowDetailsPage: React.FC = () => {
             </div>
           </div>
           <div className="flex-shrink-0">
-             <WorkflowVotePanel
-               workflowId={workflow.id}
-               template={template}
-               onVoteSuccess={() => fetchVotes(workflow.id)}
-             />
+            <WorkflowVotePanel
+              workflowId={workflow.id}
+              template={template}
+              onVoteSuccess={() => fetchVotes(workflow.id)}
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -215,7 +230,7 @@ const WorkflowDetailsPage: React.FC = () => {
           </div>
 
           {workflow.description && (
-             <div className="mt-4 rounded-md border border-border/40 bg-muted/20 p-4">
+            <div className="mt-4 rounded-md border border-border/40 bg-muted/20 p-4">
               <div className="mb-2 flex items-center gap-2">
                 <Info className="size-4 text-muted-foreground" />
                 <p className="text-sm font-medium text-muted-foreground">Description</p>
@@ -240,14 +255,14 @@ const WorkflowDetailsPage: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-           {template?.approvalRule ? (
-             <ApprovalRuleRenderer rule={template.approvalRule} votes={votes} />
-           ) : (
-             <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-               <Loader2 className="mb-4 size-8 animate-spin opacity-50" />
-               <p>Loading template rules...</p>
-             </div>
-           )}
+          {template?.approvalRule ? (
+            <ApprovalRuleRenderer rule={template.approvalRule} votes={votes} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+              <Loader2 className="mb-4 size-8 animate-spin opacity-50" />
+              <p>Loading template rules...</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

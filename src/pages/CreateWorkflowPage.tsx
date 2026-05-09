@@ -8,17 +8,17 @@ import type {WorkflowCreate, WorkflowTemplateSummary} from "@approvio/api"
 
 import WorkflowDetailsForm from "@/components/workflows/WorkflowDetailsForm"
 import WorkflowReview from "@/components/workflows/WorkflowReview"
-import MultiStepFormLayout, { type StepDefinition } from "@/components/common/MultiStepFormLayout"
-import { GitBranch, Settings2, CheckCircle2 } from "lucide-react"
+import MultiStepFormLayout, {type StepDefinition} from "@/components/common/MultiStepFormLayout"
+import {GitBranch, Settings2, CheckCircle2} from "lucide-react"
 
 enum CreateWorkflowSteps {
   Details = 0,
-  Review = 1,
+  Review = 1
 }
 
 const steps: StepDefinition[] = [
-  { id: CreateWorkflowSteps.Details, label: "Details", icon: Settings2 },
-  { id: CreateWorkflowSteps.Review, label: "Review", icon: CheckCircle2 }
+  {id: CreateWorkflowSteps.Details, label: "Details", icon: Settings2},
+  {id: CreateWorkflowSteps.Review, label: "Review", icon: CheckCircle2}
 ]
 
 const CreateWorkflowPage: React.FC = () => {
@@ -80,9 +80,9 @@ const CreateWorkflowPage: React.FC = () => {
     clearApiErrors()
 
     if (!templateId) {
-       addError("Template ID is missing.")
-       setLoading(false)
-       return
+      addError("Template ID is missing.")
+      setLoading(false)
+      return
     }
 
     const payload: WorkflowCreate = {
@@ -139,13 +139,7 @@ const CreateWorkflowPage: React.FC = () => {
           />
         )
       case CreateWorkflowSteps.Review:
-        return (
-          <WorkflowReview
-            name={name}
-            description={description}
-            template={template}
-          />
-        )
+        return <WorkflowReview name={name} description={description} template={template} />
     }
   }
 

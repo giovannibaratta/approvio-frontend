@@ -30,7 +30,7 @@ export default tseslint.config(
       "eol-last": "error",
       "prefer-arrow-callback": "error",
       "no-trailing-spaces": "error",
-      quotes: ["warn", "double", { avoidEscape: true }],
+      quotes: ["warn", "double", {avoidEscape: true}]
     }
   },
   {
@@ -43,7 +43,7 @@ export default tseslint.config(
 
       // Turn off Node-specific rules for frontend files
       "n/no-missing-import": "off",
-      "n/no-unsupported-features/es-syntax": "off",
+      "n/no-unsupported-features/es-syntax": "off"
     }
   },
   {
@@ -51,7 +51,7 @@ export default tseslint.config(
     ...jestPlugin.configs["flat/recommended"],
     rules: {
       "jest/no-focused-tests": "error",
-      "jest/no-identical-title": "error",
+      "jest/no-identical-title": "error"
     }
   }
 )
