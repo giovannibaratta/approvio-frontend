@@ -5,6 +5,7 @@ import { useNotification } from "../providers/notification/NotificationContext"
 import { handleEither } from "../utils/either"
 import type { Workflow, WorkflowTemplate, WorkflowVote } from "@approvio/api"
 import ApprovalRuleRenderer from "../components/shared/ApprovalRuleRenderer"
+import { WorkflowVotePanel } from "../components/workflows/WorkflowVotePanel"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Activity, GitCommit, Clock, Calendar, FileText, Info } from "lucide-react"
@@ -71,6 +72,33 @@ const WorkflowDetailsPage: React.FC = () => {
 
   const notification = useNotification()
 
+  const fetchVotes = async (wfId: string) => {
+    const votesResult = await listWorkflowVotes(wfId)
+    await handleEither(
+      votesResult,
+      async (vRes) => {
+        const rawVotes = vRes.votes
+        const votesWithId = rawVotes.map((v, i) => ({ ...v, id: `vote-${i}` }))
+
+        // Resolve names
+        const resolvedVotes = await Promise.all(votesWithId.map(async (vote) => {
+          let name = vote.voterId
+          if (vote.voterType === "human") {
+            const userRes = await getUser(vote.voterId)
+            handleEither(userRes, (u) => { name = u.displayName }, (err) => console.error(`Failed to resolve user ${vote.voterId}`, err))
+          } else if (vote.voterType === "agent") {
+            const agentRes = await getAgent(vote.voterId)
+            handleEither(agentRes, (a) => { name = a.agentName }, (err) => console.error(`Failed to resolve agent ${vote.voterId}`, err))
+          }
+          return { ...vote, voterName: name }
+        }))
+
+        setVotes(resolvedVotes)
+      },
+      (err) => console.error("Failed to fetch votes", err)
+    )
+  }
+
   useEffect(() => {
     const fetchAll = async () => {
       if (!workflowId) return
@@ -96,30 +124,7 @@ const WorkflowDetailsPage: React.FC = () => {
           }
 
           // Fetch votes
-          const votesResult = await listWorkflowVotes(workflowId)
-          await handleEither(
-            votesResult,
-            async (vRes) => {
-              const rawVotes = vRes.votes
-              const votesWithId = rawVotes.map((v, i) => ({ ...v, id: `vote-${i}` }))
-
-              // Resolve names
-              const resolvedVotes = await Promise.all(votesWithId.map(async (vote) => {
-                let name = vote.voterId
-                if (vote.voterType === "human") {
-                  const userRes = await getUser(vote.voterId)
-                  handleEither(userRes, (u) => { name = u.displayName }, (err) => console.error(`Failed to resolve user ${vote.voterId}`, err))
-                } else if (vote.voterType === "agent") {
-                  const agentRes = await getAgent(vote.voterId)
-                  handleEither(agentRes, (a) => { name = a.agentName }, (err) => console.error(`Failed to resolve agent ${vote.voterId}`, err))
-                }
-                return { ...vote, voterName: name }
-              }))
-
-              setVotes(resolvedVotes)
-            },
-            (err) => console.error("Failed to fetch votes", err)
-          )
+          await fetchVotes(workflowId)
         },
         (err) => {
           setError(err.message)
@@ -162,7 +167,7 @@ const WorkflowDetailsPage: React.FC = () => {
       {/* Top Section: Overview */}
       <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
         <CardHeader className="flex flex-col items-start justify-between gap-4 pb-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-1 items-center gap-4">
             <div className="flex size-12 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
               <Activity className="size-6 text-blue-500" />
             </div>
@@ -173,6 +178,13 @@ const WorkflowDetailsPage: React.FC = () => {
                 <span className="ml-2 font-mono text-sm text-muted-foreground">ID: {workflow.id}</span>
               </CardDescription>
             </div>
+          </div>
+          <div className="flex-shrink-0">
+             <WorkflowVotePanel
+               workflowId={workflow.id}
+               template={template}
+               onVoteSuccess={() => fetchVotes(workflow.id)}
+             />
           </div>
         </CardHeader>
         <CardContent>

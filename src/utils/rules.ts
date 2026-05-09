@@ -1,6 +1,21 @@
 import type {ApprovalRule, WorkflowVote} from "@approvio/api"
 
 /**
+ * Extracts all group IDs required by an approval rule.
+ */
+export const extractGroupIds = (rule: ApprovalRule): string[] => {
+  const groupIds = new Set<string>()
+
+  const extract = (r: ApprovalRule) => {
+    if (r.type === "GROUP_REQUIREMENT") groupIds.add(r.groupId)
+    else if (r.type === "AND" || r.type === "OR") r.rules.forEach(extract)
+  }
+
+  extract(rule)
+  return Array.from(groupIds)
+}
+
+/**
  * Checks if an approval rule is satisfied by the given votes.
  */
 export const isRuleSatisfied = (rule: ApprovalRule, votes: WorkflowVote[]): boolean => {
