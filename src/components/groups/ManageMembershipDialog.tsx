@@ -1,10 +1,6 @@
-import { type FrontendError } from "../../services/api"
+import {type FrontendError} from "../../services/api"
 import React, {useState, useEffect, useRef, useCallback, useMemo} from "react"
-import {
-  listUsers,
-  addGroupEntities,
-  removeGroupEntities,
-} from "../../services/api"
+import {listUsers, addGroupEntities, removeGroupEntities} from "../../services/api"
 import type {
   AddGroupEntitiesRequest,
   RemoveGroupEntitiesRequest,
@@ -13,18 +9,17 @@ import type {
 } from "@approvio/api"
 import {useNotification} from "../../providers/notification/NotificationContext"
 import {handleEither} from "../../utils/either"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, AlertCircle, Plus, Minus, Undo2, Users } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { debounce } from "../../utils/debounce"
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription} from "@/components/ui/dialog"
+import {Input} from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {ScrollArea} from "@/components/ui/scroll-area"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Loader2, AlertCircle, Plus, Minus, Undo2, Users} from "lucide-react"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Badge} from "@/components/ui/badge"
+import {debounce} from "../../utils/debounce"
 
-
-import type { MemberDetails } from "@/models/group-details"
+import type {MemberDetails} from "@/models/group-details"
 
 interface UserAssignment extends UserSummary {
   isNew?: boolean
@@ -84,9 +79,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         (response: ListUsers200Response) => {
           const currentDraftIds = new Set(draftMembers.map(dm => dm.id))
 
-          const filteredUsers = response.users.filter(
-            (user: UserSummary) => !currentDraftIds.has(user.id)
-          )
+          const filteredUsers = response.users.filter((user: UserSummary) => !currentDraftIds.has(user.id))
           setSearchResults([...filteredUsers])
         },
         (error: FrontendError) => {
@@ -100,10 +93,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
     [draftMembers, notification]
   )
 
-  const debouncedSearch = useMemo(
-    () => debounce(performSearch, 300),
-    [performSearch]
-  )
+  const debouncedSearch = useMemo(() => debounce(performSearch, 300), [performSearch])
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -122,9 +112,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
   }
 
   const handleAddUser = (user: UserSummary) => {
-    const isAlreadyInDraft = draftMembers.some(
-      (member) => member.id === user.id && !member.isRemoved
-    )
+    const isAlreadyInDraft = draftMembers.some(member => member.id === user.id && !member.isRemoved)
 
     if (!isAlreadyInDraft) {
       const newMember: UserAssignment = {
@@ -147,16 +135,14 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
         displayName: userSummary.displayName,
         email: userSummary.email,
         isNew: false,
-        isRemoved: true,
+        isRemoved: true
       }
       setDraftMembers(prev => [...prev, memberToRemove])
     }
   }
 
   const handleUndoRemove = (memberId: string) => {
-    setDraftMembers(prev =>
-      prev.filter(member => !(member.id === memberId && member.isRemoved))
-    )
+    setDraftMembers(prev => prev.filter(member => !(member.id === memberId && member.isRemoved)))
   }
 
   const handleSaveChanges = async () => {
@@ -178,7 +164,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       const removeResult = await removeGroupEntities(groupId, payload)
       handleEither(
         removeResult,
-        () => { /* Do nothing on success */ },
+        () => {
+          /* Do nothing on success */
+        },
         (error: FrontendError) => {
           setError(error.message)
           notification.showError(`Failed to remove users: ${error.message}`)
@@ -202,7 +190,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       const addResult = await addGroupEntities(groupId, payload)
       handleEither(
         addResult,
-        () => { /* Do nothing on success */ },
+        () => {
+          /* Do nothing on success */
+        },
         (error: FrontendError) => {
           setError(error.message)
           notification.showError(`Failed to add users: ${error.message}`)
@@ -226,9 +216,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
     onClose()
   }
 
-  const pendingChanges = draftMembers.filter(
-    member => member.isNew || member.isRemoved
-  )
+  const pendingChanges = draftMembers.filter(member => member.isNew || member.isRemoved)
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text
@@ -250,7 +238,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+    <Dialog open={open} onOpenChange={isOpen => !isOpen && handleClose()}>
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -295,13 +283,20 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                   <div className="p-1">
                     {searchResults.map(user => {
                       const isUserCurrentlyMember = currentMembers.some(
-                        (member) => member.entity.entityId === user.id && member.entity.entityType === "human"
+                        member => member.entity.entityId === user.id && member.entity.entityType === "human"
                       )
-                      const isPendingAdd = draftMembers.some(member => member.id === user.id && member.isNew && !member.isRemoved)
-                      const isPendingRemove = draftMembers.some(member => member.id === user.id && !member.isNew && member.isRemoved)
+                      const isPendingAdd = draftMembers.some(
+                        member => member.id === user.id && member.isNew && !member.isRemoved
+                      )
+                      const isPendingRemove = draftMembers.some(
+                        member => member.id === user.id && !member.isNew && member.isRemoved
+                      )
 
                       return (
-                        <div key={user.id} className="flex items-center justify-between rounded-sm border-b border-border/40 p-3 transition-colors last:border-0 hover:bg-muted/50">
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-between rounded-sm border-b border-border/40 p-3 transition-colors last:border-0 hover:bg-muted/50"
+                        >
                           <div className="flex flex-col overflow-hidden">
                             <span className="truncate text-sm font-medium">
                               {highlightMatch(user.displayName, searchQuery)}
@@ -311,7 +306,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                             </span>
                           </div>
                           <div className="ml-4 shrink-0">
-                            {(isUserCurrentlyMember && !isPendingRemove) ? (
+                            {isUserCurrentlyMember && !isPendingRemove ? (
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -367,7 +362,9 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-semibold tracking-tight">Pending Changes</h4>
               {pendingChanges.length > 0 && (
-                <Badge variant="secondary" className="font-mono text-xs">{pendingChanges.length}</Badge>
+                <Badge variant="secondary" className="font-mono text-xs">
+                  {pendingChanges.length}
+                </Badge>
               )}
             </div>
 
@@ -389,24 +386,42 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                     {pendingChanges.map(member => (
                       <TableRow
                         key={member.id}
-                        className={member.isNew && !member.isRemoved ? "bg-emerald-500/5 hover:bg-emerald-500/10" : member.isRemoved ? "bg-destructive/5 hover:bg-destructive/10" : ""}
+                        className={
+                          member.isNew && !member.isRemoved
+                            ? "bg-emerald-500/5 hover:bg-emerald-500/10"
+                            : member.isRemoved
+                              ? "bg-destructive/5 hover:bg-destructive/10"
+                              : ""
+                        }
                       >
                         <TableCell className={member.isRemoved ? "opacity-50" : ""}>
                           <div className="flex flex-col">
                             <span className={`text-sm font-medium ${member.isRemoved ? "line-through" : ""}`}>
                               {member.displayName}
                             </span>
-                            <span className={`font-mono text-xs text-muted-foreground ${member.isRemoved ? "line-through" : ""}`}>
+                            <span
+                              className={`font-mono text-xs text-muted-foreground ${member.isRemoved ? "line-through" : ""}`}
+                            >
                               {member.email}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           {member.isNew && !member.isRemoved && (
-                            <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600">To Be Added</Badge>
+                            <Badge
+                              variant="outline"
+                              className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600"
+                            >
+                              To Be Added
+                            </Badge>
                           )}
                           {member.isRemoved && (
-                            <Badge variant="outline" className="border-destructive/20 bg-destructive/10 text-destructive">To Be Removed</Badge>
+                            <Badge
+                              variant="outline"
+                              className="border-destructive/20 bg-destructive/10 text-destructive"
+                            >
+                              To Be Removed
+                            </Badge>
                           )}
                         </TableCell>
                         <TableCell className="text-right">

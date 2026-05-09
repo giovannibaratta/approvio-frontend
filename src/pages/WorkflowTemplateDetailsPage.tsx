@@ -5,10 +5,10 @@ import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Space, WorkflowTemplate} from "@approvio/api"
 import TemplateDetailsRule from "../components/workflow-templates/TemplateDetailsRule"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, ArrowLeftRight, FileJson, LayoutGrid, Clock, Calendar, Edit3, AlignLeft } from "lucide-react"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Loader2, ArrowLeftRight, FileJson, LayoutGrid, Clock, Calendar, Edit3, AlignLeft} from "lucide-react"
 
 const WorkflowTemplateDetailsPage: React.FC = () => {
   const {templateIdentifier} = useParams<{templateIdentifier: string}>()
@@ -32,18 +32,18 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
         result,
         async (templateData: WorkflowTemplate) => {
           setTemplate(templateData)
-            const spacesResult = await getSpace(templateData.spaceId)
-            handleEither(
-              spacesResult,
-              (space: Space) => {
-                setSpaceName(space.name)
-              },
-              () => {
-                setSpaceName(templateData.spaceId)
-              }
-            )
+          const spacesResult = await getSpace(templateData.spaceId)
+          handleEither(
+            spacesResult,
+            (space: Space) => {
+              setSpaceName(space.name)
+            },
+            () => {
+              setSpaceName(templateData.spaceId)
+            }
+          )
         },
-        (errorMessage) => {
+        errorMessage => {
           setError(errorMessage.message)
           notification.showError(errorMessage.message)
         }
@@ -91,15 +91,14 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
             <div>
               <CardTitle className="text-2xl font-semibold tracking-tight">{template.name}</CardTitle>
               <CardDescription className="mt-1 flex items-center gap-2 text-base text-muted-foreground">
-                <span className="rounded-sm border border-border/50 bg-muted px-1.5 py-0.5 font-mono text-xs">v{template.version}</span>
+                <span className="rounded-sm border border-border/50 bg-muted px-1.5 py-0.5 font-mono text-xs">
+                  v{template.version}
+                </span>
                 <span>{template.status.replace(/_/g, " ")}</span>
               </CardDescription>
             </div>
           </div>
-          <Button
-            asChild
-            variant="outline"
-          >
+          <Button asChild variant="outline">
             <RouterLink to={`/workflow-templates/${template.id}/compare`}>
               <ArrowLeftRight className="mr-2 size-4" />
               Compare Versions

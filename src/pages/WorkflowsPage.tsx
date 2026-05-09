@@ -1,17 +1,17 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
 import {listWorkflows} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Workflow, Pagination, ListWorkflows200Response} from "@approvio/api"
-import { DataTable, type Column } from "../components/DataTable"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
-import { StatusBadge } from "../components/common/StatusBadge"
-import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import {DataTable, type Column} from "../components/DataTable"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {AlertCircle} from "lucide-react"
+import {StatusBadge} from "../components/common/StatusBadge"
+import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
+import {Button} from "@/components/ui/button"
+import {Plus} from "lucide-react"
+import {useNavigate} from "react-router-dom"
 
 const WorkflowsPage: React.FC = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([])
@@ -28,11 +28,11 @@ const WorkflowsPage: React.FC = () => {
     {
       id: "name",
       label: "Name",
-      render: (workflow) => (
+      render: workflow => (
         <div
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault()
               navigate(`/workflows/${workflow.id}`)
@@ -48,14 +48,20 @@ const WorkflowsPage: React.FC = () => {
     {
       id: "status",
       label: "Status",
-      render: (workflow) => <StatusBadge status={workflow.status as any} />
+      render: workflow => <StatusBadge status={workflow.status as any} />
     },
-    {id: "description", label: "Description", render: (workflow) => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{workflow.description || "No description"}</span>},
+    {
+      id: "description",
+      label: "Description",
+      render: workflow => <span className={TYPOGRAPHY.DESCRIPTION_SM}>{workflow.description || "No description"}</span>
+    },
     {
       id: "createdAt",
       label: "Created At",
-      render: (workflow) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(workflow.createdAt).toLocaleDateString()}</span>
-    },
+      render: workflow => (
+        <span className={TYPOGRAPHY.MONO_SM_MUTED}>{new Date(workflow.createdAt).toLocaleDateString()}</span>
+      )
+    }
   ]
 
   useEffect(() => {

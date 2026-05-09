@@ -1,29 +1,25 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useCallback, useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
-import {
-  getGroup,
-  listGroupEntities,
-  getUser,
-} from "../services/api"
+import {getGroup, listGroupEntities, getUser} from "../services/api"
 import {handleEither} from "../utils/either"
 import ManageMembershipDialog from "../components/groups/ManageMembershipDialog"
-import { isRight } from "fp-ts/Either"
-import { useNotification } from "../providers/notification/NotificationContext"
+import {isRight} from "fp-ts/Either"
+import {useNotification} from "../providers/notification/NotificationContext"
 
-import type { Group, ListGroupEntities200Response, Pagination } from "@approvio/api"
-import type { User } from "@approvio/api"
-import type { GroupMembership } from "@approvio/api"
+import type {Group, ListGroupEntities200Response, Pagination} from "@approvio/api"
+import type {User} from "@approvio/api"
+import type {GroupMembership} from "@approvio/api"
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Users, Loader2, Calendar, Edit3, Settings } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
-import { PaginationUI } from "../components/common/PaginationUI"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
+import {Users, Loader2, Calendar, Edit3, Settings} from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Skeleton} from "@/components/ui/skeleton"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {Button} from "@/components/ui/button"
+import {cn} from "@/lib/utils"
+import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
+import {PaginationUI} from "../components/common/PaginationUI"
 
 interface MemberDetails extends GroupMembership {
   userDetails?: User
@@ -73,8 +69,7 @@ const GroupDetailsPage: React.FC = () => {
     fetchGroupDetails()
   }, [groupIdentifier, notification])
 
-  const fetchGroupMembers = useCallback(
-    async () => {
+  const fetchGroupMembers = useCallback(async () => {
     if (!groupIdentifier) {
       setLoadingMembers(false)
       setMembers([])

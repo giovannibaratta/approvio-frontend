@@ -1,7 +1,7 @@
-import React, { useState } from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Loader2, ArrowLeft } from "lucide-react"
+import React, {useState} from "react"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Loader2, ArrowLeft} from "lucide-react"
 import DiscardChangesDialog from "./DiscardChangesDialog"
 
 /**
@@ -106,7 +106,7 @@ const MultiStepFormLayout: React.FC<MultiStepFormLayoutProps> = ({
   primaryButtonText,
   isPrimaryLoading = false,
   isPrimaryDisabled = false,
-  children,
+  children
 }) => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 
@@ -136,11 +136,22 @@ const MultiStepFormLayout: React.FC<MultiStepFormLayoutProps> = ({
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-12">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={handleCancelClick} disabled={isPrimaryLoading} className="shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleCancelClick}
+          disabled={isPrimaryLoading}
+          className="shrink-0"
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight" {...(pageTitle === "Edit Approval Rule" ? { "data-testid": "edit-rule-header" } : {})}>{pageTitle}</h1>
+          <h1
+            className="text-2xl font-semibold tracking-tight"
+            {...(pageTitle === "Edit Approval Rule" ? {"data-testid": "edit-rule-header"} : {})}
+          >
+            {pageTitle}
+          </h1>
           <p className="text-sm text-muted-foreground">{pageDescription}</p>
         </div>
       </div>
@@ -158,16 +169,19 @@ const MultiStepFormLayout: React.FC<MultiStepFormLayoutProps> = ({
               <div key={step.id} className="flex flex-col items-center gap-2 bg-background px-2">
                 <div
                   className={`flex size-10 items-center justify-center rounded-full border-2 transition-colors
-                    ${isActive
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : isCompleted
-                        ? "border-primary bg-primary/20 text-primary"
-                        : "border-muted bg-background text-muted-foreground"
+                    ${
+                      isActive
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : isCompleted
+                          ? "border-primary bg-primary/20 text-primary"
+                          : "border-muted bg-background text-muted-foreground"
                     }`}
                 >
                   <Icon className="size-5" />
                 </div>
-                <span className={`text-xs font-medium uppercase tracking-wider ${isActive || isCompleted ? "text-foreground" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-xs font-medium uppercase tracking-wider ${isActive || isCompleted ? "text-foreground" : "text-muted-foreground"}`}
+                >
                   {step.label}
                 </span>
               </div>
@@ -188,16 +202,21 @@ const MultiStepFormLayout: React.FC<MultiStepFormLayoutProps> = ({
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          {children}
-        </CardContent>
+        <CardContent className="pt-6">{children}</CardContent>
         <CardFooter className="flex items-center justify-between border-t border-border/40 bg-muted/20 py-4">
           {onCancelClick || onCancelConfirm ? (
-            <Button variant="ghost" onClick={handleCancelClick} disabled={isPrimaryLoading} className="text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              onClick={handleCancelClick}
+              disabled={isPrimaryLoading}
+              className="text-muted-foreground hover:text-foreground"
+            >
               Cancel
             </Button>
-          ) : <div />} {/* Empty div to keep right-aligned buttons on the right */}
-
+          ) : (
+            <div />
+          )}{" "}
+          {/* Empty div to keep right-aligned buttons on the right */}
           <div className="flex gap-3">
             {showBackButton && onBackClick && (
               <Button variant="outline" onClick={onBackClick} disabled={isPrimaryLoading}>
@@ -221,7 +240,7 @@ const MultiStepFormLayout: React.FC<MultiStepFormLayoutProps> = ({
 
       <DiscardChangesDialog
         open={cancelDialogOpen}
-        onOpenChange={(open) => !open && handleCancelClose()}
+        onOpenChange={open => !open && handleCancelClose()}
         onCancel={handleCancelClose}
         onConfirm={handleCancelConfirm}
       />

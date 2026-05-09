@@ -2,8 +2,8 @@ import React from "react"
 import {Link as RouterLink} from "react-router-dom"
 import type {ApprovalRule} from "@approvio/api"
 import ApprovalRuleViewer from "./ApprovalRuleViewer"
-import { Button } from "@/components/ui/button"
-import { Edit } from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {Edit} from "lucide-react"
 
 /**
  * Props for the TemplateDetailsRule component.
@@ -27,12 +27,7 @@ interface Props {
  */
 const TemplateDetailsRule: React.FC<Props> = ({rule, templateId}) => {
   const editIconButton = (
-    <Button
-      asChild
-      variant="outline"
-      size="sm"
-      className="h-8 border-primary/20 text-primary hover:bg-primary/10"
-    >
+    <Button asChild variant="outline" size="sm" className="h-8 border-primary/20 text-primary hover:bg-primary/10">
       <RouterLink to={`/workflow-templates/${templateId}/edit-approval-rule`} aria-label="Edit Approval Rule">
         <Edit className="mr-1.5 size-3.5" />
         Edit Rule
@@ -40,12 +35,7 @@ const TemplateDetailsRule: React.FC<Props> = ({rule, templateId}) => {
     </Button>
   )
 
-  return (
-    <ApprovalRuleViewer
-      rule={rule}
-      extraHeaderContent={editIconButton}
-    />
-  )
+  return <ApprovalRuleViewer rule={rule} extraHeaderContent={editIconButton} />
 }
 
 export default TemplateDetailsRule

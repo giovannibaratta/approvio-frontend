@@ -1,4 +1,4 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useState} from "react"
 import {useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
@@ -6,21 +6,21 @@ import {handleEither} from "../utils/either"
 import CreateGroupForm from "../components/groups/GroupDetailsForm"
 import AssignUsersStep from "../components/groups/AssignUsersStep"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
-import type { GroupCreate, UserSummary } from "@approvio/api"
+import type {GroupCreate, UserSummary} from "@approvio/api"
 import {createGroup, addGroupEntities} from "../services/api"
-import MultiStepFormLayout, { type StepDefinition } from "@/components/common/MultiStepFormLayout"
-import { Users, UserPlus } from "lucide-react"
+import MultiStepFormLayout, {type StepDefinition} from "@/components/common/MultiStepFormLayout"
+import {Users, UserPlus} from "lucide-react"
 
 enum CreateGroupSteps {
   CreateGroup = "CreateGroup",
-  AssignUsers = "AssignUsers",
+  AssignUsers = "AssignUsers"
 }
 
 const stepOrder: CreateGroupSteps[] = [CreateGroupSteps.CreateGroup, CreateGroupSteps.AssignUsers]
 
 const steps: StepDefinition[] = [
-  { id: CreateGroupSteps.CreateGroup, label: "Create Group", icon: Users },
-  { id: CreateGroupSteps.AssignUsers, label: "Assign Users (Optional)", icon: UserPlus }
+  {id: CreateGroupSteps.CreateGroup, label: "Create Group", icon: Users},
+  {id: CreateGroupSteps.AssignUsers, label: "Assign Users (Optional)", icon: UserPlus}
 ]
 
 function getNextStep(activeStep: CreateGroupSteps): CreateGroupSteps {
@@ -48,7 +48,7 @@ const CreateGroupPage: React.FC = () => {
   // Conditions to advance to the next step from the step mentioned in the key
   const canAdvanceToNextStep: Record<CreateGroupSteps, boolean> = {
     [CreateGroupSteps.CreateGroup]: groupNameError === null && groupName.trim() !== "",
-    [CreateGroupSteps.AssignUsers]: true,
+    [CreateGroupSteps.AssignUsers]: true
   }
 
   const addError = (message: string) => {

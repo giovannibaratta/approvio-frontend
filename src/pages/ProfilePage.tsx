@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
 import {getEntityInfo, type EntityInfo} from "../services/auth"
 import {handleEither} from "../utils/either"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Loader2, UserCircle, Users, Mail, User } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
+import {Loader2, UserCircle, Users, Mail, User} from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Badge} from "@/components/ui/badge"
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<EntityInfo | null>(null)
@@ -97,23 +97,19 @@ const ProfilePage: React.FC = () => {
               <Users className="size-4 text-muted-foreground" />
               Group Memberships
             </CardTitle>
-            <CardDescription>
-              Groups define your access policies and approval authority.
-            </CardDescription>
+            <CardDescription>Groups define your access policies and approval authority.</CardDescription>
           </CardHeader>
           <CardContent>
             {profile.groups.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {profile.groups.map((group) => (
+                {profile.groups.map(group => (
                   <Badge key={group.groupId} variant="secondary" className="py-1 font-mono text-xs">
                     {group.groupName}
                   </Badge>
                 ))}
               </div>
             ) : (
-              <p className="text-sm italic text-muted-foreground">
-                You are not a member of any groups.
-              </p>
+              <p className="text-sm italic text-muted-foreground">You are not a member of any groups.</p>
             )}
           </CardContent>
         </Card>

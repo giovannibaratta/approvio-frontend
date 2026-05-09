@@ -5,8 +5,8 @@ import "prismjs/components/prism-json"
 import "prismjs/themes/prism.css"
 import {getGroup} from "../../services/api"
 import {isLeft} from "fp-ts/Either"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle, Info, FileJson } from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {AlertTriangle, Info, FileJson} from "lucide-react"
 
 interface TemplateRuleFormProps {
   ruleJson: string
@@ -93,7 +93,6 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
       }, 1000)
 
       return () => clearTimeout(timer)
-
     } catch (e) {
       setIsValidJson(false)
       if (e instanceof Error) {
@@ -115,7 +114,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
               Define the conditions that must be met for a workflow to be approved. Example:
             </p>
             <pre className="overflow-x-auto rounded-md border border-border/40 bg-background p-2 font-mono text-[11px] text-muted-foreground">
-{`{
+              {`{
   "type": "GROUP_REQUIREMENT",
   "minCount": 1,
   "groupId": "uuid-of-group"
@@ -133,9 +132,7 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
         <div
           className={`rounded-md border ${
             error ? "border-destructive" : "border-border/50"
-          } relative overflow-hidden bg-muted/20 ${
-            disableComponents ? "pointer-events-none opacity-60" : ""
-          }`}
+          } relative overflow-hidden bg-muted/20 ${disableComponents ? "pointer-events-none opacity-60" : ""}`}
         >
           <div className="absolute right-0 top-0 select-none p-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground opacity-50">
             JSON
@@ -146,10 +143,11 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
             highlight={code => (Prism.languages.json ? Prism.highlight(code, Prism.languages.json, "json") : code)}
             padding={16}
             style={{
-              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+              fontFamily:
+                'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
               fontSize: 13,
               minHeight: "250px",
-              backgroundColor: "transparent",
+              backgroundColor: "transparent"
             }}
             textareaClassName="focus:outline-none"
           />

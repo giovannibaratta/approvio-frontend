@@ -80,19 +80,34 @@ const App: React.FC = () => {
               <nav className="flex items-center gap-6">
                 {isAuthenticated && (
                   <>
-                    <RouterLink to="/users" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/users"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Users
                     </RouterLink>
-                    <RouterLink to="/groups" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/groups"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Groups
                     </RouterLink>
-                    <RouterLink to="/spaces" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/spaces"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Spaces
                     </RouterLink>
-                    <RouterLink to="/workflow-templates" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/workflow-templates"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Templates
                     </RouterLink>
-                    <RouterLink to="/workflows" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/workflows"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Workflows
                     </RouterLink>
                     <div className="h-4 w-px bg-border/50" />
@@ -100,7 +115,10 @@ const App: React.FC = () => {
                 )}
                 {isAuthenticated && (
                   <div className="flex items-center gap-4">
-                    <RouterLink to="/me" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                    <RouterLink
+                      to="/me"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       Profile
                     </RouterLink>
                     <button
@@ -130,8 +148,14 @@ const App: React.FC = () => {
                 <Route path="/spaces/new" element={<CreateSpacePage />} />
                 <Route path="/workflow-templates" element={<WorkflowTemplatesPage />} />
                 <Route path="/workflow-templates/new" element={<CreateWorkflowTemplatePage />} />
-                <Route path="/workflow-templates/:templateIdentifier/edit-approval-rule" element={<WorkflowTemplateEditRulePage />} />
-                <Route path="/workflow-templates/:templateIdentifier/compare" element={<CompareWorkflowTemplatePage />} />
+                <Route
+                  path="/workflow-templates/:templateIdentifier/edit-approval-rule"
+                  element={<WorkflowTemplateEditRulePage />}
+                />
+                <Route
+                  path="/workflow-templates/:templateIdentifier/compare"
+                  element={<CompareWorkflowTemplatePage />}
+                />
                 <Route path="/workflow-templates/:templateIdentifier" element={<WorkflowTemplateDetailsPage />} />
                 <Route path="/workflows" element={<WorkflowsPage />} />
                 <Route path="/workflows/new" element={<CreateWorkflowPage />} />

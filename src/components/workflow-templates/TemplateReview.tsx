@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {listSpaces} from "../../services/api"
 import {handleEither} from "../../utils/either"
-import { FileJson, Layers, Settings2, Clock, AlignLeft } from "lucide-react"
+import {FileJson, Layers, Settings2, Clock, AlignLeft} from "lucide-react"
 
 interface TemplateReviewProps {
   name: string
@@ -30,7 +30,7 @@ const TemplateReview: React.FC<TemplateReviewProps> = ({
       const result = await listSpaces(1, 100)
       handleEither(
         result,
-        (response) => {
+        response => {
           const space = response.data.find(s => s.id === spaceId)
           setSpaceName(space ? space.name : "Unknown Space")
         },

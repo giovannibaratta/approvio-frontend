@@ -1,9 +1,9 @@
 import React, {useState} from "react"
 import type {ApprovalRule} from "@approvio/api"
 import ApprovalRuleRenderer from "../shared/ApprovalRuleRenderer"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { FileJson, GitBranch } from "lucide-react"
+import {Switch} from "@/components/ui/switch"
+import {Label} from "@/components/ui/label"
+import {FileJson, GitBranch} from "lucide-react"
 
 interface Props {
   rule: ApprovalRule
@@ -43,7 +43,7 @@ const ApprovalRuleViewer: React.FC<Props> = ({rule, title = "Approval Rule", ext
           <Switch
             id="show-raw-json"
             checked={showRaw}
-            onCheckedChange={(checked) => setShowRaw(checked)}
+            onCheckedChange={checked => setShowRaw(checked)}
             className="ml-2"
           />
         </div>

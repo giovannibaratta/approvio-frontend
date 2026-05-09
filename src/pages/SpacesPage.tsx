@@ -1,22 +1,28 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
 import {Link as RouterLink} from "react-router-dom"
-import { Plus, AlertCircle } from "lucide-react"
+import {Plus, AlertCircle} from "lucide-react"
 import {listSpaces} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Space, Pagination, ListSpaces200Response} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Button} from "@/components/ui/button"
 
 const columns: Column<Space>[] = [
   {id: "name", label: "Name", render: space => <span className="font-medium">{space.name}</span>},
-  {id: "description", label: "Description", render: space => <span className="text-muted-foreground">{space.description || "No description"}</span>},
+  {
+    id: "description",
+    label: "Description",
+    render: space => <span className="text-muted-foreground">{space.description || "No description"}</span>
+  },
   {
     id: "createdAt",
     label: "Created At",
-    render: space => <span className="font-mono text-sm text-muted-foreground">{new Date(space.createdAt).toLocaleDateString()}</span>
+    render: space => (
+      <span className="font-mono text-sm text-muted-foreground">{new Date(space.createdAt).toLocaleDateString()}</span>
+    )
   }
 ]
 

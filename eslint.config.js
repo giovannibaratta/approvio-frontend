@@ -9,7 +9,16 @@ import eslintPluginTailwindcss from "eslint-plugin-tailwindcss"
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "node_modules/**", ".yarn/**", "build/**", "coverage/**", "playwright-report/**", "test-results/**", "playwright/**"]
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      ".yarn/**",
+      "build/**",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
+      "playwright/**"
+    ]
   },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
@@ -50,7 +59,7 @@ export default tseslint.config(
       "eol-last": "error",
       "prefer-arrow-callback": "error",
       "no-trailing-spaces": "error",
-      quotes: ["warn", "double", { avoidEscape: true }],
+      quotes: ["warn", "double", {avoidEscape: true}],
       "no-restricted-properties": [
         "error",
         {
@@ -67,10 +76,10 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-function": "warn",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": ["warn", {argsIgnorePattern: "^_"}],
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": ["warn", {allowConstantExport: true}],
       "react/jsx-uses-react": "off"
     },
     settings: {

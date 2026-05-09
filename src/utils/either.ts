@@ -1,4 +1,4 @@
-import { type Either, isLeft } from "fp-ts/Either"
+import {type Either, isLeft} from "fp-ts/Either"
 
 /**
  * Handle an Either result with callbacks for success and error

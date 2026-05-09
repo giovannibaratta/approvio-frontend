@@ -5,11 +5,11 @@ import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {WorkflowTemplate, WorkflowTemplateSummary} from "@approvio/api"
 import ApprovalRuleViewer from "../components/workflow-templates/ApprovalRuleViewer"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, ArrowLeft, ArrowLeftRight, Clock, AlignLeft } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Loader2, ArrowLeft, ArrowLeftRight, Clock, AlignLeft} from "lucide-react"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 
 /**
  * A page component that allows users to compare different versions of a workflow template.
@@ -136,19 +136,21 @@ const CompareWorkflowTemplatePage: React.FC = () => {
         </div>
 
         <div className="w-[280px]">
-          <Select value={selectedVersionId} onValueChange={(val) => setSelectedVersionId(val || "")}>
+          <Select value={selectedVersionId} onValueChange={val => setSelectedVersionId(val || "")}>
             <SelectTrigger>
               <SelectValue placeholder="Select a version to compare">
-                {selectedVersionId ? (
-                  otherVersions.find(v => v.id === selectedVersionId)
-                  ? `v${otherVersions.find(v => v.id === selectedVersionId)?.version} - ${new Date(otherVersions.find(v => v.id === selectedVersionId)!.createdAt).toLocaleDateString()}`
-                  : null
-                ) : null}
+                {selectedVersionId
+                  ? otherVersions.find(v => v.id === selectedVersionId)
+                    ? `v${otherVersions.find(v => v.id === selectedVersionId)?.version} - ${new Date(otherVersions.find(v => v.id === selectedVersionId)!.createdAt).toLocaleDateString()}`
+                    : null
+                  : null}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {otherVersions.length === 0 ? (
-                <SelectItem value="none" disabled>No other versions available</SelectItem>
+                <SelectItem value="none" disabled>
+                  No other versions available
+                </SelectItem>
               ) : (
                 otherVersions.map(v => (
                   <SelectItem key={v.id} value={v.id}>
@@ -181,7 +183,9 @@ const CompareWorkflowTemplatePage: React.FC = () => {
                   <span className="text-xs font-medium uppercase tracking-wider">Default Expiry</span>
                 </div>
                 <p className="font-mono text-sm font-medium">
-                  {currentTemplate.defaultExpiresInHours ? `${currentTemplate.defaultExpiresInHours}h` : "System Default"}
+                  {currentTemplate.defaultExpiresInHours
+                    ? `${currentTemplate.defaultExpiresInHours}h`
+                    : "System Default"}
                 </p>
               </div>
             </div>
@@ -204,14 +208,18 @@ const CompareWorkflowTemplatePage: React.FC = () => {
 
         {/* Selected Version */}
         {selectedTemplate && (
-          <Card className={`h-fit border-border/50 bg-background/50 shadow-sm backdrop-blur-sm transition-opacity duration-200 ${loadingCompare ? "opacity-50" : "opacity-100"}`}>
+          <Card
+            className={`h-fit border-border/50 bg-background/50 shadow-sm backdrop-blur-sm transition-opacity duration-200 ${loadingCompare ? "opacity-50" : "opacity-100"}`}
+          >
             <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ArrowLeftRight className="size-4 text-muted-foreground" />
                   <CardTitle className="text-lg text-muted-foreground">Compared Version</CardTitle>
                 </div>
-                <span className="font-mono text-sm font-semibold text-muted-foreground">v{selectedTemplate.version}</span>
+                <span className="font-mono text-sm font-semibold text-muted-foreground">
+                  v{selectedTemplate.version}
+                </span>
               </div>
             </CardHeader>
             <CardContent className="relative min-h-[200px] pt-6">
@@ -228,7 +236,9 @@ const CompareWorkflowTemplatePage: React.FC = () => {
                         <span className="text-xs font-medium uppercase tracking-wider">Default Expiry</span>
                       </div>
                       <p className="font-mono text-sm font-medium">
-                        {selectedTemplate.defaultExpiresInHours ? `${selectedTemplate.defaultExpiresInHours}h` : "System Default"}
+                        {selectedTemplate.defaultExpiresInHours
+                          ? `${selectedTemplate.defaultExpiresInHours}h`
+                          : "System Default"}
                       </p>
                     </div>
                   </div>

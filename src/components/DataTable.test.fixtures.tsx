@@ -86,5 +86,13 @@ export function DataSubTableWrapper() {
 }
 
 export function DataSubTableLoadingWrapper() {
-  return <DataSubTable columns={mockColumns} data={mockData} hasMore={true} loadingMore={true} onShowMore={() => undefined} />
+  return (
+    <DataSubTable
+      columns={mockColumns}
+      data={mockData}
+      hasMore={true}
+      loadingMore={true}
+      onShowMore={() => undefined}
+    />
+  )
 }

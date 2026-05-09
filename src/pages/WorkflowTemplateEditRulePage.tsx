@@ -8,7 +8,7 @@ import type {WorkflowTemplateUpdate, WorkflowTemplate} from "@approvio/api"
 
 import TemplateRuleForm from "../components/workflow-templates/TemplateRuleForm"
 import MultiStepFormLayout from "@/components/common/MultiStepFormLayout"
-import { Loader2, Code } from "lucide-react"
+import {Loader2, Code} from "lucide-react"
 
 const WorkflowTemplateEditRulePage: React.FC = () => {
   const {templateIdentifier} = useParams<{templateIdentifier: string}>()

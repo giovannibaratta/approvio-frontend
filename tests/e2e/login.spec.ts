@@ -2,7 +2,7 @@ import {test, expect} from "@playwright/test"
 
 test("user can logout and then login successfully navigating the mock SSO flow", async ({page}) => {
   // Intercept the mock SSO login URL and redirect the browser back to the callback URL
-  await page.route("**/mock/auth/web/login", async (route) => {
+  await page.route("**/mock/auth/web/login", async route => {
     // WebKit doesn't support route.fulfill with a 302 status, so we use a client-side redirect
     await route.fulfill({
       status: 200,
@@ -37,5 +37,5 @@ test("user can logout and then login successfully navigating the mock SSO flow",
   await expect(page.getByRole("button", {name: "Logout"})).toBeVisible()
 
   // Capture a screenshot to visually verify the frontend changes as requested
-  await page.screenshot({ path: "playwright/screenshots/login-success.png", fullPage: true })
+  await page.screenshot({path: "playwright/screenshots/login-success.png", fullPage: true})
 })

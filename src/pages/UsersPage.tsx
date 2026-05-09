@@ -1,17 +1,17 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {AlertCircle} from "lucide-react"
 import {listUsers} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {ListUsers200Response, Pagination, UserSummary} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
-import { LAYOUT, TYPOGRAPHY } from "@/lib/styles"
+import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
 
 const columns: Column<UserSummary>[] = [
-  {id: "name", label: "Name", render: (user) => <span className={TYPOGRAPHY.LABEL}>{user.displayName}</span>},
-  {id: "email", label: "Email", render: (user) => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{user.email}</span>},
+  {id: "name", label: "Name", render: user => <span className={TYPOGRAPHY.LABEL}>{user.displayName}</span>},
+  {id: "email", label: "Email", render: user => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{user.email}</span>}
 ]
 
 const UsersPage: React.FC = () => {
@@ -31,7 +31,7 @@ const UsersPage: React.FC = () => {
 
       const result = await listUsers({
         page: page + 1,
-        limit: rowsPerPage,
+        limit: rowsPerPage
       })
 
       handleEither(

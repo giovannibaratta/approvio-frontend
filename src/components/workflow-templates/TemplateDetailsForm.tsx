@@ -2,12 +2,12 @@ import React, {useState, useEffect} from "react"
 import {listSpaces} from "../../services/api"
 import {handleEither} from "../../utils/either"
 import type {Space} from "@approvio/api"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Textarea} from "@/components/ui/textarea"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
+import {Info} from "lucide-react"
 
 interface TemplateDetailsFormProps {
   name: string
@@ -49,7 +49,7 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
       const result = await listSpaces(1, 100) // Fetches up to 100 spaces
       handleEither(
         result,
-        (response) => {
+        response => {
           setSpaces(response.data)
         },
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -74,7 +74,7 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
   }
 
   const handleExpiresChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === ""){
+    if (e.target.value === "") {
       setDefaultExpiresInHours(null)
       return
     }
@@ -94,7 +94,9 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
   return (
     <form noValidate autoComplete="off" className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="templateName" className={nameError ? "text-destructive" : ""}>Template Name <span className="text-destructive">*</span></Label>
+        <Label htmlFor="templateName" className={nameError ? "text-destructive" : ""}>
+          Template Name <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="templateName"
           name="templateName"
@@ -106,13 +108,13 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
           className={nameError ? "border-destructive focus-visible:ring-destructive" : ""}
           maxLength={255}
         />
-        {nameError && (
-          <p className="mt-1 text-xs font-medium text-destructive">{nameError}</p>
-        )}
+        {nameError && <p className="mt-1 text-xs font-medium text-destructive">{nameError}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="templateDescription">Description <span className="font-normal text-muted-foreground">(Optional)</span></Label>
+        <Label htmlFor="templateDescription">
+          Description <span className="font-normal text-muted-foreground">(Optional)</span>
+        </Label>
         <Textarea
           id="templateDescription"
           name="templateDescription"
@@ -139,7 +141,9 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="max-w-xs">Default expiry time for workflows created from this template (in hours, max 1 year).</p>
+                  <p className="max-w-xs">
+                    Default expiry time for workflows created from this template (in hours, max 1 year).
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -154,27 +158,28 @@ const TemplateDetailsForm: React.FC<TemplateDetailsFormProps> = ({
             min={1}
             max={8760}
           />
-          {defaultExpireError && (
-            <p className="mt-1 text-xs font-medium text-destructive">{defaultExpireError}</p>
-          )}
+          {defaultExpireError && <p className="mt-1 text-xs font-medium text-destructive">{defaultExpireError}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="space-select" className={(!spaceId && !disableComponents) ? "text-destructive" : ""}>
+          <Label htmlFor="space-select" className={!spaceId && !disableComponents ? "text-destructive" : ""}>
             Space <span className="text-destructive">*</span>
           </Label>
           <Select
             value={spaceId || ""}
-            onValueChange={(value) => setSpaceId(value)}
+            onValueChange={value => setSpaceId(value)}
             disabled={disableComponents || loadingSpaces}
           >
-            <SelectTrigger id="space-select" className={(!spaceId && !disableComponents) ? "border-destructive focus:ring-destructive" : ""}>
+            <SelectTrigger
+              id="space-select"
+              className={!spaceId && !disableComponents ? "border-destructive focus:ring-destructive" : ""}
+            >
               <SelectValue placeholder={loadingSpaces ? "Loading spaces..." : "Select a space"}>
                 {spaces.find(s => s.id === spaceId)?.name}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {spaces.map((space) => (
+              {spaces.map(space => (
                 <SelectItem key={space.id} value={space.id}>
                   {space.name}
                 </SelectItem>

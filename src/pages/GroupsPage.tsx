@@ -1,15 +1,15 @@
-import { type FrontendError } from "../services/api"
+import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
 import {Link as RouterLink, useNavigate} from "react-router-dom"
 import {listGroups} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
-import { Plus, AlertCircle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {Plus, AlertCircle} from "lucide-react"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 import type {Group, ListGroups200Response, Pagination} from "@approvio/api"
 import {DataTable, type Column} from "../components/DataTable"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Button} from "@/components/ui/button"
 
 const GroupsPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([])
@@ -90,11 +90,7 @@ const GroupsPage: React.FC = () => {
     {
       id: "description",
       label: "Description",
-      render: group => (
-        <span className="text-sm text-muted-foreground">
-          {group.description || "No description"}
-        </span>
-      )
+      render: group => <span className="text-sm text-muted-foreground">{group.description || "No description"}</span>
     },
     {
       id: "entitiesCount",
