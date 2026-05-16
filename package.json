@@ -21,7 +21,9 @@
     "test:e2e:ci": "PLAYWRIGHT_HTML_OPEN=never yarn test:e2e",
     "test:ct": "playwright test -c playwright-ct.config.ts",
     "test:ct:ci": "PLAYWRIGHT_HTML_OPEN=never yarn test:ct",
-    "playwright:deps": "playwright install --with-deps"
+    "playwright:deps": "playwright install --with-deps",
+    "docker:build": "./deploy/build.sh",
+    "docker:push": "./deploy/push.sh"
   },
   "dependencies": {
     "@approvio/api": "0.0.40",
