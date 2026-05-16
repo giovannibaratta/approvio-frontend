@@ -9,6 +9,17 @@ export default defineConfig(({mode}) => {
     plugins: [
       react(),
       {
+        name: "conditional-csp",
+        transformIndexHtml(html) {
+          // Conditionally remove CSP for testing to allow mocks and cross-origin API calls during E2E.
+          // This addresses the restriction while keeping production secure.
+          if (process.env.VITE_APP_ENV === "testing")
+            return html.replace(/<meta http-equiv="Content-Security-Policy".*?\/>/, "")
+
+          return html
+        }
+      },
+      {
         name: "remove-msw-from-build",
         apply: "build", // Only runs during "npm run build"
         closeBundle() {
@@ -38,7 +49,10 @@ export default defineConfig(({mode}) => {
       exclude: ["@approvio/ts-sdk"]
     },
     build: {
-      minify: "esbuild"
+      minify: "esbuild",
+      // Explicitly disable source maps in production to prevent original source code
+      // exposure in the browser, reducing the attack surface.
+      sourcemap: false
     },
     esbuild: {
       // Removes console.log and console.debug in production
