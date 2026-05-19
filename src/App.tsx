@@ -20,9 +20,9 @@ import ProfilePage from "./pages/ProfilePage"
 import WorkflowDetailsPage from "./pages/WorkflowDetailsPage"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
 import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
-import {getEntityInfo} from "./services/auth"
-import {isRight} from "fp-ts/Either"
-import {NotificationProvider} from "./providers/notification/NotificationProvider"
+import {getEntityInfo, logout} from "./services/api"
+import {isRight, isLeft} from "fp-ts/Either"
+import {useNotification} from "./providers/notification/NotificationContext"
 
 interface ProtectedRouteProps {
   isAuthenticated: boolean
@@ -38,6 +38,7 @@ const App: React.FC = () => {
   const isInitialized = useAppSelector(state => state.auth.isInitialized)
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
   const dispatch = useAppDispatch()
+  const notification = useNotification()
 
   React.useEffect(() => {
     const checkSession = async () => {
@@ -49,8 +50,12 @@ const App: React.FC = () => {
     checkSession()
   }, [dispatch])
 
-  const handleLogout = () => {
-    dispatch(clearAuth())
+  const handleLogout = async () => {
+    const result = await logout()
+    if (isLeft(result))
+      notification.showError(
+        "Failed to securely log out from the server. Please check your internet connection and try again. If you are on a shared computer, consider clearing your browser cookies."
+      )
   }
 
   if (!isInitialized) {
@@ -62,8 +67,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <NotificationProvider>
-      <Router>
+    <Router>
         <div className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased selection:bg-emerald-500/30">
           <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
@@ -174,7 +178,6 @@ const App: React.FC = () => {
           </footer>
         </div>
       </Router>
-    </NotificationProvider>
   )
 }
 

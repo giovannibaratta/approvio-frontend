@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client"
 import App from "./App.tsx"
 import {Provider} from "react-redux"
 import {store} from "./store/store"
+import {NotificationProvider} from "./providers/notification/NotificationProvider"
 import "./index.css"
 
 // Conditionally start MSW in development and test mode
@@ -32,7 +33,9 @@ enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <Provider store={store}>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </Provider>
     </React.StrictMode>
   )
