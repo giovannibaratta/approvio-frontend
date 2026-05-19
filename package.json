@@ -24,8 +24,8 @@
     "playwright:deps": "playwright install --with-deps"
   },
   "dependencies": {
-    "@approvio/api": "0.0.40",
-    "@approvio/ts-sdk": "0.0.14",
+    "@approvio/api": "0.0.49",
+    "@approvio/ts-sdk": "0.0.17",
     "@base-ui/react": "^1.4.0",
     "@fontsource-variable/geist": "^5.2.8",
     "@radix-ui/react-slot": "^1.2.4",

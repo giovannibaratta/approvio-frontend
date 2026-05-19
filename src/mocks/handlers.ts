@@ -7,6 +7,11 @@ export const handlers = [
     return HttpResponse.redirect("/auth/callback", 302)
   }),
 
+  // 0.5. Auth Logout Handler
+  http.post("*/auth/web/logout", () => {
+    return new HttpResponse(null, {status: 204})
+  }),
+
   // 1. Auth Info Handler
   http.get("*/auth/info", () => {
     return HttpResponse.json({
@@ -14,7 +19,17 @@ export const handlers = [
       groups: [],
       email: "test@example.com",
       name: "Test User",
-      id: "1"
+      id: "1",
+      orgRole: "admin",
+      roles: [
+        {
+          roleName: "GroupReadOnly",
+          scope: {
+            type: "group",
+            groupId: "some-group-id"
+          }
+        }
+      ]
     })
   }),
 

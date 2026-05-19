@@ -21,11 +21,14 @@ import {
   type Workflow,
   type AgentGet200Response,
   type CanVoteResponse,
-  type WorkflowVoteRequest
+  type WorkflowVoteRequest,
+  type GetEntityInfo200Response
 } from "@approvio/api"
-import {type Either, mapLeft} from "fp-ts/Either"
+import {type Either, mapLeft, isRight} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
 import {API_BASE_URL} from "../constants"
+import {store} from "../store/store"
+import {clearAuth} from "../store/authSlice"
 
 export interface ListWorkflowVotes200Response {
   votes: WorkflowVote[]
@@ -47,15 +50,37 @@ interface ListUsersRequest {
 
 export const handleApiError = (error: ApprovioError): FrontendError => {
   if (isApprovioError(error)) {
+    if (error.status === 401)
+      store.dispatch(clearAuth())
     return {
       code: error.code || "UNKNOWN_ERROR",
       message: error.message
     }
   }
+  // Fallback: If the error is not a formal ApprovioError (e.g., a raw response or network error object)
+  // but still contains a 401 status, ensure the local authentication state is cleared.
+  if (error && typeof error === "object" && "status" in error && error.status === 401)
+    store.dispatch(clearAuth())
   return {
     code: "UNKNOWN_ERROR",
     message: error.message
   }
+}
+
+export async function getEntityInfo(): Promise<Either<FrontendError, GetEntityInfo200Response>> {
+  const result = await client.getEntityInfo()()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function logout(): Promise<Either<FrontendError, void>> {
+  const result = await client.logout()()
+  // Security guard: Only wipe local auth state on success. Since the access/refresh tokens
+  // are stored in HttpOnly cookies, a failed API call (e.g. network/server error) means the
+  // browser did not receive the Set-Cookie clear directives. Wiping auth state locally on
+  // failure would leave valid cookies intact, leading to silent auto-relogin on next refresh.
+  if (isRight(result))
+    store.dispatch(clearAuth())
+  return mapLeft(handleApiError)(result)
 }
 
 export async function listUsers(request: ListUsersRequest): Promise<Either<FrontendError, ListUsers200Response>> {

@@ -7,11 +7,10 @@ import {Textarea} from "@/components/ui/textarea"
 import {Label} from "@/components/ui/label"
 import {useNotification} from "@/providers/notification/NotificationContext"
 
-import {canVoteOnWorkflow, voteOnWorkflow} from "@/services/api"
-import {getEntityInfo, type EntityInfo} from "@/services/auth"
+import {canVoteOnWorkflow, voteOnWorkflow, getEntityInfo} from "@/services/api"
 import {handleEither} from "@/utils/either"
 import {extractGroupIds} from "@/utils/rules"
-import type {WorkflowTemplate} from "@approvio/api"
+import type {WorkflowTemplate, GetEntityInfo200Response} from "@approvio/api"
 
 interface WorkflowVotePanelProps {
   workflowId: string
@@ -26,7 +25,7 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
   const hasInitializedRef = React.useRef(false)
 
   const [canVoteInfo, setCanVoteInfo] = useState<{canVote: boolean; voteStatus: string} | null>(null)
-  const [entityGroups, setEntityGroups] = useState<EntityInfo["groups"]>([])
+  const [entityGroups, setEntityGroups] = useState<GetEntityInfo200Response["groups"]>([])
 
   // Form State
   const [voteType, setVoteType] = useState<"APPROVE" | "VETO" | "WITHDRAW">("APPROVE")
