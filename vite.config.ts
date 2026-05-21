@@ -1,20 +1,25 @@
-import {defineConfig} from "vite"
+import {defineConfig, loadEnv} from "vite"
 import react from "@vitejs/plugin-react"
 import fs from "fs"
 import path from "path"
 
 // https://vite.dev/config/
 export default defineConfig(({mode}) => {
+  const env = loadEnv(mode, process.cwd(), "")
+  const appEnv = env.VITE_APP_ENV || mode
+
   return {
     plugins: [
       react(),
       {
         name: "conditional-csp",
         transformIndexHtml(html) {
-          // Conditionally remove CSP for testing to allow mocks and cross-origin API calls during E2E.
-          // This addresses the restriction while keeping production secure.
-          if (process.env.VITE_APP_ENV === "testing")
+          // Conditionally remove CSP for development and testing to allow mocks,
+          // local backend connections, and cross-origin API calls.
+          // This addresses local testing restrictions while keeping production secure.
+          if (appEnv === "testing" || appEnv === "development") {
             return html.replace(/<meta http-equiv="Content-Security-Policy".*?\/>/, "")
+          }
 
           return html
         }

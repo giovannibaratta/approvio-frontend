@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react"
 
 import {Button} from "@/components/ui/button"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Textarea} from "@/components/ui/textarea"
 import {Label} from "@/components/ui/label"
@@ -10,7 +11,9 @@ import {useNotification} from "@/providers/notification/NotificationContext"
 import {canVoteOnWorkflow, voteOnWorkflow, getEntityInfo} from "@/services/api"
 import {handleEither} from "@/utils/either"
 import {extractGroupIds} from "@/utils/rules"
-import type {WorkflowTemplate, GetEntityInfo200Response} from "@approvio/api"
+import type {WorkflowTemplate, GetEntityInfo200Response, CanVoteResponse} from "@approvio/api"
+import {CantVoteReason} from "@approvio/api"
+
 
 interface WorkflowVotePanelProps {
   workflowId: string
@@ -24,7 +27,7 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
   const [submitting, setSubmitting] = useState(false)
   const hasInitializedRef = React.useRef(false)
 
-  const [canVoteInfo, setCanVoteInfo] = useState<{canVote: boolean; voteStatus: string} | null>(null)
+  const [canVoteInfo, setCanVoteInfo] = useState<CanVoteResponse | null>(null)
   const [entityGroups, setEntityGroups] = useState<GetEntityInfo200Response["groups"]>([])
 
   // Form State
@@ -127,17 +130,55 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
     setSelectedGroups(prev => (prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]))
   }
 
-  if (canVoteInfo && !canVoteInfo.canVote && canVoteInfo.voteStatus !== "ALREADY_VOTED") {
-    // If they can't vote and haven't voted, we shouldn't even show the button, or show it disabled.
-    return null
+  const hasVoted = canVoteInfo?.voteStatus === "ALREADY_VOTED"
+  const cannotVote = !!(canVoteInfo && !canVoteInfo.canVote)
+
+  const getCantVoteMessage = (reason?: CantVoteReason) => {
+    switch (reason) {
+      case CantVoteReason.WorkflowExpired:
+        return "This workflow has expired."
+      case CantVoteReason.WorkflowApproved:
+        return "This workflow has already been approved."
+      case CantVoteReason.WorkflowCanceled:
+        return "This workflow has been canceled."
+      case CantVoteReason.EntityNotInGroup:
+        return "You are not a member of any required approval groups for this workflow."
+      case CantVoteReason.WorkflowTemplateNotActive:
+        return "The template for this workflow is not active."
+      case CantVoteReason.NoPermissions:
+        return "You do not have permission to vote on this workflow."
+      default:
+        return "You cannot vote on this workflow at this time."
+    }
   }
 
-  const hasVoted = canVoteInfo?.voteStatus === "ALREADY_VOTED"
+  const voteButton = (
+    <Button variant={hasVoted ? "outline" : "default"} disabled={cannotVote}>
+      {hasVoted ? "Vote again" : "Cast Vote"}
+    </Button>
+  )
+
+  if (cannotVote) {
+    return (
+      <TooltipProvider delay={300}>
+        <Tooltip>
+          <TooltipTrigger>
+            <div className="inline-block cursor-not-allowed">
+              {voteButton}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            {getCantVoteMessage(canVoteInfo.cantVoteReason)}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={hasVoted ? "outline" : "default"}>{hasVoted ? "Vote again" : "Cast Vote"}</Button>
+        {voteButton}
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <div className="flex flex-col space-y-4">
