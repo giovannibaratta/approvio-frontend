@@ -29,8 +29,8 @@ const AuthCallbackPage: React.FC = () => {
 
       handleEither(
         result,
-        () => {
-          dispatch(setAuthenticated(true))
+        data => {
+          dispatch(setAuthenticated({isAuthenticated: true, orgRole: data.orgRole}))
           notification.showSuccess("Login successful!")
           navigate("/", {replace: true})
         },

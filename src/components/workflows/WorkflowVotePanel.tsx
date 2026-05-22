@@ -11,7 +11,7 @@ import {useNotification} from "@/providers/notification/NotificationContext"
 import {canVoteOnWorkflow, voteOnWorkflow, getEntityInfo} from "@/services/api"
 import {handleEither} from "@/utils/either"
 import {extractGroupIds} from "@/utils/rules"
-import type {WorkflowTemplate, GetEntityInfo200Response, CanVoteResponse} from "@approvio/api"
+import type {WorkflowTemplate, GetEntityInfoUserResponse, CanVoteResponse} from "@approvio/api"
 import {CantVoteReason} from "@approvio/api"
 
 
@@ -28,7 +28,7 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
   const hasInitializedRef = React.useRef(false)
 
   const [canVoteInfo, setCanVoteInfo] = useState<CanVoteResponse | null>(null)
-  const [entityGroups, setEntityGroups] = useState<GetEntityInfo200Response["groups"]>([])
+  const [entityGroups, setEntityGroups] = useState<GetEntityInfoUserResponse["groups"]>([])
 
   // Form State
   const [voteType, setVoteType] = useState<"APPROVE" | "VETO" | "WITHDRAW">("APPROVE")

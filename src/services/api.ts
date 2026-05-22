@@ -22,7 +22,7 @@ import {
   type AgentGet200Response,
   type CanVoteResponse,
   type WorkflowVoteRequest,
-  type GetEntityInfo200Response
+  type GetEntityInfoUserResponse
 } from "@approvio/api"
 import {type Either, mapLeft, isRight} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -67,7 +67,7 @@ export const handleApiError = (error: ApprovioError): FrontendError => {
   }
 }
 
-export async function getEntityInfo(): Promise<Either<FrontendError, GetEntityInfo200Response>> {
+export async function getEntityInfo(): Promise<Either<FrontendError, GetEntityInfoUserResponse>> {
   const result = await client.getEntityInfo()()
   return mapLeft(handleApiError)(result)
 }

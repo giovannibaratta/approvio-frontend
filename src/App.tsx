@@ -23,6 +23,7 @@ import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
 import {getEntityInfo, logout} from "./services/api"
 import {isRight, isLeft} from "fp-ts/Either"
 import {useNotification} from "./providers/notification/NotificationContext"
+import { GetEntityInfoUserResponse } from "@approvio/api"
 
 interface ProtectedRouteProps {
   isAuthenticated: boolean
@@ -34,17 +35,33 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, redirec
   return <Outlet />
 }
 
+const AdminProtectedRoute: React.FC<{isAuthenticated: boolean; orgRole: GetEntityInfoUserResponse["orgRole"] | null; redirectPath?: string}> = ({
+  isAuthenticated,
+  orgRole,
+  redirectPath = "/"
+}) => {
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  if (orgRole !== GetEntityInfoUserResponse.OrgRoleEnum.Admin) return <Navigate to={redirectPath} replace />
+  return <Outlet />
+}
+
 const App: React.FC = () => {
   const isInitialized = useAppSelector(state => state.auth.isInitialized)
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
+  const orgRole = useAppSelector(state => state.auth.orgRole)
   const dispatch = useAppDispatch()
   const notification = useNotification()
 
   React.useEffect(() => {
     const checkSession = async () => {
       const result = await getEntityInfo()
-      if (isRight(result)) dispatch(setAuthenticated(true))
-      else dispatch(clearAuth())
+      if (isRight(result)) {
+        const data = result.right
+        const orgRole = data.orgRole
+        dispatch(setAuthenticated({isAuthenticated: true, orgRole}))
+      } else {
+        dispatch(clearAuth())
+      }
       dispatch(setInitialized(true))
     }
     checkSession()
@@ -84,12 +101,14 @@ const App: React.FC = () => {
               <nav className="flex items-center gap-6">
                 {isAuthenticated && (
                   <>
-                    <RouterLink
-                      to="/users"
-                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Users
-                    </RouterLink>
+                    {orgRole === GetEntityInfoUserResponse.OrgRoleEnum.Admin && (
+                      <RouterLink
+                        to="/users"
+                        className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        Users
+                      </RouterLink>
+                    )}
                     <RouterLink
                       to="/groups"
                       className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -141,9 +160,11 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              <Route element={<AdminProtectedRoute isAuthenticated={isAuthenticated} orgRole={orgRole} />}>
+                <Route path="/users" element={<UsersPage />} />
+              </Route>
               <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/users" element={<UsersPage />} />
                 <Route path="/groups" element={<GroupsPage />} />
                 <Route path="/groups/new" element={<CreateGroupPage />} />
                 <Route path="/groups/:groupIdentifier" element={<GroupDetailsPage />} />
