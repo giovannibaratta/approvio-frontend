@@ -7,10 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Link as RouterLink } from "react-router-dom"
 import { getGroup, getSpace, getWorkflowTemplate, getEntityInfo } from "../services/api"
 import { isRight } from "fp-ts/Either"
-import type { RoleOperationItem, GetEntityInfo200Response } from "@approvio/api"
+import type { RoleOperationItem, GetEntityInfoUserResponse } from "@approvio/api"
 
 const ProfilePage: React.FC = () => {
-  const [profile, setProfile] = useState<GetEntityInfo200Response | null>(null)
+  const [profile, setProfile] = useState<GetEntityInfoUserResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({})

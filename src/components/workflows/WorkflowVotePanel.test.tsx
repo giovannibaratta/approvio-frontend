@@ -31,9 +31,11 @@ test.describe("WorkflowVotePanel", () => {
       return route.fulfill({
         status: 200,
         json: {
-          entityType: "HUMAN",
+          entityType: "user",
           groups: [{groupId: "group-1", groupName: "Test Group"}],
-          id: "user-1"
+          id: "user-1",
+          roles: [],
+          orgRole: "member"
         }
       })
     })
