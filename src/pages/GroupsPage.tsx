@@ -73,12 +73,9 @@ const GroupsPage: React.FC = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <button
-                className="cursor-pointer text-left font-medium text-primary transition-colors hover:text-primary/80 focus:outline-none"
-                onClick={() => navigate(`/groups/${group.id}`)}
-              >
+              <span className="font-medium text-primary hover:underline">
                 {group.name}
-              </button>
+              </span>
             </TooltipTrigger>
             <TooltipContent align="start">
               <p>Click to view details for {group.name}</p>
@@ -139,6 +136,7 @@ const GroupsPage: React.FC = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         headerAction={headerAction}
+        onRowClick={row => navigate(`/groups/${row.id}`)}
       />
     </div>
   )

@@ -31,7 +31,7 @@ const SHARED_COLUMNS: Column<WorkflowTemplateSummary>[] = [
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <span className="cursor-pointer text-left font-medium text-primary transition-colors hover:text-primary/80 focus:outline-none">
+            <span className="text-left font-medium text-primary hover:underline">
               {template.name}
             </span>
           </TooltipTrigger>
@@ -275,29 +275,7 @@ const WorkflowTemplatesPage: React.FC = () => {
     <div className="space-y-4">
       <DataTable
         title="Workflow Templates"
-        columns={SHARED_COLUMNS.map(col =>
-          col.id === "name"
-            ? {
-                ...col,
-                render: (template: WorkflowTemplateSummary) => (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault()
-                        navigate(`/workflow-templates/${template.id}`)
-                      }
-                    }}
-                    onClick={() => navigate(`/workflow-templates/${template.id}`)}
-                    className="cursor-pointer"
-                  >
-                    {col.render(template)}
-                  </div>
-                )
-              }
-            : col
-        )}
+        columns={SHARED_COLUMNS}
         expandableRow={template => (
           <ExpandedVersionsTable templateName={template.name} currentTemplateId={template.id} />
         )}
@@ -310,6 +288,7 @@ const WorkflowTemplatesPage: React.FC = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         headerAction={headerAction}
+        onRowClick={template => navigate(`/workflow-templates/${template.id}`)}
       />
     </div>
   )

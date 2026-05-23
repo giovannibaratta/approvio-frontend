@@ -13,6 +13,16 @@ export interface Column<T> {
   render: (row: T) => React.ReactNode
   /** Optional fixed width for the column (e.g., '30%' or 150). Alignment works best when all columns have widths. */
   width?: string | number
+  /**
+   * If provided, clicking this cell runs this handler and stops propagation,
+   * bypassing the table-level onRowClick. Fully handles keyboard and screen reader accessibility.
+   */
+  onCellClick?: (row: T) => void
+  /**
+   * If true, clicking this cell will stop propagation and prevent the row-level onRowClick.
+   * Useful for cells containing tooltips, badges, or copy buttons where row navigation is undesirable.
+   */
+  preventRowClick?: boolean
 }
 
 export interface DataTableProps<T> {
@@ -37,6 +47,7 @@ export interface DataTableProps<T> {
    * Useful for creating a "blended" look where the expanded content appears as a seamless extension of the parent row.
    */
   disableExpansionPadding?: boolean
+  onRowClick?: (row: T) => void
 }
 
 /**
@@ -47,22 +58,37 @@ function ExpandableRow<T extends {id: string}>({
   columns,
   actions,
   expandableRow,
-  disableExpansionPadding
+  disableExpansionPadding,
+  onRowClick
 }: {
   row: T
   columns: Column<T>[]
   actions?: (row: T) => React.ReactNode
   expandableRow?: (row: T) => React.ReactNode
   disableExpansionPadding?: boolean
+  onRowClick?: (row: T) => void
 }) {
   const [open, setOpen] = useState(false)
   const isExpandable = !!expandableRow
 
   return (
     <React.Fragment>
-      <TableRow className={isExpandable ? "border-b-0" : ""}>
+      <TableRow
+        className={cn(isExpandable ? "border-b-0" : "", onRowClick ? "cursor-pointer hover:bg-muted/50" : "")}
+        onClick={() => onRowClick?.(row)}
+        role={onRowClick ? "button" : undefined}
+        tabIndex={onRowClick ? 0 : undefined}
+        onKeyDown={e => {
+          if (onRowClick && (e.key === "Enter" || e.key === " ")) {
+            // Prevent default page scrolling when pressing Spacebar on interactive rows
+            e.preventDefault()
+            onRowClick(row)
+          }
+        }}
+      >
         {isExpandable && (
-          <TableCell className="w-[44px] whitespace-nowrap pr-0">
+          // Stop propagation to prevent expanding the row from triggering the general onRowClick callback
+          <TableCell className="w-[44px] whitespace-nowrap pr-0" onClick={e => e.stopPropagation()}>
             <button
               aria-label="expand row"
               onClick={() => setOpen(!open)}
@@ -74,11 +100,41 @@ function ExpandableRow<T extends {id: string}>({
           </TableCell>
         )}
         {columns.map(column => (
-          <TableCell key={column.id} style={{width: column.width}}>
+          <TableCell
+            key={column.id}
+            style={{width: column.width}}
+            className={cn(column.onCellClick ? "cursor-pointer" : "")}
+            onClick={e => {
+              // Stop propagation to prevent cell-specific overrides from bubbling up and triggering the general onRowClick
+              if (column.preventRowClick || column.onCellClick) {
+                e.stopPropagation()
+              }
+              column.onCellClick?.(row)
+            }}
+            role={column.onCellClick ? "button" : undefined}
+            tabIndex={column.onCellClick ? 0 : undefined}
+            onKeyDown={e => {
+              if (column.onCellClick && (e.key === "Enter" || e.key === " ")) {
+                // Prevent default scrolling and stop bubbling to the parent TableRow keydown handler
+                e.preventDefault()
+                e.stopPropagation()
+                column.onCellClick(row)
+              }
+            }}
+          >
             {column.render(row)}
           </TableCell>
         ))}
-        {actions && <TableCell className="whitespace-nowrap text-right">{actions(row)}</TableCell>}
+        {actions && (
+          // Stop propagation on clicks and keypresses to prevent custom row actions (e.g. edit/delete buttons) from triggering the row click
+          <TableCell
+            className="whitespace-nowrap text-right"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
+            {actions(row)}
+          </TableCell>
+        )}
       </TableRow>
       {isExpandable && open && (
         <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -107,7 +163,8 @@ export function DataTable<T extends {id: string}>({
   actions,
   headerAction,
   expandableRow,
-  disableExpansionPadding
+  disableExpansionPadding,
+  onRowClick
 }: DataTableProps<T>) {
   return (
     <Card className="w-full">
@@ -147,6 +204,7 @@ export function DataTable<T extends {id: string}>({
                     actions={actions}
                     expandableRow={expandableRow}
                     disableExpansionPadding={disableExpansionPadding}
+                    onRowClick={onRowClick}
                   />
                 ))}
                 {data.length === 0 && (
@@ -213,12 +271,43 @@ export function DataSubTable<T extends {id: string}>({
               {data.map(row => (
                 <TableRow
                   key={row.id}
-                  className={`border-b-0 ${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}`}
+                  className={cn("border-b-0", onRowClick ? "cursor-pointer hover:bg-muted/50" : "")}
                   onClick={() => onRowClick?.(row)}
+                  role={onRowClick ? "button" : undefined}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  onKeyDown={e => {
+                    if (onRowClick && (e.key === "Enter" || e.key === " ")) {
+                      // Prevent default page scrolling when pressing Spacebar on interactive sub-rows
+                      e.preventDefault()
+                      onRowClick(row)
+                    }
+                  }}
                 >
-                  <TableCell className="w-[44px] pr-0" /> {/* Toggle spacer for alignment */}
+                  {/* Stop propagation to align spacer area and prevent row-click conflicts */}
+                  <TableCell className="w-[44px] pr-0" onClick={e => e.stopPropagation()} /> {/* Toggle spacer for alignment */}
                   {columns.map(column => (
-                    <TableCell key={column.id} style={{width: column.width}} className="py-3">
+                    <TableCell
+                      key={column.id}
+                      style={{width: column.width}}
+                      className={cn("py-3", column.onCellClick ? "cursor-pointer" : "")}
+                      onClick={e => {
+                        // Stop propagation to prevent cell-specific overrides from bubbling up and triggering the general onRowClick
+                        if (column.preventRowClick || column.onCellClick) {
+                          e.stopPropagation()
+                        }
+                        column.onCellClick?.(row)
+                      }}
+                      role={column.onCellClick ? "button" : undefined}
+                      tabIndex={column.onCellClick ? 0 : undefined}
+                      onKeyDown={e => {
+                        if (column.onCellClick && (e.key === "Enter" || e.key === " ")) {
+                          // Prevent default scrolling and stop bubbling to the parent TableRow keydown handler
+                          e.preventDefault()
+                          e.stopPropagation()
+                          column.onCellClick(row)
+                        }
+                      }}
+                    >
                       <div className="flex items-center">
                         {column.id === columns[0]?.id && (
                           <CornerDownRight className="mr-2 size-4 text-muted-foreground/50" />
@@ -237,6 +326,7 @@ export function DataSubTable<T extends {id: string}>({
                 variant="ghost"
                 size="sm"
                 onClick={e => {
+                  // Prevent button click from bubbling up and triggering parent row-click
                   e.stopPropagation()
                   onShowMore()
                 }}

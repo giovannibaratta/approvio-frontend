@@ -1,5 +1,6 @@
 import {type FrontendError} from "../services/api"
 import React, {useEffect, useState} from "react"
+import {useNavigate} from "react-router-dom"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import {AlertCircle} from "lucide-react"
 import {listUsers} from "../services/api"
@@ -21,6 +22,7 @@ const UsersPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState<number>(0) // MUI TablePagination is 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
+  const navigate = useNavigate()
 
   const notification = useNotification()
 
@@ -82,6 +84,7 @@ const UsersPage: React.FC = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        onRowClick={(row) => navigate(`/users/${row.id}`)}
       />
     </div>
   )

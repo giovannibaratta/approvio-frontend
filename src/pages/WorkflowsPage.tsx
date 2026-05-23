@@ -12,6 +12,7 @@ import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
 import {Button} from "@/components/ui/button"
 import {Plus} from "lucide-react"
 import {useNavigate} from "react-router-dom"
+import {cn} from "@/lib/utils"
 
 const WorkflowsPage: React.FC = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([])
@@ -28,21 +29,11 @@ const WorkflowsPage: React.FC = () => {
     {
       id: "name",
       label: "Name",
+      onCellClick: workflow => navigate(`/workflows/${workflow.id}`),
       render: workflow => (
-        <div
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              navigate(`/workflows/${workflow.id}`)
-            }
-          }}
-          onClick={() => navigate(`/workflows/${workflow.id}`)}
-          className="cursor-pointer font-medium text-primary hover:underline"
-        >
-          <span className={TYPOGRAPHY.LABEL}>{workflow.name}</span>
-        </div>
+        <span className={cn(TYPOGRAPHY.LABEL, "font-medium text-primary hover:underline")}>
+          {workflow.name}
+        </span>
       )
     },
     {

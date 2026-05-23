@@ -96,3 +96,55 @@ export function DataSubTableLoadingWrapper() {
     />
   )
 }
+
+export function DataTableInteractiveWrapper({
+  onRowClick,
+  onCellClick,
+  onPreventCellClick
+}: {
+  onRowClick: (row: MockData) => void
+  onCellClick: (row: MockData) => void
+  onPreventCellClick: (row: MockData) => void
+}) {
+  const interactiveColumns: Column<MockData>[] = [
+    {
+      id: "name",
+      label: "Name",
+      width: "30%",
+      onCellClick: onCellClick,
+      render: row => row.name
+    },
+    {
+      id: "value",
+      label: "Value",
+      width: "30%",
+      preventRowClick: true,
+      render: row => (
+        <button type="button" onClick={() => onPreventCellClick(row)}>
+          {row.value}
+        </button>
+      )
+    },
+    {
+      id: "plain",
+      label: "Plain",
+      width: "40%",
+      render: () => "Plain Text"
+    }
+  ]
+
+  return (
+    <DataTable
+      title="Interactive Table"
+      columns={interactiveColumns}
+      data={mockData}
+      loading={false}
+      total={2}
+      page={0}
+      rowsPerPage={10}
+      onPageChange={() => undefined}
+      onRowsPerPageChange={() => undefined}
+      onRowClick={onRowClick}
+    />
+  )
+}
