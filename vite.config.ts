@@ -41,7 +41,10 @@ export default defineConfig(({mode}) => {
     server: {
       port: Number(process.env.VITE_PORT || "5173"),
       strictPort: true,
-      host: true
+      host: true,
+      headers: {
+        "Content-Security-Policy": "frame-ancestors 'none';"
+      }
     },
     optimizeDeps: {
       // Forces Vite to treat the SDK as source code,

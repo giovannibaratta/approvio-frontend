@@ -13,3 +13,9 @@
 **Vulnerability:** Missing input length limits on frontend input components, increasing application-layer DoS risks and potentially allowing excessively large payloads.
 **Learning:** The reusable UI components (`Input` and `Textarea`) did not enforce default length limits, meaning all downstream usage was unprotected by default unless explicitly bounded.
 **Prevention:** Added default `maxLength` constraints to base UI components (512 for `Input`, 5000 for `Textarea`) to enforce secure defaults while allowing explicit overrides where necessary.
+
+## 2025-05-17 - [Add frame-ancestors to CSP]
+
+**Vulnerability:** Missing `frame-ancestors` directive in the Content Security Policy (CSP).
+**Learning:** Without `frame-ancestors 'none'`, the application could be embedded in an iframe on a malicious website, exposing users to clickjacking attacks.
+**Prevention:** Always include `frame-ancestors 'none'` (or explicitly restrict it to trusted domains) as an HTTP response header, as it is strictly ignored when delivered via a `<meta>` tag according to the CSP specification.
