@@ -22,7 +22,10 @@ import {
   type AgentGet200Response,
   type CanVoteResponse,
   type WorkflowVoteRequest,
-  type GetEntityInfoUserResponse
+  type GetEntityInfoUserResponse,
+  type ListRoleTemplates200Response,
+  type RoleAssignmentRequest,
+  type RoleRemovalRequest
 } from "@approvio/api"
 import {type Either, mapLeft, isRight} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -122,6 +125,27 @@ export async function getGroup(groupIdentifier: string): Promise<Either<Frontend
 
 export async function getUser(userId: string): Promise<Either<FrontendError, User>> {
   const result = await client.getUser(userId)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function assignUserRoles(
+  userId: string,
+  payload: RoleAssignmentRequest
+): Promise<Either<FrontendError, void>> {
+  const result = await client.assignUserRoles(userId, payload)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function removeUserRoles(
+  userId: string,
+  payload: RoleRemovalRequest
+): Promise<Either<FrontendError, void>> {
+  const result = await client.removeUserRoles(userId, payload)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listRoleTemplates(): Promise<Either<FrontendError, ListRoleTemplates200Response>> {
+  const result = await client.listRoleTemplates()()
   return mapLeft(handleApiError)(result)
 }
 
