@@ -34,8 +34,21 @@ echo "};" >> $CONFIG_FILE
 
 echo "Generated runtime configuration at $CONFIG_FILE"
 
+# Generate static-web-server configuration for custom headers
+SWS_CONFIG_FILE="/app/sws.toml"
+cat << 'EOF' > $SWS_CONFIG_FILE
+[advanced]
+
+[[advanced.headers]]
+source = "**/*"
+headers = { Content-Security-Policy = "frame-ancestors 'none';" }
+EOF
+
+echo "Generated server configuration at $SWS_CONFIG_FILE"
+
 # Start the static web server
 exec static-web-server \
+    -w $SWS_CONFIG_FILE \
     --port 8080 \
     --root /app/public \
     --index-files index.html \
