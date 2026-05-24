@@ -108,7 +108,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
         newScope = {type: "group", groupId: ""}
         break
       case "workflow_template":
-        newScope = {type: "workflow_template", workflowTemplateId: ""}
+        newScope = {type: "workflow_template", templateName: ""}
         break
       default:
         newScope = {type: "org"}
@@ -129,7 +129,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
     } else if (currentScope.type === "group") {
       newRoles[index] = {...newRoles[index], scope: {...currentScope, groupId: targetId}} as (RoleOperationItem & {localId: string})
     } else if (currentScope.type === "workflow_template") {
-      newRoles[index] = {...newRoles[index], scope: {...currentScope, workflowTemplateId: targetId}} as (RoleOperationItem & {localId: string})
+      newRoles[index] = {...newRoles[index], scope: {...currentScope, templateName: targetId}} as (RoleOperationItem & {localId: string})
     }
 
     setRoles(newRoles)
@@ -141,7 +141,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
       if (!role.roleName) return false
       if (role.scope.type === "space" && !role.scope.spaceId) return false
       if (role.scope.type === "group" && !role.scope.groupId) return false
-      if (role.scope.type === "workflow_template" && !role.scope.workflowTemplateId) return false
+      if (role.scope.type === "workflow_template" && !role.scope.templateName) return false
       return true
     })
 
@@ -251,11 +251,11 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
                           <div className="flex-1 space-y-2">
                             <Label>Target ID</Label>
                             <Input
-                              placeholder={`Enter ${role.scope.type} ID`}
+                              placeholder={`Enter ${role.scope.type === "workflow_template" ? "template name" : role.scope.type + " ID"}`}
                               value={
                                 role.scope.type === "space" ? (role.scope.spaceId) :
                                 role.scope.type === "group" ? (role.scope.groupId) :
-                                role.scope.type === "workflow_template" ? (role.scope.workflowTemplateId) : ""
+                                role.scope.type === "workflow_template" ? (role.scope.templateName) : ""
                               }
                               onChange={e => handleScopeTargetChange(idx, e.target.value)}
                             />
