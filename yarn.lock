@@ -12,12 +12,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@approvio/api@npm:0.0.50":
-  version: 0.0.50
-  resolution: "@approvio/api@npm:0.0.50"
+"@approvio/api@npm:0.0.52":
+  version: 0.0.52
+  resolution: "@approvio/api@npm:0.0.52"
   peerDependencies:
     fp-ts: ^2.0.0
-  checksum: 10/36df1eec09c05c96ef6ee8a3af10bc1ea02a976fb0bf72a8cf190b66c0d45dd89e02d692743b0b928e0d843aa6164b16ff117a9aa9e5166a4be9d26168a86390
+  checksum: 10/271f0fc136796b6fbee0d810f16fbb378ffcc357e4c0517f66e7becd9e0fa3de1d7f66e67b53db34b0a78ebfb9f2b2b7e9e7696ff6bae2cf69158170c460d211
   languageName: node
   linkType: hard
 
@@ -25,8 +25,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@approvio/frontend@workspace:."
   dependencies:
-    "@approvio/api": "npm:0.0.50"
-    "@approvio/ts-sdk": "npm:0.0.19"
+    "@approvio/api": "npm:0.0.52"
+    "@approvio/ts-sdk": "npm:0.0.20"
     "@base-ui/react": "npm:^1.4.0"
     "@fontsource-variable/geist": "npm:^5.2.8"
     "@playwright/experimental-ct-react": "npm:^1.58.2"
@@ -75,17 +75,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@approvio/ts-sdk@npm:0.0.19":
-  version: 0.0.19
-  resolution: "@approvio/ts-sdk@npm:0.0.19"
+"@approvio/ts-sdk@npm:0.0.20":
+  version: 0.0.20
+  resolution: "@approvio/ts-sdk@npm:0.0.20"
   dependencies:
-    "@approvio/api": "npm:0.0.50"
+    "@approvio/api": "npm:0.0.52"
     axios: "npm:1.16.1"
     jose: "npm:6.2.3"
   peerDependencies:
     fp-ts: ^2.0.0
     io-ts: ^2.0.0
-  checksum: 10/f63947abaec493be8bd228324309a511ecb96a70309321e302302775ff92615ad99b48d9910e6727d1c89230ace5a197c81ebed659144d7c7b6c5a56b1546eb1
+  checksum: 10/6b9d681601e9584fd5c6c263c8a1ae0b3a201358df6584b4ee8da1a4839d5880ad57d76ff9fcbee8875b0f02d8fb20a529c0fdb2b38efd235ab06ad99488d5e6
   languageName: node
   linkType: hard
 

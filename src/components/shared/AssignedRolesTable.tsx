@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 import {DataTable, type Column} from "../DataTable"
-import {getGroup, getSpace, getWorkflowTemplate} from "../../services/api"
+import {getGroup, getSpace} from "../../services/api"
 import {isRight} from "fp-ts/Either"
 import type {RoleOperationItem, User} from "@approvio/api"
 import {TYPOGRAPHY} from "@/lib/styles"
@@ -48,14 +48,6 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
               return {id: sid, name: res.right.name}
             }
           }
-        } else if (scope.type === "workflow_template" && scope.workflowTemplateId) {
-          const wtid = scope.workflowTemplateId
-          if (!initialNames[wtid]) {
-            const res = await getWorkflowTemplate(wtid)
-            if (isRight(res)) {
-              return {id: wtid, name: res.right.name}
-            }
-          }
         }
         return null
       })
@@ -90,11 +82,11 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
         link: "/spaces"
       }
     }
-    if (scope.type === "workflow_template" && scope.workflowTemplateId) {
-      const wtid = scope.workflowTemplateId
+    if (scope.type === "workflow_template" && scope.templateName) {
+      const templateName = scope.templateName
       return {
-        name: resolvedNames[wtid] || wtid,
-        link: `/workflow-templates/${wtid}`
+        name: templateName,
+        link: `/workflow-templates/${templateName}`
       }
     }
     return null
