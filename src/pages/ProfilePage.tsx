@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from "react"
 import { handleEither } from "../utils/either"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Loader2, UserCircle, Users, User, Shield } from "lucide-react"
+import { Loader2, UserCircle, Users, User, Shield, Activity } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Link as RouterLink } from "react-router-dom"
-import { getEntityInfo } from "../services/api"
-import type { GetEntityInfoUserResponse } from "@approvio/api"
+import { getEntityInfo, listMyAuditLogs } from "../services/api"
+import type { GetEntityInfoUserResponse, AuditLog } from "@approvio/api"
 import { AssignedRolesTable } from "../components/shared/AssignedRolesTable"
+import { AuditLogsTable } from "../components/shared/AuditLogsTable"
+import { Link as RouterLink } from "react-router-dom"
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<GetEntityInfoUserResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
+  const [loadingLogs, setLoadingLogs] = useState(true)
+
+  const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([undefined])
+  const [currentPageIndex, setCurrentPageIndex] = useState(0)
+  const [limit, setLimit] = useState(10)
+  const [hasMore, setHasMore] = useState(false)
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -32,6 +42,55 @@ const ProfilePage: React.FC = () => {
 
     fetchProfile()
   }, [])
+
+  useEffect(() => {
+    if (!profile?.id) return
+
+    const fetchLogs = async () => {
+      setLoadingLogs(true)
+      const result = await listMyAuditLogs({
+        limit,
+        cursor: cursorHistory[currentPageIndex]
+      })
+      handleEither(
+        result,
+        data => {
+          setAuditLogs(data.auditLogs || [])
+          setHasMore(data.pagination?.hasMore || false)
+          setNextCursor(
+            data.pagination && "nextCursor" in data.pagination
+              ? data.pagination.nextCursor
+              : undefined
+          )
+          setLoadingLogs(false)
+        },
+        () => {
+          setLoadingLogs(false)
+        }
+      )
+    }
+
+    fetchLogs()
+  }, [profile?.id, currentPageIndex, cursorHistory, limit])
+
+  const handlePageChange = (newPageIndex: number) => {
+    if (newPageIndex > currentPageIndex) {
+      const newHistory = [...cursorHistory]
+      if (newPageIndex >= newHistory.length) {
+        newHistory.push(nextCursor)
+        setCursorHistory(newHistory)
+      }
+    }
+    setCurrentPageIndex(newPageIndex)
+  }
+
+  const handleRowsPerPageChange = (newLimit: number) => {
+    setLimit(newLimit)
+    setCursorHistory([undefined])
+    setCurrentPageIndex(0)
+    setNextCursor(undefined)
+    setHasMore(false)
+  }
 
   if (loading) {
     return (
@@ -138,6 +197,34 @@ const ProfilePage: React.FC = () => {
                 <p className="text-sm italic text-muted-foreground">You do not have any roles assigned.</p>
               </CardContent>
             </Card>
+          )}
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          {auditLogs.length === 0 && !loadingLogs ? (
+            <Card className="border-border/50 bg-background/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+                  <Activity className="size-4 text-muted-foreground" />
+                  My Recent Activity
+                </CardTitle>
+                <CardDescription>A log of your latest actions.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm italic text-muted-foreground">No activity recorded yet.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <AuditLogsTable
+              title="My Recent Activity"
+              logs={auditLogs}
+              loading={loadingLogs}
+              page={currentPageIndex}
+              rowsPerPage={limit}
+              hasMore={hasMore}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
           )}
         </div>
       </div>

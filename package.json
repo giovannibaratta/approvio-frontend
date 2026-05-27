@@ -26,8 +26,8 @@
     "docker:push": "./deploy/push.sh"
   },
   "dependencies": {
-    "@approvio/api": "0.0.52",
-    "@approvio/ts-sdk": "0.0.20",
+    "@approvio/api": "0.0.53",
+    "@approvio/ts-sdk": "0.0.22",
     "@base-ui/react": "^1.4.0",
     "@fontsource-variable/geist": "^5.2.8",
     "@radix-ui/react-slot": "^1.2.4",

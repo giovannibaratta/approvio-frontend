@@ -25,7 +25,10 @@ import {
   type GetEntityInfoUserResponse,
   type ListRoleTemplates200Response,
   type RoleAssignmentRequest,
-  type RoleRemovalRequest
+  type RoleRemovalRequest,
+  type ListAuditLogsParams,
+  type ListMyAuditLogsParams,
+  type ListAuditLogs200Response
 } from "@approvio/api"
 import {type Either, mapLeft, isRight} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -53,8 +56,7 @@ interface ListUsersRequest {
 
 export const handleApiError = (error: ApprovioError): FrontendError => {
   if (isApprovioError(error)) {
-    if (error.status === 401)
-      store.dispatch(clearAuth())
+    if (error.status === 401) store.dispatch(clearAuth())
     return {
       code: error.code || "UNKNOWN_ERROR",
       message: error.message
@@ -62,8 +64,7 @@ export const handleApiError = (error: ApprovioError): FrontendError => {
   }
   // Fallback: If the error is not a formal ApprovioError (e.g., a raw response or network error object)
   // but still contains a 401 status, ensure the local authentication state is cleared.
-  if (error && typeof error === "object" && "status" in error && error.status === 401)
-    store.dispatch(clearAuth())
+  if (error && typeof error === "object" && "status" in error && error.status === 401) store.dispatch(clearAuth())
   return {
     code: "UNKNOWN_ERROR",
     message: error.message
@@ -81,8 +82,7 @@ export async function logout(): Promise<Either<FrontendError, void>> {
   // are stored in HttpOnly cookies, a failed API call (e.g. network/server error) means the
   // browser did not receive the Set-Cookie clear directives. Wiping auth state locally on
   // failure would leave valid cookies intact, leading to silent auto-relogin on next refresh.
-  if (isRight(result))
-    store.dispatch(clearAuth())
+  if (isRight(result)) store.dispatch(clearAuth())
   return mapLeft(handleApiError)(result)
 }
 
@@ -241,5 +241,19 @@ export async function voteOnWorkflow(
   data: WorkflowVoteRequest
 ): Promise<Either<FrontendError, void>> {
   const result = await client.voteOnWorkflow(workflowId, data)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listAuditLogs(
+  params?: ListAuditLogsParams
+): Promise<Either<FrontendError, ListAuditLogs200Response>> {
+  const result = await client.listAuditLogs(params)()
+  return mapLeft(handleApiError)(result)
+}
+
+export async function listMyAuditLogs(
+  params?: ListMyAuditLogsParams
+): Promise<Either<FrontendError, ListAuditLogs200Response>> {
+  const result = await client.listMyAuditLogs(params)()
   return mapLeft(handleApiError)(result)
 }

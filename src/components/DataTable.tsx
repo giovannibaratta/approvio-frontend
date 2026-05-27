@@ -30,11 +30,13 @@ export interface DataTableProps<T> {
   columns: Column<T>[]
   data: T[]
   loading: boolean
-  total: number
+  total?: number
   page: number
   rowsPerPage: number
   onPageChange: (newPage: number) => void
   onRowsPerPageChange: (newRowsPerPage: number) => void
+  paginationType?: "page" | "cursor"
+  hasMore?: boolean
   actions?: (row: T) => React.ReactNode
   headerAction?: React.ReactNode
   /**
@@ -48,6 +50,10 @@ export interface DataTableProps<T> {
    */
   disableExpansionPadding?: boolean
   onRowClick?: (row: T) => void
+  /** Optional class name to style or override table elements */
+  tableClassName?: string
+  /** Optional minimum width for the table (e.g. '800px'). Defaults to '800px' to prevent overlap. */
+  minWidth?: string
 }
 
 /**
@@ -160,11 +166,15 @@ export function DataTable<T extends {id: string}>({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
+  paginationType = "page",
+  hasMore = false,
   actions,
   headerAction,
   expandableRow,
   disableExpansionPadding,
-  onRowClick
+  onRowClick,
+  tableClassName,
+  minWidth = "800px"
 }: DataTableProps<T>) {
   return (
     <Card className="w-full">
@@ -179,7 +189,7 @@ export function DataTable<T extends {id: string}>({
           </div>
         ) : (
           <div className="rounded-md border">
-            <Table style={{tableLayout: "fixed"}}>
+            <Table style={{tableLayout: "auto", width: `max(100%, ${minWidth})`, minWidth}} className={tableClassName}>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
                   {expandableRow && <TableHead className="w-[44px] pr-0" />}
@@ -222,13 +232,15 @@ export function DataTable<T extends {id: string}>({
           </div>
         )}
 
-        {total > 0 && (
+        {(paginationType === "cursor" || (total !== undefined && total > 0)) && (
           <PaginationUI
             total={total}
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
+            paginationType={paginationType}
+            hasMore={hasMore}
           />
         )}
       </CardContent>
