@@ -3,12 +3,14 @@ import {Button} from "@/components/ui/button"
 import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
 
 export interface PaginationUIProps {
-  total: number
+  total?: number
   page: number
   rowsPerPage: number
   onPageChange: (newPage: number) => void
   onRowsPerPageChange: (newRowsPerPage: number) => void
   rowsPerPageOptions?: number[]
+  paginationType?: "page" | "cursor"
+  hasMore?: boolean
 }
 
 export const PaginationUI: React.FC<PaginationUIProps> = ({
@@ -17,15 +19,25 @@ export const PaginationUI: React.FC<PaginationUIProps> = ({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  rowsPerPageOptions = [5, 10, 25]
+  rowsPerPageOptions = [5, 10, 25],
+  paginationType = "page",
+  hasMore = false
 }) => {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onRowsPerPageChange(parseInt(event.target.value, 10))
   }
 
+  const isCursor = paginationType === "cursor"
+
   return (
     <div className={LAYOUT.FLEX_END + " space-x-2 py-4"}>
-      <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Total: {total} items</div>
+      {isCursor ? (
+        <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Viewing page {page + 1}</div>
+      ) : (
+        total !== undefined && (
+          <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Total: {total} items</div>
+        )
+      )}
       <div className={LAYOUT.FLEX_START + " space-x-2"}>
         <p className={TYPOGRAPHY.LABEL}>Rows per page</p>
         <select
@@ -59,7 +71,7 @@ export const PaginationUI: React.FC<PaginationUIProps> = ({
           variant="outline"
           className="size-8 p-0"
           onClick={() => onPageChange(page + 1)}
-          disabled={(page + 1) * rowsPerPage >= total}
+          disabled={isCursor ? !hasMore : total !== undefined && (page + 1) * rowsPerPage >= total}
         >
           <span className="sr-only">Go to next page</span>
           <span className="text-xs">&gt;</span>

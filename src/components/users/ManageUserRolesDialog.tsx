@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react"
+import {isLeft} from "fp-ts/Either"
 import {
   Dialog,
   DialogContent,
@@ -13,9 +14,22 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Trash2, Plus, Loader2, Shield} from "lucide-react"
 import {useNotification} from "@/providers/notification/NotificationContext"
-import {listRoleTemplates, assignUserRoles} from "@/services/api"
+import {listRoleTemplates, assignUserRoles, removeUserRoles} from "@/services/api"
 import {handleEither} from "@/utils/either"
 import type {RoleOperationItem, RoleTemplate, RoleScope, User} from "@approvio/api"
+
+const isSameScope = (a: RoleScope, b: RoleScope): boolean => {
+  if (a.type !== b.type) return false
+  if (a.type === "org") return true
+  if (a.type === "space" && b.type === "space") return a.spaceId === b.spaceId
+  if (a.type === "group" && b.type === "group") return a.groupId === b.groupId
+  if (a.type === "workflow_template" && b.type === "workflow_template") return a.templateName === b.templateName
+  return false
+}
+
+const isSameRoleAssignment = (a: {roleName: string; scope: RoleScope}, b: {roleName: string; scope: RoleScope}): boolean => {
+  return a.roleName === b.roleName && isSameScope(a.scope, b.scope)
+}
 
 interface ManageUserRolesDialogProps {
   user: User
@@ -152,28 +166,66 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
 
     setSaving(true)
 
-    // Strip localId properties before submitting payloads to the backend
-    const request = {
-      roles: roles.map(({localId: _localId, ...rest}) => rest) as RoleOperationItem[],
-      concurrencyControl: {
-        version: user.concurrencyControl.version
+    // Calculate added and removed roles compared to user.roles
+    const originalRoles = user.roles || []
+    const newRoles = roles.map(({localId: _localId, ...rest}) => rest) as RoleOperationItem[]
+
+    const addedRoles = newRoles.filter(
+      newR => !originalRoles.some(origR => isSameRoleAssignment(origR, newR))
+    )
+    const removedRoles = originalRoles.filter(
+      origR => !newRoles.some(newR => isSameRoleAssignment(origR, newR))
+    )
+
+    if (addedRoles.length === 0 && removedRoles.length === 0) {
+      notification.showSuccess("Roles updated successfully")
+      onSuccess()
+      onOpenChange(false)
+      setSaving(false)
+      return
+    }
+
+    let currentVersion = user.concurrencyControl.version
+
+    if (removedRoles.length > 0) {
+      const removePayload = {
+        roles: removedRoles,
+        concurrencyControl: {
+          version: currentVersion
+        }
+      }
+
+      const removeResult = await removeUserRoles(user.id, removePayload)
+
+      if (isLeft(removeResult)) {
+        notification.showError(`Failed to remove roles: ${removeResult.left.message}`)
+        setSaving(false)
+        return
+      }
+
+      currentVersion += 1
+    }
+
+    if (addedRoles.length > 0) {
+      const assignPayload = {
+        roles: addedRoles,
+        concurrencyControl: {
+          version: currentVersion
+        }
+      }
+
+      const assignResult = await assignUserRoles(user.id, assignPayload)
+
+      if (isLeft(assignResult)) {
+        notification.showError(`Failed to assign roles: ${assignResult.left.message}`)
+        setSaving(false)
+        return
       }
     }
 
-    const result = await assignUserRoles(user.id, request)
-
-    handleEither(
-      result,
-      () => {
-        notification.showSuccess("Roles updated successfully")
-        onSuccess()
-        onOpenChange(false)
-      },
-      error => {
-        notification.showError(`Failed to update roles: ${error.message}`)
-      }
-    )
-
+    notification.showSuccess("Roles updated successfully")
+    onSuccess()
+    onOpenChange(false)
     setSaving(false)
   }
 

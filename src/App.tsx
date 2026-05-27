@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage"
 import AuthCallbackPage from "./pages/AuthCallbackPage"
 import UsersPage from "./pages/UsersPage"
 import UserDetailsPage from "./pages/UserDetailsPage"
+import AuditPage from "./pages/AuditPage"
 import GroupsPage from "./pages/GroupsPage"
 import SpacesPage from "./pages/SpacesPage"
 import WorkflowTemplatesPage from "./pages/WorkflowTemplatesPage"
@@ -103,12 +104,20 @@ const App: React.FC = () => {
                 {isAuthenticated && (
                   <>
                     {orgRole === GetEntityInfoUserResponse.OrgRoleEnum.Admin && (
-                      <RouterLink
-                        to="/users"
-                        className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        Users
-                      </RouterLink>
+                      <>
+                        <RouterLink
+                          to="/users"
+                          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          Users
+                        </RouterLink>
+                        <RouterLink
+                          to="/audit"
+                          className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          Audit
+                        </RouterLink>
+                      </>
                     )}
                     <RouterLink
                       to="/groups"
@@ -164,6 +173,7 @@ const App: React.FC = () => {
               <Route element={<AdminProtectedRoute isAuthenticated={isAuthenticated} orgRole={orgRole} />}>
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/users/:userId" element={<UserDetailsPage />} />
+                <Route path="/audit" element={<AuditPage />} />
               </Route>
               <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                 <Route path="/" element={<HomePage />} />
