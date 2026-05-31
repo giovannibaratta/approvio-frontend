@@ -78,19 +78,19 @@ export const AuditLogsTable: React.FC<AuditLogsTableProps> = ({
   }
 
   const renderPayloadDetails = (row: AuditLog) => {
-    if (!row.payload) return <p className="text-sm text-muted-foreground p-2">No additional payload data.</p>
+    if (!row.payload) return <p className="p-2 text-sm text-muted-foreground">No additional payload data.</p>
 
     const hasRoles = isRolesAuditLog(row)
 
     return (
-      <div className="space-y-4 rounded-lg bg-muted/20 p-4 border border-border/40">
+      <div className="space-y-4 rounded-lg border border-border/40 bg-muted/20 p-4">
         <h4 className="text-sm font-semibold tracking-tight text-foreground">Event Payload Details</h4>
-        
+
         {hasRoles && (
           <div className="space-y-2">
             <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Affected Roles</h5>
             <div className="overflow-hidden rounded-md border border-border bg-background">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="border-b bg-muted/40 text-xs font-medium text-muted-foreground">
                     <th className="p-2 pl-4">Role Name</th>
@@ -115,7 +115,7 @@ export const AuditLogsTable: React.FC<AuditLogsTableProps> = ({
                           break
                       }
                     }
-                    
+
                     return (
                       <tr key={idx} className="hover:bg-muted/20">
                         <td className="p-2 pl-4 font-medium">{role.roleName}</td>
@@ -132,7 +132,7 @@ export const AuditLogsTable: React.FC<AuditLogsTableProps> = ({
 
         <div className="space-y-2">
           <h5 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Raw Data</h5>
-          <pre className="max-h-[300px] overflow-y-auto rounded-lg border border-border/60 bg-muted/60 p-3 font-mono text-xs leading-relaxed text-muted-foreground select-all">
+          <pre className="max-h-[300px] select-all overflow-y-auto rounded-lg border border-border/60 bg-muted/60 p-3 font-mono text-xs leading-relaxed text-muted-foreground">
             {JSON.stringify(row.payload, null, 2)}
           </pre>
         </div>
