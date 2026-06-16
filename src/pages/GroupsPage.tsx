@@ -73,9 +73,7 @@ const GroupsPage: React.FC = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <span className="font-medium text-primary hover:underline">
-                {group.name}
-              </span>
+              <span className="font-medium text-primary hover:underline">{group.name}</span>
             </TooltipTrigger>
             <TooltipContent align="start">
               <p>Click to view details for {group.name}</p>

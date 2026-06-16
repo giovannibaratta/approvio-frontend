@@ -1,5 +1,5 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit"
-import { GetEntityInfoUserResponse } from "@approvio/api"
+import {GetEntityInfoUserResponse} from "@approvio/api"
 
 export interface AuthState {
   isAuthenticated: boolean
@@ -18,7 +18,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuthenticated: (state, action: PayloadAction<{isAuthenticated: boolean; orgRole: GetEntityInfoUserResponse["orgRole"]}>) => {
+    setAuthenticated: (
+      state,
+      action: PayloadAction<{isAuthenticated: boolean; orgRole: GetEntityInfoUserResponse["orgRole"]}>
+    ) => {
       console.log("Setting authentication state to:", action.payload.isAuthenticated)
       state.isAuthenticated = action.payload.isAuthenticated
       state.orgRole = action.payload.orgRole

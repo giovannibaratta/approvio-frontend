@@ -1,7 +1,7 @@
 import {test, expect} from "@playwright/experimental-ct-react"
 import {ProfilePageTestWrapper} from "./profilePage.test.fixtures"
-import { userWithGroupsAndRolesResponse } from "@approvio/api/mocks"
-import type { AuditLog } from "@approvio/api"
+import {userWithGroupsAndRolesResponse} from "@approvio/api/mocks"
+import type {AuditLog} from "@approvio/api"
 
 test.describe("ProfilePage Activity Log", () => {
   const mockLogs: AuditLog[] = [
@@ -9,8 +9,8 @@ test.describe("ProfilePage Activity Log", () => {
       id: "log-1",
       createdAt: "2024-03-20T10:00:00Z",
       auditType: "WORKFLOW_CREATED",
-      target: { type: "workflow", id: "wf-1" },
-      actor: { type: "user", id: userWithGroupsAndRolesResponse.id },
+      target: {type: "workflow", id: "wf-1"},
+      actor: {type: "user", id: userWithGroupsAndRolesResponse.id},
       payload: {}
     } as any
   ]
@@ -30,7 +30,7 @@ test.describe("ProfilePage Activity Log", () => {
         contentType: "application/json",
         body: JSON.stringify({
           auditLogs: [],
-          pagination: { hasMore: false }
+          pagination: {hasMore: false}
         })
       })
     })
@@ -56,7 +56,7 @@ test.describe("ProfilePage Activity Log", () => {
         contentType: "application/json",
         body: JSON.stringify({
           auditLogs: mockLogs,
-          pagination: { hasMore: false }
+          pagination: {hasMore: false}
         })
       })
     })

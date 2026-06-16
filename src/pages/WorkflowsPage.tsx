@@ -31,9 +31,7 @@ const WorkflowsPage: React.FC = () => {
       label: "Name",
       onCellClick: workflow => navigate(`/workflows/${workflow.id}`),
       render: workflow => (
-        <span className={cn(TYPOGRAPHY.LABEL, "font-medium text-primary hover:underline")}>
-          {workflow.name}
-        </span>
+        <span className={cn(TYPOGRAPHY.LABEL, "font-medium text-primary hover:underline")}>{workflow.name}</span>
       )
     },
     {

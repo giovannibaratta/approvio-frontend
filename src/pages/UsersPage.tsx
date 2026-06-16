@@ -84,7 +84,7 @@ const UsersPage: React.FC = () => {
         rowsPerPage={rowsPerPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        onRowClick={(row) => navigate(`/users/${row.id}`)}
+        onRowClick={row => navigate(`/users/${row.id}`)}
       />
     </div>
   )

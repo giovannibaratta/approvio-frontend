@@ -55,7 +55,9 @@ const UserDetailsPage: React.FC = () => {
       (response: User) => {
         setUser(response)
       },
-      () => { /* ignore */ }
+      () => {
+        /* ignore */
+      }
     )
   }
 
@@ -112,16 +114,16 @@ const UserDetailsPage: React.FC = () => {
               <p className="font-mono text-sm text-muted-foreground">{user.id}</p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Organization Role</p>
+              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Organization Role
+              </p>
               <p className="text-sm font-medium capitalize">
                 {user.orgRole === "admin" ? "Organization Admin" : "Standard User"}
               </p>
             </div>
             <div>
               <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Created At</p>
-              <p className="text-sm text-muted-foreground">
-                {new Date(user.createdAt).toLocaleString()}
-              </p>
+              <p className="text-sm text-muted-foreground">{new Date(user.createdAt).toLocaleString()}</p>
             </div>
           </CardContent>
         </Card>
@@ -139,7 +141,10 @@ const UserDetailsPage: React.FC = () => {
               <div className="flex flex-wrap gap-2">
                 {user.groups.map(group => (
                   <Link key={group.groupId} to={`/groups/${group.groupId}`}>
-                    <Badge variant="secondary" className="py-1 font-mono text-xs transition-colors hover:bg-secondary/80">
+                    <Badge
+                      variant="secondary"
+                      className="py-1 font-mono text-xs transition-colors hover:bg-secondary/80"
+                    >
                       {group.groupName}
                     </Badge>
                   </Link>
@@ -152,12 +157,7 @@ const UserDetailsPage: React.FC = () => {
         </Card>
       </div>
 
-      <AssignedRolesTable
-        roles={user.roles}
-        loading={loading}
-        user={user}
-        onRolesChange={refetchUser}
-      />
+      <AssignedRolesTable roles={user.roles} loading={loading} user={user} onRolesChange={refetchUser} />
     </div>
   )
 }

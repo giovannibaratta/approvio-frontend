@@ -1,6 +1,6 @@
 import {test, expect} from "@playwright/experimental-ct-react"
 import {AuditPageTestWrapper} from "./auditPage.test.fixtures"
-import type { AuditLog } from "@approvio/api"
+import type {AuditLog} from "@approvio/api"
 
 test.describe("AuditPage", () => {
   const mockLogs: AuditLog[] = [
@@ -8,16 +8,16 @@ test.describe("AuditPage", () => {
       id: "log-1",
       createdAt: "2024-03-20T10:00:00Z",
       auditType: "WORKFLOW_CREATED",
-      target: { type: "workflow", id: "wf-1" },
-      actor: { type: "user", id: "user-1" },
+      target: {type: "workflow", id: "wf-1"},
+      actor: {type: "user", id: "user-1"},
       payload: {}
     } as any,
     {
       id: "log-2",
       createdAt: "2024-03-19T14:30:00Z",
       auditType: "SPACE_CREATED",
-      target: { type: "space", id: "sp-1" },
-      actor: { type: "user", id: "user-1" },
+      target: {type: "space", id: "sp-1"},
+      actor: {type: "user", id: "user-1"},
       payload: {}
     } as any
   ]
@@ -29,7 +29,7 @@ test.describe("AuditPage", () => {
         contentType: "application/json",
         body: JSON.stringify({
           auditLogs: [],
-          pagination: { hasMore: false }
+          pagination: {hasMore: false}
         })
       })
     })
@@ -47,7 +47,7 @@ test.describe("AuditPage", () => {
         contentType: "application/json",
         body: JSON.stringify({
           auditLogs: mockLogs,
-          pagination: { hasMore: false }
+          pagination: {hasMore: false}
         })
       })
     })

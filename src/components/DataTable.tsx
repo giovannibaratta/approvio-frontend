@@ -296,7 +296,8 @@ export function DataSubTable<T extends {id: string}>({
                   }}
                 >
                   {/* Stop propagation to align spacer area and prevent row-click conflicts */}
-                  <TableCell className="w-[44px] pr-0" onClick={e => e.stopPropagation()} /> {/* Toggle spacer for alignment */}
+                  <TableCell className="w-[44px] pr-0" onClick={e => e.stopPropagation()} />{" "}
+                  {/* Toggle spacer for alignment */}
                   {columns.map(column => (
                     <TableCell
                       key={column.id}
