@@ -14,7 +14,6 @@ import {extractGroupIds} from "@/utils/rules"
 import type {WorkflowTemplate, GetEntityInfoUserResponse, CanVoteResponse} from "@approvio/api"
 import {CantVoteReason} from "@approvio/api"
 
-
 interface WorkflowVotePanelProps {
   workflowId: string
   template: WorkflowTemplate | null
@@ -163,13 +162,9 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
       <TooltipProvider delay={300}>
         <Tooltip>
           <TooltipTrigger>
-            <div className="inline-block cursor-not-allowed">
-              {voteButton}
-            </div>
+            <div className="inline-block cursor-not-allowed">{voteButton}</div>
           </TooltipTrigger>
-          <TooltipContent>
-            {getCantVoteMessage(canVoteInfo.cantVoteReason)}
-          </TooltipContent>
+          <TooltipContent>{getCantVoteMessage(canVoteInfo.cantVoteReason)}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     )
@@ -177,9 +172,7 @@ export const WorkflowVotePanel: React.FC<WorkflowVotePanelProps> = ({workflowId,
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        {voteButton}
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{voteButton}</PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <div className="flex flex-col space-y-4">
           <div className="space-y-1">

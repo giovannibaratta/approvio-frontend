@@ -1,7 +1,6 @@
 import {test, expect} from "@playwright/experimental-ct-react"
 import {UserDetailsTestWrapper} from "./userDetails.test.fixtures"
-import { userWithGroupsAndRolesResponse } from "@approvio/api/mocks"
-
+import {userWithGroupsAndRolesResponse} from "@approvio/api/mocks"
 
 test.describe("UserDetailsPage & Role Management", () => {
   test("renders user details, cards, and handles role management editing", async ({mount, page}) => {

@@ -1,13 +1,6 @@
 import React, {useState, useEffect} from "react"
 import {isLeft} from "fp-ts/Either"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog"
+import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog"
 import {Button} from "@/components/ui/button"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Input} from "@/components/ui/input"
@@ -27,7 +20,10 @@ const isSameScope = (a: RoleScope, b: RoleScope): boolean => {
   return false
 }
 
-const isSameRoleAssignment = (a: {roleName: string; scope: RoleScope}, b: {roleName: string; scope: RoleScope}): boolean => {
+const isSameRoleAssignment = (
+  a: {roleName: string; scope: RoleScope},
+  b: {roleName: string; scope: RoleScope}
+): boolean => {
   return a.roleName === b.roleName && isSameScope(a.scope, b.scope)
 }
 
@@ -86,7 +82,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
         roleName: "",
         scope: {type: "org"},
         localId: `new-role-${Math.random().toString(36).substr(2, 9)}`
-      } as (RoleOperationItem & {localId: string})
+      } as RoleOperationItem & {localId: string}
     ])
   }
 
@@ -101,7 +97,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
     newRoles[index] = {
       ...newRoles[index],
       roleName
-    } as (RoleOperationItem & {localId: string})
+    } as RoleOperationItem & {localId: string}
     setRoles(newRoles)
   }
 
@@ -128,7 +124,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
         newScope = {type: "org"}
     }
     const newRoles = [...roles]
-    newRoles[index] = {...newRoles[index], scope: newScope} as (RoleOperationItem & {localId: string})
+    newRoles[index] = {...newRoles[index], scope: newScope} as RoleOperationItem & {localId: string}
     setRoles(newRoles)
   }
 
@@ -139,11 +135,17 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
     if (!currentScope) return
 
     if (currentScope.type === "space") {
-      newRoles[index] = {...newRoles[index], scope: {...currentScope, spaceId: targetId}} as (RoleOperationItem & {localId: string})
+      newRoles[index] = {...newRoles[index], scope: {...currentScope, spaceId: targetId}} as RoleOperationItem & {
+        localId: string
+      }
     } else if (currentScope.type === "group") {
-      newRoles[index] = {...newRoles[index], scope: {...currentScope, groupId: targetId}} as (RoleOperationItem & {localId: string})
+      newRoles[index] = {...newRoles[index], scope: {...currentScope, groupId: targetId}} as RoleOperationItem & {
+        localId: string
+      }
     } else if (currentScope.type === "workflow_template") {
-      newRoles[index] = {...newRoles[index], scope: {...currentScope, templateName: targetId}} as (RoleOperationItem & {localId: string})
+      newRoles[index] = {...newRoles[index], scope: {...currentScope, templateName: targetId}} as RoleOperationItem & {
+        localId: string
+      }
     }
 
     setRoles(newRoles)
@@ -170,12 +172,8 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
     const originalRoles = user.roles || []
     const newRoles = roles.map(({localId: _localId, ...rest}) => rest) as RoleOperationItem[]
 
-    const addedRoles = newRoles.filter(
-      newR => !originalRoles.some(origR => isSameRoleAssignment(origR, newR))
-    )
-    const removedRoles = originalRoles.filter(
-      origR => !newRoles.some(newR => isSameRoleAssignment(origR, newR))
-    )
+    const addedRoles = newRoles.filter(newR => !originalRoles.some(origR => isSameRoleAssignment(origR, newR)))
+    const removedRoles = originalRoles.filter(origR => !newRoles.some(newR => isSameRoleAssignment(origR, newR)))
 
     if (addedRoles.length === 0 && removedRoles.length === 0) {
       notification.showSuccess("Roles updated successfully")
@@ -237,9 +235,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
             <Shield className="size-5" />
             Manage Roles for {user.displayName}
           </DialogTitle>
-          <DialogDescription>
-            Assign or remove roles and their corresponding scopes for this user.
-          </DialogDescription>
+          <DialogDescription>Assign or remove roles and their corresponding scopes for this user.</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto py-4 pr-1">
@@ -261,10 +257,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
                       <div className="flex flex-1 gap-3">
                         <div className="flex-1 space-y-2">
                           <Label>Role</Label>
-                          <Select
-                            value={role.roleName || ""}
-                            onValueChange={val => val && handleRoleChange(idx, val)}
-                          >
+                          <Select value={role.roleName || ""} onValueChange={val => val && handleRoleChange(idx, val)}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
@@ -305,9 +298,13 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
                             <Input
                               placeholder={`Enter ${role.scope.type === "workflow_template" ? "template name" : role.scope.type + " ID"}`}
                               value={
-                                role.scope.type === "space" ? (role.scope.spaceId) :
-                                role.scope.type === "group" ? (role.scope.groupId) :
-                                role.scope.type === "workflow_template" ? (role.scope.templateName) : ""
+                                role.scope.type === "space"
+                                  ? role.scope.spaceId
+                                  : role.scope.type === "group"
+                                    ? role.scope.groupId
+                                    : role.scope.type === "workflow_template"
+                                      ? role.scope.templateName
+                                      : ""
                               }
                               onChange={e => handleScopeTargetChange(idx, e.target.value)}
                             />

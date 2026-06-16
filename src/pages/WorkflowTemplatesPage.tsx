@@ -31,9 +31,7 @@ const SHARED_COLUMNS: Column<WorkflowTemplateSummary>[] = [
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <span className="text-left font-medium text-primary hover:underline">
-              {template.name}
-            </span>
+            <span className="text-left font-medium text-primary hover:underline">{template.name}</span>
           </TooltipTrigger>
           <TooltipContent align="start">
             <p>Click to view details for {template.name}</p>

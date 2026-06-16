@@ -18,7 +18,7 @@ export default defineConfig(({mode}) => {
           // local backend connections, and cross-origin API calls.
           // This addresses local testing restrictions while keeping production secure.
           if (appEnv === "testing" || appEnv === "development") {
-            return html.replace(/<meta http-equiv="Content-Security-Policy".*?\/>/, "")
+            return html.replace(/<meta\s+http-equiv="Content-Security-Policy"[\s\S]*?\/>/i, "")
           }
 
           return html

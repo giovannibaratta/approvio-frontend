@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react"
-import { handleEither } from "../utils/either"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Loader2, UserCircle, Users, User, Shield, Activity } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
-import { getEntityInfo, listMyAuditLogs } from "../services/api"
-import type { GetEntityInfoUserResponse, AuditLog } from "@approvio/api"
-import { AssignedRolesTable } from "../components/shared/AssignedRolesTable"
-import { AuditLogsTable } from "../components/shared/AuditLogsTable"
-import { Link as RouterLink } from "react-router-dom"
+import React, {useEffect, useState} from "react"
+import {handleEither} from "../utils/either"
+import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
+import {Loader2, UserCircle, Users, User, Shield, Activity} from "lucide-react"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Badge} from "@/components/ui/badge"
+import {getEntityInfo, listMyAuditLogs} from "../services/api"
+import type {GetEntityInfoUserResponse, AuditLog} from "@approvio/api"
+import {AssignedRolesTable} from "../components/shared/AssignedRolesTable"
+import {AuditLogsTable} from "../components/shared/AuditLogsTable"
+import {Link as RouterLink} from "react-router-dom"
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<GetEntityInfoUserResponse | null>(null)
@@ -57,11 +57,7 @@ const ProfilePage: React.FC = () => {
         data => {
           setAuditLogs(data.auditLogs || [])
           setHasMore(data.pagination?.hasMore || false)
-          setNextCursor(
-            data.pagination && "nextCursor" in data.pagination
-              ? data.pagination.nextCursor
-              : undefined
-          )
+          setNextCursor(data.pagination && "nextCursor" in data.pagination ? data.pagination.nextCursor : undefined)
           setLoadingLogs(false)
         },
         () => {
@@ -147,7 +143,9 @@ const ProfilePage: React.FC = () => {
             </div>
             {profile.entityType === "user" && (
               <div>
-                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">Organization Role</p>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Organization Role
+                </p>
                 <p className="font-medium capitalize">
                   {profile.orgRole === "admin" ? "Organization Admin" : "Standard User"}
                 </p>
@@ -169,7 +167,10 @@ const ProfilePage: React.FC = () => {
               <div className="flex flex-wrap gap-2">
                 {profile.groups.map(group => (
                   <RouterLink key={group.groupId} to={`/groups/${group.groupId}`}>
-                    <Badge variant="secondary" className="py-1 font-mono text-xs transition-colors hover:bg-secondary/80">
+                    <Badge
+                      variant="secondary"
+                      className="py-1 font-mono text-xs transition-colors hover:bg-secondary/80"
+                    >
                       {group.groupName}
                     </Badge>
                   </RouterLink>

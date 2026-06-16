@@ -19,6 +19,7 @@ Build the Docker image from the **root directory** of the frontend workspace usi
 ## Publishing the Image
 
 1. **Login to GHCR**:
+
    ```bash
    USERNAME="giovannibaratta"
    echo $GITHUB_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
@@ -33,9 +34,9 @@ Build the Docker image from the **root directory** of the frontend workspace usi
 
 The container supports the following environment variables at runtime:
 
-| Variable | Description |
-| --- | --- |
-| `API_BASE_URL` | The base URL for the Approvio API (e.g., `https://api.approvio.io`). |
+| Variable         | Description                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| `API_BASE_URL`   | The base URL for the Approvio API (e.g., `https://api.approvio.io`).                          |
 | `AUTH_LOGIN_URL` | Optional. The URL to redirect users for login (defaults to `${API_BASE_URL}/auth/web/login`). |
 
 ### Local Testing with Runtime Config

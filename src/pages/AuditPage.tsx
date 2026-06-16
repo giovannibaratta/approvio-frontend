@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react"
-import { AuditLogsTable } from "../components/shared/AuditLogsTable"
-import { handleEither } from "../utils/either"
-import { listAuditLogs } from "../services/api"
-import type { AuditLog, ListAuditLogsParams } from "@approvio/api"
-import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { FileText, Search } from "lucide-react"
-import { toast } from "sonner"
-import { TYPOGRAPHY, LAYOUT } from "../lib/styles"
+import React, {useState, useEffect} from "react"
+import {AuditLogsTable} from "../components/shared/AuditLogsTable"
+import {handleEither} from "../utils/either"
+import {listAuditLogs} from "../services/api"
+import type {AuditLog, ListAuditLogsParams} from "@approvio/api"
+import {Card, CardContent} from "@/components/ui/card"
+import {Alert, AlertDescription} from "@/components/ui/alert"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Input} from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {FileText, Search} from "lucide-react"
+import {toast} from "sonner"
+import {TYPOGRAPHY, LAYOUT} from "../lib/styles"
 
 const AuditPage: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([])
@@ -61,11 +61,7 @@ const AuditPage: React.FC = () => {
         data => {
           setLogs(data.auditLogs || [])
           setHasMore(data.pagination?.hasMore || false)
-          setNextCursor(
-            data.pagination && "nextCursor" in data.pagination
-              ? data.pagination.nextCursor
-              : undefined
-          )
+          setNextCursor(data.pagination && "nextCursor" in data.pagination ? data.pagination.nextCursor : undefined)
           setLoading(false)
         },
         errorObj => {
@@ -117,8 +113,6 @@ const AuditPage: React.FC = () => {
     })
   }
 
-
-
   return (
     <div className="space-y-6">
       <div className={LAYOUT.FLEX_BETWEEN}>
@@ -137,7 +131,12 @@ const AuditPage: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="space-y-2">
-              <label htmlFor="entityTypeFilter" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Entity Type</label>
+              <label
+                htmlFor="entityTypeFilter"
+                className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+              >
+                Entity Type
+              </label>
               <Select value={entityTypeFilter} onValueChange={e => setEntityTypeFilter(e || "ALL")}>
                 <SelectTrigger id="entityTypeFilter" className="w-[180px]">
                   <SelectValue placeholder="All types" />
@@ -152,7 +151,12 @@ const AuditPage: React.FC = () => {
               </Select>
             </div>
             <div className="flex-1 space-y-2">
-              <label htmlFor="entityIdFilter" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Entity ID</label>
+              <label
+                htmlFor="entityIdFilter"
+                className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+              >
+                Entity ID
+              </label>
               <Input
                 id="entityIdFilter"
                 placeholder="Search by UUID..."
@@ -163,7 +167,12 @@ const AuditPage: React.FC = () => {
               />
             </div>
             <div className="flex-1 space-y-2">
-              <label htmlFor="actorIdFilter" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Actor ID</label>
+              <label
+                htmlFor="actorIdFilter"
+                className="text-xs font-medium uppercase tracking-wider text-muted-foreground"
+              >
+                Actor ID
+              </label>
               <Input
                 id="actorIdFilter"
                 placeholder="Search by UUID..."

@@ -34,9 +34,7 @@ export const PaginationUI: React.FC<PaginationUIProps> = ({
       {isCursor ? (
         <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Viewing page {page + 1}</div>
       ) : (
-        total !== undefined && (
-          <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Total: {total} items</div>
-        )
+        total !== undefined && <div className={"flex-1 " + TYPOGRAPHY.DESCRIPTION_SM}>Total: {total} items</div>
       )}
       <div className={LAYOUT.FLEX_START + " space-x-2"}>
         <p className={TYPOGRAPHY.LABEL}>Rows per page</p>
