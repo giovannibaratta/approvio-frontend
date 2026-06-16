@@ -44,12 +44,17 @@ test("CreateWorkflowTemplatePage allows navigation, validation, and cancellation
 
   await component.getByRole("button", {name: "Next Step"}).click()
 
-  // Step 3: Review & Create
+  // Step 3: Actions (new step)
+  await expect(page.getByText("Configure post-approval automated actions.")).toBeVisible()
+
+  await component.getByRole("button", {name: "Next Step"}).click()
+
+  // Step 4: Review & Create
   await expect(page.getByText("Verify template configuration before creation.")).toBeVisible()
 
   // Test back button
   await component.getByRole("button", {name: "Back"}).click()
-  await expect(page.getByText("Provide the Approval Rule in JSON format.")).toBeVisible()
+  await expect(page.getByText("Configure post-approval automated actions.")).toBeVisible()
   await component.getByRole("button", {name: "Next Step"}).click()
 
   // Submit
