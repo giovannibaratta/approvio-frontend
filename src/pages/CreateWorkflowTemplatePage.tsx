@@ -8,20 +8,24 @@ import type {WorkflowTemplateCreate} from "@approvio/api"
 
 import TemplateDetailsForm from "@/components/workflow-templates/TemplateDetailsForm"
 import TemplateRuleForm from "@/components/workflow-templates/TemplateRuleForm"
+import TemplateActionsForm from "@/components/workflow-templates/TemplateActionsForm"
 import TemplateReview from "@/components/workflow-templates/TemplateReview"
 
 import MultiStepFormLayout, {type StepDefinition} from "@/components/common/MultiStepFormLayout"
-import {GitBranch, Settings2, Code, CheckCircle2} from "lucide-react"
+import {GitBranch, Settings2, Code, Zap, CheckCircle2} from "lucide-react"
+import {type WorkflowAction} from "@approvio/api"
 
 enum CreateTemplateSteps {
   Details = 0,
   ApprovalRule = 1,
-  Review = 2
+  Actions = 2,
+  Review = 3
 }
 
 const steps: StepDefinition[] = [
   {id: CreateTemplateSteps.Details, label: "Details", icon: Settings2},
   {id: CreateTemplateSteps.ApprovalRule, label: "Approval Rule", icon: Code},
+  {id: CreateTemplateSteps.Actions, label: "Actions", icon: Zap},
   {id: CreateTemplateSteps.Review, label: "Review", icon: CheckCircle2}
 ]
 
@@ -34,10 +38,12 @@ const CreateWorkflowTemplatePage: React.FC = () => {
   const [defaultExpiresInHours, setDefaultExpiresInHours] = useState<number | null>(null)
   const [spaceId, setSpaceId] = useState<string | null>(null)
   const [ruleJson, setRuleJson] = useState("{\n  \n}")
+  const [actions, setActions] = useState<WorkflowAction[]>([])
 
   // Validation State
   const [nameError, setNameError] = useState<string | null>(null)
   const [isValidJson, setIsValidJson] = useState(false)
+  const [isValidActions, setIsValidActions] = useState(true)
   const [defaultExpireError, setDefaultExpireError] = useState<string | null>(null)
 
   // Execution State
@@ -78,6 +84,14 @@ const CreateWorkflowTemplatePage: React.FC = () => {
       clearApiErrors()
     }
 
+    if (activeStep === CreateTemplateSteps.Actions) {
+      if (!isValidActions) {
+        addError("Please correct the invalid actions before proceeding.")
+        return
+      }
+      clearApiErrors()
+    }
+
     setActiveStep(prev => prev + 1)
   }
 
@@ -109,7 +123,8 @@ const CreateWorkflowTemplatePage: React.FC = () => {
       description,
       spaceId,
       defaultExpiresInHours: defaultExpiresInHours ?? undefined,
-      approvalRule: parsedRule
+      approvalRule: parsedRule,
+      actions: actions.length > 0 ? actions : undefined
     }
 
     const result = await createWorkflowTemplate(payload)
@@ -133,12 +148,9 @@ const CreateWorkflowTemplatePage: React.FC = () => {
   }
 
   const isNextDisabled = () => {
-    if (activeStep === CreateTemplateSteps.Details) {
-      return !name.trim() || !spaceId || loading
-    }
-    if (activeStep === CreateTemplateSteps.ApprovalRule) {
-      return !isValidJson || loading
-    }
+    if (activeStep === CreateTemplateSteps.Details) return !name.trim() || !spaceId || loading
+    if (activeStep === CreateTemplateSteps.ApprovalRule) return !isValidJson || loading
+    if (activeStep === CreateTemplateSteps.Actions) return !isValidActions || loading
     return loading
   }
 
@@ -171,6 +183,15 @@ const CreateWorkflowTemplatePage: React.FC = () => {
             setIsValidJson={setIsValidJson}
           />
         )
+      case CreateTemplateSteps.Actions:
+        return (
+          <TemplateActionsForm
+            actions={actions}
+            setActions={setActions}
+            disableComponents={loading}
+            setIsValid={setIsValidActions}
+          />
+        )
       case CreateTemplateSteps.Review:
         return (
           <TemplateReview
@@ -179,6 +200,7 @@ const CreateWorkflowTemplatePage: React.FC = () => {
             defaultExpiresInHours={defaultExpiresInHours}
             spaceId={spaceId}
             ruleJson={ruleJson}
+            actions={actions}
           />
         )
     }
@@ -197,7 +219,9 @@ const CreateWorkflowTemplatePage: React.FC = () => {
           ? "Configure basic information and defaults."
           : activeStep === CreateTemplateSteps.ApprovalRule
             ? "Define the JSON logic for approval conditions."
-            : "Verify template configuration before creation."
+            : activeStep === CreateTemplateSteps.Actions
+              ? "Configure post-approval automated actions."
+              : "Verify template configuration before creation."
       }
       steps={steps}
       activeStepIndex={activeStep}

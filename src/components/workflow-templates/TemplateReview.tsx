@@ -1,7 +1,20 @@
 import React, {useEffect, useState} from "react"
 import {listSpaces} from "../../services/api"
 import {handleEither} from "../../utils/either"
-import {FileJson, Layers, Settings2, Clock, AlignLeft} from "lucide-react"
+import {
+  FileJson,
+  Layers,
+  Settings2,
+  Clock,
+  AlignLeft,
+  Zap,
+  Mail,
+  Webhook,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react"
+import type {WorkflowAction} from "@approvio/api"
 
 interface TemplateReviewProps {
   name: string
@@ -9,6 +22,7 @@ interface TemplateReviewProps {
   defaultExpiresInHours: number | null
   spaceId: string | null
   ruleJson: string
+  actions?: WorkflowAction[]
 }
 
 const TemplateReview: React.FC<TemplateReviewProps> = ({
@@ -16,9 +30,11 @@ const TemplateReview: React.FC<TemplateReviewProps> = ({
   description,
   defaultExpiresInHours,
   spaceId,
-  ruleJson
+  ruleJson,
+  actions = []
 }) => {
   const [spaceName, setSpaceName] = useState<string>("Loading...")
+  const [actionsExpanded, setActionsExpanded] = useState(false)
 
   useEffect(() => {
     const fetchSpaces = async () => {
@@ -98,6 +114,78 @@ const TemplateReview: React.FC<TemplateReviewProps> = ({
           </pre>
         </div>
       </div>
+
+      {actions.length > 0 && (
+        <div className="mt-6 space-y-2">
+          <div className="mb-2 flex items-center gap-2">
+            <Zap className="size-4 text-muted-foreground" />
+            <h4 className="text-sm font-medium text-muted-foreground">Post-Approval Actions ({actions.length})</h4>
+          </div>
+          <div className="rounded-md border border-border/50 bg-muted/20">
+            <button
+              className="flex w-full items-center justify-between rounded-t-md px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/30"
+              onClick={() => setActionsExpanded(!actionsExpanded)}
+            >
+              <span>View Configured Actions</span>
+              {actionsExpanded ? (
+                <ChevronUp className="size-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="size-4 text-muted-foreground" />
+              )}
+            </button>
+            {actionsExpanded && (
+              <div className="space-y-3 border-t border-border/30 px-4 pb-4 pt-2">
+                {actions.map((act, idx) => {
+                  const action = act as any
+                  return (
+                    <div key={idx} className="rounded-md border border-border/40 bg-background p-3">
+                      {action.type === "EMAIL" && (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <Mail className="size-4 text-muted-foreground" />
+                            <span className="text-sm font-semibold">Email Action</span>
+                          </div>
+                          <div className="pl-6 text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground">Recipients:</span>{" "}
+                            {action.recipients?.join(", ")}
+                          </div>
+                        </div>
+                      )}
+                      {action.type === "WEBHOOK" && (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <Webhook className="size-4 text-muted-foreground" />
+                            <span className="text-sm font-semibold">Webhook Action</span>
+                          </div>
+                          <div className="space-y-1 pl-6 text-xs text-muted-foreground">
+                            <div>
+                              <span className="font-medium text-foreground">URL:</span> {action.url}
+                            </div>
+                            <div>
+                              <span className="font-medium text-foreground">Method:</span> {action.method}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {action.type === "SLACK" && (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <MessageSquare className="size-4 text-muted-foreground" />
+                            <span className="text-sm font-semibold">Slack Action</span>
+                          </div>
+                          <div className="pl-6 text-xs text-muted-foreground">
+                            <span className="font-medium text-foreground">Webhook URL:</span> {action.webhookUrl}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
