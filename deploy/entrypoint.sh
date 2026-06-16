@@ -34,6 +34,16 @@ echo "};" >> $CONFIG_FILE
 
 echo "Generated runtime configuration at $CONFIG_FILE"
 
+# Generate static web server configuration for CSP headers
+SWS_CONFIG_FILE="/app/sws-config.toml"
+cat << 'EOF' > $SWS_CONFIG_FILE
+[advanced]
+[[advanced.headers]]
+source = "**"
+headers = { Content-Security-Policy = "frame-ancestors 'none';" }
+EOF
+echo "Generated SWS configuration at $SWS_CONFIG_FILE"
+
 # Start the static web server
 exec static-web-server \
     --port 8080 \
@@ -44,5 +54,6 @@ exec static-web-server \
     --health true \
     --compression true \
     --log-level info \
-    --log-forwarded-for true
+    --log-forwarded-for true \
+    -w $SWS_CONFIG_FILE
 
