@@ -47,7 +47,7 @@ export default defineConfig({
           // This captures "fp-ts/Anything.js" and redirects it correctly
           {
             find: /^fp-ts\/(.*)\.js$/,
-            replacement: path.join(__dirname, "./node_modules/fp-ts/es6/$1.js")
+            replacement: path.join(__dirname, "./node_modules/fp-ts/lib/$1.js")
           }
         ]
       },
