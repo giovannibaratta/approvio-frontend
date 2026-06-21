@@ -5,10 +5,11 @@ import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {Space, WorkflowTemplate} from "@approvio/api"
 import TemplateDetailsRule from "../components/workflow-templates/TemplateDetailsRule"
+import TemplateActionsList from "../components/workflow-templates/TemplateActionsList"
 import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
 import {Alert, AlertDescription} from "@/components/ui/alert"
-import {Loader2, ArrowLeftRight, FileJson, LayoutGrid, Clock, Calendar, Edit3, AlignLeft} from "lucide-react"
+import {Loader2, ArrowLeftRight, FileJson, LayoutGrid, Clock, Calendar, Edit3, AlignLeft, Zap} from "lucide-react"
 
 const WorkflowTemplateDetailsPage: React.FC = () => {
   const {templateIdentifier} = useParams<{templateIdentifier: string}>()
@@ -161,6 +162,25 @@ const WorkflowTemplateDetailsPage: React.FC = () => {
 
           <div className="border-t border-border/40 pt-4">
             <TemplateDetailsRule rule={template.approvalRule} templateId={template.id} />
+          </div>
+
+          <div className="border-t border-border/40 pt-6">
+            <div className="mb-4 flex items-center gap-2">
+              <Zap className="size-5 text-muted-foreground" />
+              <h3 className="text-lg font-medium tracking-tight">
+                Post-Approval Actions ({(template.actions || []).length})
+              </h3>
+            </div>
+
+            {template.actions && template.actions.length > 0 ? (
+              <div className="rounded-md border border-border/50 bg-muted/20 p-4">
+                <TemplateActionsList actions={template.actions} />
+              </div>
+            ) : (
+              <div className="rounded-md border border-border/50 bg-muted/20 p-8 text-center">
+                <p className="text-sm text-muted-foreground">No post-approval actions configured.</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
