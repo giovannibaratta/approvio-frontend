@@ -3,10 +3,11 @@ import Editor from "react-simple-code-editor"
 import Prism from "prismjs"
 import "prismjs/components/prism-json"
 import "prismjs/themes/prism.css"
-import {getGroup} from "../../services/api"
-import {isLeft} from "fp-ts/Either"
+import {resolveResources} from "../../services/api"
+import {isRight} from "fp-ts/Either"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import {AlertTriangle, Info, FileJson} from "lucide-react"
+import type {ResourceResolveRequest} from "@approvio/api"
 
 interface TemplateRuleFormProps {
   ruleJson: string
@@ -66,25 +67,48 @@ const TemplateRuleForm: React.FC<TemplateRuleFormProps> = ({
       // Perform validation of found groupIds
       const checkGroups = async () => {
         const warnings: string[] = []
+        const resourcesToResolve: ResourceResolveRequest["resources"] = []
+
         for (const id of foundGroupIds.slice(0, MAX_GROUP_TO_FETCH)) {
           // If we haven't checked this ID yet
           if (groupCacheRef.current[id] === undefined) {
-            const result = await getGroup(id)
-            if (isLeft(result)) {
-              if (result.left.code === "GROUP_NOT_FOUND") {
-                // Group does not exist
-                setGroupCache(prev => ({...prev, [id]: false}))
-                warnings.push(`Group ID not found: ${id}`)
-              }
-            } else {
-              // Group exists
-              setGroupCache(prev => ({...prev, [id]: true}))
-            }
+            resourcesToResolve.push({type: "group", id})
+            // Temporary set to avoid duplicates while fetching
+            groupCacheRef.current[id] = true
           } else if (groupCacheRef.current[id] === false) {
             warnings.push(`Group ID not found: ${id}`)
           }
         }
-        setGroupWarnings(warnings)
+
+        if (resourcesToResolve.length > 0) {
+          const result = await resolveResources({resources: resourcesToResolve})
+          if (isRight(result)) {
+            const newCache = {...groupCacheRef.current}
+            result.right.resolved.forEach(item => {
+              newCache[item.id] = true
+            })
+            result.right.denied.forEach(item => {
+              if (item.reason === "NOT_FOUND") {
+                newCache[item.id] = false
+                warnings.push(`Group ID not found: ${item.id}`)
+              } else {
+                newCache[item.id] = true // Ignore authorization/other errors for validation purposes
+              }
+            })
+            setGroupCache(newCache)
+          } else {
+            // Reset cache on error so we can try again
+            const resetCache = {...groupCacheRef.current}
+            resourcesToResolve.forEach(req => delete resetCache[req.id])
+            setGroupCache(resetCache)
+          }
+        }
+        setGroupWarnings(() => {
+          // Only update warnings if there's actually a change (or a warning from cache/network)
+          // We append newly found warnings to warnings already present in cache but deduplicate.
+          const allWarnings = Array.from(new Set([...warnings]))
+          return allWarnings
+        })
       }
 
       // Debounce the check slightly so we don't spam as they type

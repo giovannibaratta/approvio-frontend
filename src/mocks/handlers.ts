@@ -114,6 +114,42 @@ export const handlers = [
     })
   }),
 
+  // 6.5 Resolve Resources handler
+  http.post("*/resources/resolve", async ({request}) => {
+    const data = (await request.json()) as any
+    const resources = data?.resources || []
+
+    const resolved = []
+    const denied = []
+
+    for (const res of resources) {
+      if (res.type === "group" && res.id === "some-group-id") {
+        resolved.push({
+          type: "group",
+          id: "some-group-id",
+          name: "Test Group"
+        })
+      } else if (res.type === "space" && res.id === "test-space-id") {
+        resolved.push({
+          type: "space",
+          id: "test-space-id",
+          name: "Test Space"
+        })
+      } else {
+        denied.push({
+          type: res.type,
+          id: res.id,
+          reason: "NOT_FOUND"
+        })
+      }
+    }
+
+    return HttpResponse.json({
+      resolved,
+      denied
+    })
+  }),
+
   // 7. Workflow Template Details Handler
   http.get("*/workflow-templates/3fa85f64-5717-4562-b3fc-2c963f66afa6", () => {
     return HttpResponse.json({
