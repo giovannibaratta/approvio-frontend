@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react"
 import {DataTable, type Column} from "../DataTable"
-import {getGroup, getSpace} from "../../services/api"
+import {resolveResources} from "../../services/api"
 import {isRight} from "fp-ts/Either"
-import type {RoleOperationItem, User} from "@approvio/api"
+import type {RoleOperationItem, User, ResourceResolveRequest} from "@approvio/api"
 import {TYPOGRAPHY} from "@/lib/styles"
 import {Link} from "react-router-dom"
 import {ManageUserRolesDialog} from "../users/ManageUserRolesDialog"
@@ -32,38 +32,32 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
       if (!roles || roles.length === 0) return
 
       const initialNames = {...resolvedNames}
-      const promises = roles.map(async role => {
+      const resourcesToResolve: ResourceResolveRequest["resources"] = []
+
+      roles.forEach(role => {
         const scope = role.scope
-        if (scope.type === "group" && scope.groupId) {
-          const gid = scope.groupId
-          if (!initialNames[gid]) {
-            const res = await getGroup(gid)
-            if (isRight(res)) {
-              return {id: gid, name: res.right.name}
-            }
-          }
-        } else if (scope.type === "space" && scope.spaceId) {
-          const sid = scope.spaceId
-          if (!initialNames[sid]) {
-            const res = await getSpace(sid)
-            if (isRight(res)) {
-              return {id: sid, name: res.right.name}
-            }
-          }
+        if (scope.type === "group" && scope.groupId && initialNames[scope.groupId] === undefined) {
+          resourcesToResolve.push({type: "group", id: scope.groupId})
+          // Mark as processing to avoid duplicate requests in the same batch
+          initialNames[scope.groupId] = "pending"
+        } else if (scope.type === "space" && scope.spaceId && initialNames[scope.spaceId] === undefined) {
+          resourcesToResolve.push({type: "space", id: scope.spaceId})
+          initialNames[scope.spaceId] = "pending"
         }
-        return null
       })
 
-      const fetched = await Promise.all(promises)
-      setResolvedNames(prev => {
-        const next = {...prev}
-        fetched.forEach(item => {
-          if (item) {
-            next[item.id] = item.name
-          }
-        })
-        return next
-      })
+      if (resourcesToResolve.length > 0) {
+        const res = await resolveResources({resources: resourcesToResolve})
+        if (isRight(res)) {
+          setResolvedNames(prev => {
+            const next = {...prev}
+            res.right.resolved.forEach(item => {
+              next[item.id] = item.name
+            })
+            return next
+          })
+        }
+      }
     }
 
     resolveNames()
