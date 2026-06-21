@@ -23,6 +23,8 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({})
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
   // Resolve scope target names dynamically
   useEffect(() => {
@@ -146,6 +148,8 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
     id: `${r.roleName}-${r.scope.type}-${i}`
   }))
 
+  const paginatedData = tableData.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+
   const headerAction = user ? (
     <>
       <button
@@ -167,16 +171,15 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
     <DataTable
       title="Assigned Roles"
       columns={columns}
-      data={tableData}
+      data={paginatedData}
       loading={loading}
       total={roles.length}
-      page={0}
-      rowsPerPage={100}
-      onPageChange={() => {
-        /* no-op */
-      }}
-      onRowsPerPageChange={() => {
-        /* no-op */
+      page={page}
+      rowsPerPage={rowsPerPage}
+      onPageChange={setPage}
+      onRowsPerPageChange={(newRowsPerPage) => {
+        setRowsPerPage(newRowsPerPage)
+        setPage(0)
       }}
       headerAction={headerAction}
     />
