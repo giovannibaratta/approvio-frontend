@@ -49,7 +49,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
       setRoles(
         (user.roles || []).map((r, idx) => ({
           ...r,
-          localId: `${r.roleName}-${r.scope.type}-${idx}-${Math.random().toString(36).substr(2, 9)}`
+          localId: `${r.roleName}-${r.scope.type}-${idx}-${crypto.randomUUID()}`
         }))
       )
     }
@@ -81,7 +81,7 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
       {
         roleName: "",
         scope: {type: "org"},
-        localId: `new-role-${Math.random().toString(36).substr(2, 9)}`
+        localId: `new-role-${crypto.randomUUID()}`
       } as RoleOperationItem & {localId: string}
     ])
   }
