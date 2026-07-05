@@ -21,3 +21,7 @@
 **Vulnerability:** Missing `frame-ancestors` directive in the Content Security Policy (CSP).
 **Learning:** Without `frame-ancestors 'none'`, the application could be embedded in an iframe on a malicious website, exposing users to clickjacking attacks.
 **Prevention:** Always include `frame-ancestors 'none'` (or explicitly restrict it to trusted domains) as an HTTP response header, as it is strictly ignored when delivered via a `<meta>` tag according to the CSP specification.
+## 2026-07-05 - [Replace insecure Math.random with crypto.randomUUID]
+**Vulnerability:** Use of insecure pseudo-random number generator (PRNG) `Math.random()` for generating local identifiers.
+**Learning:** While only used for local React keys, weak PRNGs are flagged by security standards (and SAST tools). Modern browsers provide `crypto.randomUUID()`, which is cryptographically secure and standard for unique IDs.
+**Prevention:** Always use `crypto.randomUUID()` when generating unique identifiers in the frontend, avoiding `Math.random()` entirely for such purposes.
