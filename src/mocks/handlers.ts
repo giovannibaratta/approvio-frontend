@@ -1,8 +1,24 @@
 import {http, HttpResponse} from "msw"
 
 export const handlers = [
-  // 0. Auth Login Handler (Mock SSO flow for E2E testing)
-  http.get("*/mock/auth/web/login", () => {
+  // 0. Auth Providers Handler (Discovery endpoint)
+  http.get("*/auth/providers", () => {
+    return HttpResponse.json([
+      {
+        id: "google",
+        displayName: "Google",
+        loginUrl: "/auth/web/login?provider=google"
+      },
+      {
+        id: "okta",
+        displayName: "Okta SSO",
+        loginUrl: "/auth/web/login?provider=okta"
+      }
+    ])
+  }),
+
+  // 0.2. Auth Login Handler (Mock SSO flow)
+  http.get("*/auth/web/login*", () => {
     // Simulates the backend redirecting back to the application callback URL
     return HttpResponse.redirect("/auth/callback", 302)
   }),

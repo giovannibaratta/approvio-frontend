@@ -44,7 +44,11 @@ export default defineConfig({
           // 1. Source alias
           {find: "@", replacement: path.resolve(__dirname, "./src")},
           // 2. Map SDK's deep imports to the fp-ts ESM directory (es6)
-          // This captures "fp-ts/Anything.js" and redirects it correctly
+          // This captures "fp-ts/Anything.js" and "fp-ts/lib/Anything.js" and redirects it correctly
+          {
+            find: /^fp-ts\/(?:lib|es6)\/(.*)\.js$/,
+            replacement: path.join(__dirname, "./node_modules/fp-ts/es6/$1.js")
+          },
           {
             find: /^fp-ts\/(.*)\.js$/,
             replacement: path.join(__dirname, "./node_modules/fp-ts/es6/$1.js")
