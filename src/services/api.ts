@@ -28,7 +28,8 @@ import {
   type RoleRemovalRequest,
   type ListAuditLogsParams,
   type ListMyAuditLogsParams,
-  type ListAuditLogs200Response
+  type ListAuditLogs200Response,
+  type AuthProvider
 } from "@approvio/api"
 import {type Either, mapLeft, isRight} from "fp-ts/Either"
 import {isApprovioError, WebAuthenticator, ApprovioUserClient, type ApprovioError} from "@approvio/ts-sdk"
@@ -257,3 +258,9 @@ export async function listMyAuditLogs(
   const result = await client.listMyAuditLogs(params)()
   return mapLeft(handleApiError)(result)
 }
+
+export async function getAuthProviders(): Promise<Either<FrontendError, AuthProvider[]>> {
+  const result = await client.getAuthProviders()()
+  return mapLeft(handleApiError)(result)
+}
+
