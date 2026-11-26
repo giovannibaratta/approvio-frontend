@@ -1,5 +1,6 @@
 import React from "react"
 import {Navigate, Link as RouterLink} from "react-router-dom"
+import {readPendingInvitation} from "../services/pending-invitation"
 import {useAppSelector} from "../store/hooks"
 import {Card, CardContent} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
@@ -10,6 +11,7 @@ import {cn} from "@/lib/utils"
 
 const AuthCallbackPage: React.FC = () => {
   const session = useAppSelector(state => state.auth.session)
+  if (session && readPendingInvitation()) return <Navigate to="/join" replace />
   if (session) return <Navigate to={session.data.selectedOrganizationId ? "/" : "/organizations"} replace />
 
   return (

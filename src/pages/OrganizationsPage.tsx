@@ -122,6 +122,9 @@ export default function OrganizationsPage() {
             <Link to="/organizations/new">Create organization</Link>
           </Button>
         )}
+        <Button asChild variant="outline">
+          <Link to="/join">Join with an invitation</Link>
+        </Button>
         {selectedId && (
           <Button asChild variant="ghost">
             <Link to="/">Back to workspace</Link>

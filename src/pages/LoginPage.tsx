@@ -109,6 +109,13 @@ const LoginPage: React.FC = () => {
             ) : null}
           </CardContent>
 
+          {!isAuthenticated && (
+            <CardFooter className="justify-center">
+              <RouterLink to="/join" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                Join with an invitation
+              </RouterLink>
+            </CardFooter>
+          )}
           {isAuthenticated && (
             <CardFooter className="flex justify-center pb-8">
               <Button asChild size="lg" className="w-full px-8 sm:w-auto">

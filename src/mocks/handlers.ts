@@ -65,6 +65,22 @@ export const handlers = [
     return HttpResponse.json({organization}, {status: 201})
   }),
 
+  http.post("*/o/:organizationId/invitations/:invitationId/accept", async ({params, request}) => {
+    const {token} = (await request.json()) as {token: string}
+    if (token !== "valid-invite-token")
+      return HttpResponse.json({code: "INVALID_INVITATION", message: "Invalid invitation"}, {status: 404})
+    const joined: OrganizationSummary = {
+      id: String(params.organizationId),
+      slug: "invited-org",
+      displayName: "Invited workspace",
+      status: "active"
+    }
+    const organizations = mockOrganizations()
+    if (!organizations.some(organization => organization.id === joined.id))
+      sessionStorage.setItem("mock-organizations", JSON.stringify([...organizations, joined]))
+    return HttpResponse.json({organizationId: joined.id})
+  }),
+
   http.post("*/auth/web/select-organization", async ({request}) => {
     const {organizationId} = (await request.json()) as {organizationId: string}
     sessionStorage.setItem("mock-organization", organizationId)

@@ -5,6 +5,8 @@ import LoginPage from "./pages/LoginPage"
 import AuthCallbackPage from "./pages/AuthCallbackPage"
 import OrganizationsPage from "./pages/OrganizationsPage"
 import CreateOrganizationPage from "./pages/CreateOrganizationPage"
+import JoinOrganizationPage from "./pages/JoinOrganizationPage"
+import {clearPendingInvitation} from "./services/pending-invitation"
 import UsersPage from "./pages/UsersPage"
 import UserDetailsPage from "./pages/UserDetailsPage"
 import AuditPage from "./pages/AuditPage"
@@ -77,6 +79,7 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     const result = await logout()
+    if (!isLeft(result)) clearPendingInvitation()
     if (isLeft(result))
       notification.showError(
         "Failed to securely log out from the server. Please check your internet connection and try again. If you are on a shared computer, consider clearing your browser cookies."
@@ -194,6 +197,8 @@ const App: React.FC = () => {
         <main className="container mx-auto max-w-7xl flex-1 p-4 md:p-6 lg:p-8">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/join" element={<JoinOrganizationPage />} />
+            <Route path="/join/:organizationId/:invitationId" element={<JoinOrganizationPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route
               path="/organizations"

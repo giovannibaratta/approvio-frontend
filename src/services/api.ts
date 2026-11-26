@@ -47,6 +47,7 @@ import {
 } from "@approvio/ts-sdk"
 import {API_BASE_URL} from "../constants"
 import {store} from "../store/store"
+import type {PendingInvitation} from "./pending-invitation"
 import {clearAuth, setSession} from "../store/authSlice"
 
 export interface ListWorkflowVotes200Response {
@@ -138,6 +139,10 @@ export async function listOwnOrganizations(page = 1): Promise<Either<FrontendErr
 
 export async function createOrganization(input: OrganizationCreate) {
   return mapLeft(mapApiError)(await platform.createOrganization(input)())
+}
+
+export async function acceptOrganizationInvitation({organizationId, invitationId, token}: PendingInvitation) {
+  return mapLeft(mapApiError)(await tenantClient(organizationId).acceptInvitation(invitationId, {token})())
 }
 
 export async function switchOrganization(
