@@ -6,7 +6,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage"
 import OrganizationsPage from "./pages/OrganizationsPage"
 import CreateOrganizationPage from "./pages/CreateOrganizationPage"
 import JoinOrganizationPage from "./pages/JoinOrganizationPage"
-import {clearPendingInvitation} from "./services/pending-invitation"
+import {clearPendingInvitation, readPendingInvitation} from "./services/pending-invitation"
 import UsersPage from "./pages/UsersPage"
 import UserDetailsPage from "./pages/UserDetailsPage"
 import AuditPage from "./pages/AuditPage"
@@ -227,8 +227,19 @@ const App: React.FC = () => {
               <Route path="/users/:userId" element={<UserDetailsPage />} />
               <Route path="/audit" element={<AuditPage />} />
             </Route>
+            <Route
+              path="/"
+              element={
+                isAuthenticated && readPendingInvitation() ? (
+                  <Navigate to="/join" replace />
+                ) : (
+                  <ProtectedRoute isAuthenticated={isAuthenticated} organizationId={organizationId} />
+                )
+              }
+            >
+              <Route index element={<HomePage />} />
+            </Route>
             <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} organizationId={organizationId} />}>
-              <Route path="/" element={<HomePage />} />
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/new" element={<CreateGroupPage />} />
               <Route path="/groups/:groupIdentifier" element={<GroupDetailsPage />} />
