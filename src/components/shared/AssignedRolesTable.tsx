@@ -3,6 +3,7 @@ import {DataTable, type Column} from "../DataTable"
 import {getGroup, getSpace} from "../../services/api"
 import {isRight} from "fp-ts/Either"
 import type {RoleOperationItem, User} from "@approvio/api"
+import type {Versioned} from "@approvio/ts-sdk"
 import {TYPOGRAPHY} from "@/lib/styles"
 import {Link} from "react-router-dom"
 import {ManageUserRolesDialog} from "../users/ManageUserRolesDialog"
@@ -11,7 +12,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 export interface AssignedRolesTableProps {
   roles: RoleOperationItem[]
   loading?: boolean
-  user?: User // Optional user prop. If provided, role management editing is enabled.
+  user?: Versioned<User>
   onRolesChange?: () => void
 }
 
@@ -159,7 +160,8 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
         Manage Roles
       </button>
       <ManageUserRolesDialog
-        user={user}
+        user={user.data}
+        etag={user.etag}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSuccess={() => onRolesChange?.()}
@@ -177,7 +179,7 @@ export const AssignedRolesTable: React.FC<AssignedRolesTableProps> = ({
       page={page}
       rowsPerPage={rowsPerPage}
       onPageChange={setPage}
-      onRowsPerPageChange={(newRowsPerPage) => {
+      onRowsPerPageChange={newRowsPerPage => {
         setRowsPerPage(newRowsPerPage)
         setPage(0)
       }}

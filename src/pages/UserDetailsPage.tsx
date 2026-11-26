@@ -2,10 +2,11 @@ import React, {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import {AlertCircle, ArrowLeft, Loader2, User as UserIcon, Users} from "lucide-react"
-import {getUser} from "../services/api"
+import {getVersionedUser} from "../services/api"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import type {User} from "@approvio/api"
+import type {Versioned} from "@approvio/ts-sdk"
 import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
 import {Link} from "react-router-dom"
 import {type FrontendError} from "../services/api"
@@ -15,7 +16,8 @@ import {Badge} from "@/components/ui/badge"
 
 const UserDetailsPage: React.FC = () => {
   const {userId} = useParams<{userId: string}>()
-  const [user, setUser] = useState<User | null>(null)
+  const [userSnapshot, setUserSnapshot] = useState<Versioned<User> | null>(null)
+  const user = userSnapshot?.data
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,12 +30,12 @@ const UserDetailsPage: React.FC = () => {
       setLoading(true)
       setError(null)
 
-      const result = await getUser(userId)
+      const result = await getVersionedUser(userId)
 
       handleEither(
         result,
-        (response: User) => {
-          setUser(response)
+        (response: Versioned<User>) => {
+          setUserSnapshot(response)
         },
         (error: FrontendError) => {
           setError(error.message)
@@ -49,11 +51,11 @@ const UserDetailsPage: React.FC = () => {
 
   const refetchUser = async () => {
     if (!userId) return
-    const result = await getUser(userId)
+    const result = await getVersionedUser(userId)
     handleEither(
       result,
-      (response: User) => {
-        setUser(response)
+      (response: Versioned<User>) => {
+        setUserSnapshot(response)
       },
       () => {
         /* ignore */
@@ -78,7 +80,7 @@ const UserDetailsPage: React.FC = () => {
     )
   }
 
-  if (loading || !user) {
+  if (loading || !user || !userSnapshot) {
     return (
       <div className="flex justify-center p-8">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -156,7 +158,7 @@ const UserDetailsPage: React.FC = () => {
         </Card>
       </div>
 
-      <AssignedRolesTable roles={user.roles} loading={loading} user={user} onRolesChange={refetchUser} />
+      <AssignedRolesTable roles={user.roles} loading={loading} user={userSnapshot} onRolesChange={refetchUser} />
     </div>
   )
 }

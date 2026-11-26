@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Route, Link as RouterLink, Navigate, Ou
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import AuthCallbackPage from "./pages/AuthCallbackPage"
+import OrganizationsPage from "./pages/OrganizationsPage"
 import UsersPage from "./pages/UsersPage"
 import UserDetailsPage from "./pages/UserDetailsPage"
 import AuditPage from "./pages/AuditPage"
@@ -21,49 +22,53 @@ import GroupDetailsPage from "./pages/GroupDetailsPage"
 import ProfilePage from "./pages/ProfilePage"
 import WorkflowDetailsPage from "./pages/WorkflowDetailsPage"
 import {useAppSelector, useAppDispatch} from "./store/hooks"
-import {clearAuth, setAuthenticated, setInitialized} from "./store/authSlice"
-import {getEntityInfo, logout} from "./services/api"
-import {isRight, isLeft} from "fp-ts/Either"
+import {setInitialized} from "./store/authSlice"
+import {loadBrowserSession, logout} from "./services/api"
+import {isLeft} from "fp-ts/Either"
 import {useNotification} from "./providers/notification/NotificationContext"
 import {GetEntityInfoUserResponse} from "@approvio/api"
 
 interface ProtectedRouteProps {
   isAuthenticated: boolean
+  organizationId: string | null
   redirectPath?: string
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, redirectPath = "/login"}) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, organizationId, redirectPath = "/login"}) => {
   if (!isAuthenticated) return <Navigate to={redirectPath} replace />
-  return <Outlet />
+  if (!organizationId) return <Navigate to="/organizations" replace />
+  return <Outlet key={organizationId} />
 }
 
 const AdminProtectedRoute: React.FC<{
   isAuthenticated: boolean
   orgRole: GetEntityInfoUserResponse["orgRole"] | null
+  organizationId: string | null
   redirectPath?: string
-}> = ({isAuthenticated, orgRole, redirectPath = "/"}) => {
+}> = ({isAuthenticated, organizationId, orgRole, redirectPath = "/"}) => {
   if (!isAuthenticated) return <Navigate to="/login" replace />
-  if (orgRole !== GetEntityInfoUserResponse.OrgRoleEnum.Admin) return <Navigate to={redirectPath} replace />
+  if (!organizationId) return <Navigate to="/organizations" replace />
+  if (!isOrganizationAdmin(orgRole)) return <Navigate to={redirectPath} replace />
   return <Outlet />
+}
+
+function isOrganizationAdmin(role: GetEntityInfoUserResponse["orgRole"] | null): boolean {
+  return role === "owner" || role === "admin"
 }
 
 const App: React.FC = () => {
   const isInitialized = useAppSelector(state => state.auth.isInitialized)
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
   const orgRole = useAppSelector(state => state.auth.orgRole)
+  const organizationId = useAppSelector(state => state.auth.session?.data.selectedOrganizationId ?? null)
+  const [startupError, setStartupError] = React.useState<string | null>(null)
   const dispatch = useAppDispatch()
   const notification = useNotification()
 
   React.useEffect(() => {
     const checkSession = async () => {
-      const result = await getEntityInfo()
-      if (isRight(result)) {
-        const data = result.right
-        const orgRole = data.orgRole
-        dispatch(setAuthenticated({isAuthenticated: true, orgRole}))
-      } else {
-        dispatch(clearAuth())
-      }
+      const result = await loadBrowserSession()
+      if (isLeft(result) && result.left.status !== 401) setStartupError(result.left.message)
       dispatch(setInitialized(true))
     }
     checkSession()
@@ -75,6 +80,17 @@ const App: React.FC = () => {
       notification.showError(
         "Failed to securely log out from the server. Please check your internet connection and try again. If you are on a shared computer, consider clearing your browser cookies."
       )
+  }
+
+  if (startupError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-4 text-foreground">
+        <p role="alert">Could not restore your session. {startupError}</p>
+        <button className="rounded-md border px-3 py-1.5 text-sm" onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    )
   }
 
   if (!isInitialized) {
@@ -91,7 +107,7 @@ const App: React.FC = () => {
         <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
             <RouterLink
-              to={isAuthenticated ? "/" : "/login"}
+              to={isAuthenticated && !organizationId ? "/organizations" : isAuthenticated ? "/" : "/login"}
               className="flex items-center gap-2 font-semibold tracking-tight transition-colors hover:text-emerald-500"
             >
               <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500">
@@ -101,9 +117,9 @@ const App: React.FC = () => {
             </RouterLink>
 
             <nav className="flex items-center gap-6">
-              {isAuthenticated && (
+              {organizationId && (
                 <>
-                  {orgRole === GetEntityInfoUserResponse.OrgRoleEnum.Admin && (
+                  {isOrganizationAdmin(orgRole) && (
                     <>
                       <RouterLink
                         to="/users"
@@ -149,11 +165,19 @@ const App: React.FC = () => {
               {isAuthenticated && (
                 <div className="flex items-center gap-4">
                   <RouterLink
-                    to="/me"
+                    to="/organizations"
                     className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Profile
+                    Organizations
                   </RouterLink>
+                  {organizationId && (
+                    <RouterLink
+                      to="/me"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Profile
+                    </RouterLink>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="rounded-md border border-border/50 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted/50"
@@ -170,12 +194,24 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
-            <Route element={<AdminProtectedRoute isAuthenticated={isAuthenticated} orgRole={orgRole} />}>
+            <Route
+              path="/organizations"
+              element={isAuthenticated ? <OrganizationsPage /> : <Navigate to="/login" replace />}
+            />
+            <Route
+              element={
+                <AdminProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  organizationId={organizationId}
+                  orgRole={orgRole}
+                />
+              }
+            >
               <Route path="/users" element={<UsersPage />} />
               <Route path="/users/:userId" element={<UserDetailsPage />} />
               <Route path="/audit" element={<AuditPage />} />
             </Route>
-            <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+            <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} organizationId={organizationId} />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/groups" element={<GroupsPage />} />
               <Route path="/groups/new" element={<CreateGroupPage />} />

@@ -11,6 +11,7 @@ test.describe("UserDetailsPage & Role Management", () => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
+        headers: {ETag: '"user-version"'},
         body: JSON.stringify(mockUser)
       })
     })
@@ -42,6 +43,7 @@ test.describe("UserDetailsPage & Role Management", () => {
     let saveRolesCalled = false
     await page.route("**/users/*/roles", async route => {
       if (route.request().method() === "PUT") {
+        expect(route.request().headers()["if-match"]).toBe('"user-version"')
         saveRolesCalled = true
         await route.fulfill({
           status: 200,
@@ -58,7 +60,6 @@ test.describe("UserDetailsPage & Role Management", () => {
 
     // 6. Assert standard page elements
     await expect(component.getByRole("heading", {name: "User with Groups and Roles"})).toBeVisible()
-    await expect(component.getByText("groups-roles@localhost.com")).toBeVisible()
 
     // Assert Personal Information Card
     await expect(component.getByText("User ID")).toBeVisible()

@@ -3,7 +3,7 @@ import {useParams, useNavigate} from "react-router-dom"
 import {useNotification} from "../providers/notification/NotificationContext"
 import {handleEither} from "../utils/either"
 import ErrorList, {type ErrorEntry} from "../components/common/ErrorList"
-import {getWorkflowTemplate, updateWorkflowTemplate, type FrontendError} from "../services/api"
+import {getVersionedWorkflowTemplate, updateWorkflowTemplate, type FrontendError} from "../services/api"
 import type {WorkflowTemplateUpdate, WorkflowTemplate} from "@approvio/api"
 
 import TemplateRuleForm from "../components/workflow-templates/TemplateRuleForm"
@@ -13,6 +13,7 @@ import {Loader2, Code} from "lucide-react"
 const WorkflowTemplateEditRulePage: React.FC = () => {
   const {templateIdentifier} = useParams<{templateIdentifier: string}>()
   const [template, setTemplate] = useState<WorkflowTemplate | null>(null)
+  const [etag, setEtag] = useState<string | null>(null)
 
   // Form State
   const [ruleJson, setRuleJson] = useState("{\n  \n}")
@@ -44,11 +45,12 @@ const WorkflowTemplateEditRulePage: React.FC = () => {
       setLoading(true)
       clearApiErrors()
 
-      const result = await getWorkflowTemplate(templateIdentifier)
+      const result = await getVersionedWorkflowTemplate(templateIdentifier)
 
       handleEither(
         result,
-        (templateData: WorkflowTemplate) => {
+        ({data: templateData, etag}) => {
+          setEtag(etag)
           setTemplate(templateData)
           setRuleJson(JSON.stringify(templateData.approvalRule, null, 2))
           setIsValidJson(true)
@@ -78,7 +80,7 @@ const WorkflowTemplateEditRulePage: React.FC = () => {
       return
     }
 
-    if (!templateIdentifier || !template) {
+    if (!templateIdentifier || !template || !etag) {
       addError("Template identifier or template details are missing.")
       setLoading(false)
       return
@@ -86,11 +88,10 @@ const WorkflowTemplateEditRulePage: React.FC = () => {
 
     const payload: WorkflowTemplateUpdate = {
       approvalRule: parsedRule,
-      concurrencyControl: template.concurrencyControl,
       cancelWorkflows: false
     }
 
-    const result = await updateWorkflowTemplate(template.name, payload)
+    const result = await updateWorkflowTemplate(template.name, payload, etag)
 
     handleEither(
       result,

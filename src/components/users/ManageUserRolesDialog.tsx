@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Trash2, Plus, Loader2, Shield} from "lucide-react"
 import {useNotification} from "@/providers/notification/NotificationContext"
-import {listRoleTemplates, assignUserRoles, removeUserRoles} from "@/services/api"
+import {listRoleTemplates, assignUserRoles, removeUserRoles, getVersionedUser} from "@/services/api"
 import {handleEither} from "@/utils/either"
 import type {RoleOperationItem, RoleTemplate, RoleScope, User} from "@approvio/api"
 
@@ -29,12 +29,19 @@ const isSameRoleAssignment = (
 
 interface ManageUserRolesDialogProps {
   user: User
+  etag: string
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
 
-export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({user, open, onOpenChange, onSuccess}) => {
+export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({
+  user,
+  etag,
+  open,
+  onOpenChange,
+  onSuccess
+}) => {
   const [roleTemplates, setRoleTemplates] = useState<RoleTemplate[]>([])
   const [loadingTemplates, setLoadingTemplates] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
@@ -183,39 +190,41 @@ export const ManageUserRolesDialog: React.FC<ManageUserRolesDialogProps> = ({use
       return
     }
 
-    let currentVersion = user.concurrencyControl.version
-
+    let currentEtag = etag
     if (removedRoles.length > 0) {
-      const removePayload = {
-        roles: removedRoles,
-        concurrencyControl: {
-          version: currentVersion
-        }
-      }
-
-      const removeResult = await removeUserRoles(user.id, removePayload)
-
+      const removeResult = await removeUserRoles(user.id, {roles: removedRoles}, currentEtag)
       if (isLeft(removeResult)) {
         notification.showError(`Failed to remove roles: ${removeResult.left.message}`)
+        onSuccess()
         setSaving(false)
         return
       }
 
-      currentVersion += 1
+      if (addedRoles.length > 0) {
+        const refreshed = await getVersionedUser(user.id)
+        const remaining = originalRoles.filter(
+          role => !removedRoles.some(removed => isSameRoleAssignment(role, removed))
+        )
+        if (
+          isLeft(refreshed) ||
+          refreshed.right.data.roles.length !== remaining.length ||
+          remaining.some(role => !refreshed.right.data.roles.some(current => isSameRoleAssignment(role, current)))
+        ) {
+          notification.showError("Roles were removed. Refresh the user before adding more roles.")
+          onSuccess()
+          onOpenChange(false)
+          setSaving(false)
+          return
+        }
+        currentEtag = refreshed.right.etag
+      }
     }
 
     if (addedRoles.length > 0) {
-      const assignPayload = {
-        roles: addedRoles,
-        concurrencyControl: {
-          version: currentVersion
-        }
-      }
-
-      const assignResult = await assignUserRoles(user.id, assignPayload)
-
+      const assignResult = await assignUserRoles(user.id, {roles: addedRoles}, currentEtag)
       if (isLeft(assignResult)) {
         notification.showError(`Failed to assign roles: ${assignResult.left.message}`)
+        onSuccess()
         setSaving(false)
         return
       }

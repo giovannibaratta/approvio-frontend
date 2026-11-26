@@ -12,12 +12,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@approvio/api@npm:0.0.57":
-  version: 0.0.57
-  resolution: "@approvio/api@npm:0.0.57"
+"@approvio/api@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@approvio/api@npm:1.0.0"
   peerDependencies:
     fp-ts: ^2.0.0
-  checksum: 10/dac5e7f092227d9f4218aac454b48c6995c39238777c21c886da7b425a1537a937344324944069cb2ac06a9555620625c22aeacc796ec449283f5de7b92316bc
+  checksum: 10/c2c2912727c55efd0ebb1597042823d568f5b208fffd775cec0454397c2857f8cf951995d18a4c580001a5cfd6d87e8d6ad5a2ff08307430c0b9bf477ffcebd5
   languageName: node
   linkType: hard
 
@@ -25,8 +25,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@approvio/frontend@workspace:."
   dependencies:
-    "@approvio/api": "npm:0.0.57"
-    "@approvio/ts-sdk": "npm:0.0.27"
+    "@approvio/api": "npm:1.0.0"
+    "@approvio/ts-sdk": "npm:1.0.0"
     "@base-ui/react": "npm:^1.4.0"
     "@fontsource-variable/geist": "npm:^5.2.8"
     "@playwright/experimental-ct-react": "npm:^1.58.2"
@@ -53,6 +53,7 @@ __metadata:
     fp-ts: "npm:2.16.11"
     framer-motion: "npm:^12.38.0"
     globals: "npm:16.2.0"
+    io-ts: "npm:2.2.20"
     lucide-react: "npm:^1.8.0"
     msw: "npm:^2.12.10"
     next-themes: "npm:^0.4.6"
@@ -75,17 +76,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@approvio/ts-sdk@npm:0.0.27":
-  version: 0.0.27
-  resolution: "@approvio/ts-sdk@npm:0.0.27"
+"@approvio/ts-sdk@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@approvio/ts-sdk@npm:1.0.0"
   dependencies:
-    "@approvio/api": "npm:0.0.57"
+    "@approvio/api": "npm:1.0.0"
     axios: "npm:1.16.1"
     jose: "npm:6.2.3"
   peerDependencies:
     fp-ts: ^2.0.0
     io-ts: ^2.0.0
-  checksum: 10/39cc03905c8485aae8036e27945bf1de8b2224a3342228de70e8707084d51bdad7f5489badf87e3fd5ff00e06d6d68fe595b17684284c669d8eb64f69f4bfb61
+  checksum: 10/d4d85e15c4018e5efbff1d66a70980bf1cb50ef7b7e447d147f6a0a1e37e6d07f827a3e259fe5c3457970627d96852db0fa3ea3ca34131978d10b5b5f1000ffc
   languageName: node
   linkType: hard
 
@@ -4117,6 +4118,15 @@ __metadata:
     hasown: "npm:^2.0.2"
     side-channel: "npm:^1.1.0"
   checksum: 10/1d5219273a3dab61b165eddf358815eefc463207db33c20fcfca54717da02e3f492003757721f972fd0bf21e4b426cab389c5427b99ceea4b8b670dc88ee6d4a
+  languageName: node
+  linkType: hard
+
+"io-ts@npm:2.2.20":
+  version: 2.2.20
+  resolution: "io-ts@npm:2.2.20"
+  peerDependencies:
+    fp-ts: ^2.5.0
+  checksum: 10/c4508f666dec87ac5e343f11a1d69f4026509b0add3a88c9a39b71ca2d5117396af14ee2b6d1324a17763857d97dd3933095a6b99d885c3b38a89b548e5e32b3
   languageName: node
   linkType: hard
 

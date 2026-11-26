@@ -116,8 +116,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
 
     if (!isAlreadyInDraft) {
       const newMember: UserAssignment = {
-        id: user.id,
-        displayName: user.displayName,
+        ...user,
         isNew: true,
         isRemoved: false
       }
@@ -130,8 +129,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
 
     if (!existingDraft) {
       const memberToRemove: UserAssignment = {
-        id: userSummary.id,
-        displayName: userSummary.displayName,
+        ...userSummary,
         isNew: false,
         isRemoved: true
       }
@@ -261,7 +259,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
             <div className="relative">
               <Input
                 ref={searchInputRef}
-                placeholder="Search users by name or email..."
+                placeholder="Search users by name or ID..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 disabled={loading}

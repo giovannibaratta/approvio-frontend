@@ -217,7 +217,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
             <Input
               ref={searchInputRef}
               type="text"
-              placeholder="Search users by name or email..."
+              placeholder="Search users by name or ID..."
               value={searchQuery}
               onChange={handleSearchChange}
               disabled={loadingSearch || loadingAssigned || loading}

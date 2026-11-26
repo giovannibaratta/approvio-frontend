@@ -31,7 +31,9 @@ test("user can logout and then login successfully navigating the mock SSO flow",
   await expect(googleLoginButton).toBeVisible()
   await googleLoginButton.click()
 
-  // 5. It should go to /auth/callback briefly, which triggers getEntityInfo, then to /
+  // 5. Login establishes an account session. Pick an organization before viewing tenant pages.
+  await expect(page).toHaveURL("/organizations")
+  await page.getByRole("button", {name: "Open Example workspace"}).click()
   await expect(page).toHaveURL(/.*\/$/)
 
   // 6. Verify we are logged in by checking the presence of authenticated UI elements

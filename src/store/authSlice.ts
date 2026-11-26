@@ -1,42 +1,40 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit"
-import {GetEntityInfoUserResponse} from "@approvio/api"
+import type {GetEntityInfoUserResponse, WebSessionContext} from "@approvio/api"
+import type {Versioned} from "@approvio/ts-sdk"
 
-export interface AuthState {
+interface AuthState {
   isAuthenticated: boolean
-  // False if we haven't checked the session yet, true or false after the check is done
   isInitialized: boolean
   orgRole: GetEntityInfoUserResponse["orgRole"] | null
+  session: Versioned<WebSessionContext> | null
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   isInitialized: false,
-  orgRole: null
+  orgRole: null,
+  session: null
 }
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuthenticated: (
-      state,
-      action: PayloadAction<{isAuthenticated: boolean; orgRole: GetEntityInfoUserResponse["orgRole"]}>
-    ) => {
-      console.log("Setting authentication state to:", action.payload.isAuthenticated)
-      state.isAuthenticated = action.payload.isAuthenticated
+    setSession: (state, action: PayloadAction<Pick<AuthState, "session" | "orgRole">>) => {
+      state.isAuthenticated = action.payload.session !== null
+      state.session = action.payload.session
       state.orgRole = action.payload.orgRole
     },
     clearAuth: state => {
-      console.log("Clearing authentication state.")
       state.isAuthenticated = false
+      state.session = null
       state.orgRole = null
     },
     setInitialized: (state, action: PayloadAction<boolean>) => {
-      console.log("Setting initialization state to:", action.payload)
       state.isInitialized = action.payload
     }
   }
 })
 
-export const {setAuthenticated, clearAuth, setInitialized} = authSlice.actions
+export const {setSession, clearAuth, setInitialized} = authSlice.actions
 export default authSlice.reducer

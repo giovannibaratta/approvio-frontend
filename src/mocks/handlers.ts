@@ -1,5 +1,8 @@
 import {http, HttpResponse} from "msw"
 
+const organizationId = "01910000-0000-7000-8000-000000000001"
+const workspace = {id: organizationId, displayName: "Example workspace", slug: "example-workspace", status: "active"}
+
 export const handlers = [
   // 0. Auth Providers Handler (Discovery endpoint)
   http.get("*/auth/providers", () => {
@@ -23,8 +26,34 @@ export const handlers = [
     return HttpResponse.redirect("/auth/callback", 302)
   }),
 
+  http.get("*/auth/web/session", () => {
+    if (sessionStorage.getItem("mock-signed-out") === "true" && location.pathname !== "/auth/callback")
+      return HttpResponse.json({code: "INVALID_SESSION", message: "Sign in first"}, {status: 401})
+    if (location.pathname === "/auth/callback") {
+      sessionStorage.removeItem("mock-signed-out")
+      sessionStorage.setItem("mock-organization", "")
+    }
+    const selectedOrganizationId = sessionStorage.getItem("mock-organization") ?? organizationId
+    return HttpResponse.json(
+      {selectedOrganizationId: selectedOrganizationId || null},
+      {headers: {ETag: '"mock-session"'}}
+    )
+  }),
+
+  http.post("*/auth/web/refresh", () => new HttpResponse(null, {status: 401})),
+
+  http.get("*/o", () => HttpResponse.json({items: [workspace], page: 1, limit: 25, total: 1})),
+
+  http.post("*/auth/web/select-organization", async ({request}) => {
+    const {organizationId} = (await request.json()) as {organizationId: string}
+    sessionStorage.setItem("mock-organization", organizationId)
+    return HttpResponse.json({selectedOrganizationId: organizationId}, {headers: {ETag: '"mock-session-updated"'}})
+  }),
+
   // 0.5. Auth Logout Handler
   http.post("*/auth/web/logout", () => {
+    sessionStorage.setItem("mock-signed-out", "true")
+    sessionStorage.removeItem("mock-organization")
     return new HttpResponse(null, {status: 204})
   }),
 
@@ -32,6 +61,7 @@ export const handlers = [
   http.get("*/auth/info", () => {
     return HttpResponse.json({
       entityType: "user",
+      organizationId,
       groups: [],
       email: "test@example.com",
       name: "Test User",
@@ -132,22 +162,25 @@ export const handlers = [
 
   // 7. Workflow Template Details Handler
   http.get("*/workflow-templates/3fa85f64-5717-4562-b3fc-2c963f66afa6", () => {
-    return HttpResponse.json({
-      id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      name: "Test Template",
-      version: 1,
-      occVersion: 1,
-      description: "A test template",
-      status: "ACTIVE",
-      spaceId: "test-space-id",
-      approvalRule: {
-        type: "GROUP_REQUIREMENT",
-        groupId: "some-group-id",
-        minCount: 1
+    return HttpResponse.json(
+      {
+        id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        name: "Test Template",
+        version: 1,
+        occVersion: 1,
+        description: "A test template",
+        status: "ACTIVE",
+        spaceId: "test-space-id",
+        approvalRule: {
+          type: "GROUP_REQUIREMENT",
+          groupId: "some-group-id",
+          minCount: 1
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    })
+      {headers: {ETag: '"mock-template"'}}
+    )
   }),
 
   // 8. Workflow Templates List Handler
