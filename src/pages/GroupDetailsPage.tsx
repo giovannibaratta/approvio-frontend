@@ -248,7 +248,7 @@ const GroupDetailsPage: React.FC = () => {
                   <TableRow>
                     <TableHead>Type</TableHead>
                     <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead>Member ID</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -284,9 +284,7 @@ const GroupDetailsPage: React.FC = () => {
                             member.loadingUserDetails ? (
                               <Skeleton className="h-4 w-[150px]" />
                             ) : (
-                              <span className={TYPOGRAPHY.MONO_SM_MUTED}>
-                                {member.userDetails?.email || "Unknown Email"}
-                              </span>
+                              <span className={TYPOGRAPHY.MONO_SM_MUTED}>{member.entity.entityId}</span>
                             )
                           ) : (
                             <span className={TYPOGRAPHY.DESCRIPTION_SM}>N/A</span>

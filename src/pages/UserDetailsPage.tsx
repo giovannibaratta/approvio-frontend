@@ -97,7 +97,6 @@ const UserDetailsPage: React.FC = () => {
 
       <div className="mb-8">
         <h1 className={TYPOGRAPHY.TITLE_LG}>{user.displayName}</h1>
-        <p className={TYPOGRAPHY.DESCRIPTION_SM}>{user.email}</p>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">

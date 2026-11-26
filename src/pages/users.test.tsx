@@ -22,5 +22,4 @@ test("UsersPage displays list of users", async ({mount, page}) => {
 
   // 3. Assert
   await expect(component.getByText(userSummaryResponse.displayName)).toBeVisible()
-  await expect(component.getByText(userSummaryResponse.email)).toBeVisible()
 })

@@ -11,8 +11,7 @@ import {DataTable, type Column} from "../components/DataTable"
 import {LAYOUT, TYPOGRAPHY} from "@/lib/styles"
 
 const columns: Column<UserSummary>[] = [
-  {id: "name", label: "Name", render: user => <span className={TYPOGRAPHY.LABEL}>{user.displayName}</span>},
-  {id: "email", label: "Email", render: user => <span className={TYPOGRAPHY.MONO_SM_MUTED}>{user.email}</span>}
+  {id: "name", label: "Name", render: user => <span className={TYPOGRAPHY.LABEL}>{user.displayName}</span>}
 ]
 
 const UsersPage: React.FC = () => {

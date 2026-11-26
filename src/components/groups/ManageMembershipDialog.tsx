@@ -118,7 +118,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       const newMember: UserAssignment = {
         id: user.id,
         displayName: user.displayName,
-        email: user.email,
         isNew: true,
         isRemoved: false
       }
@@ -133,7 +132,6 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
       const memberToRemove: UserAssignment = {
         id: userSummary.id,
         displayName: userSummary.displayName,
-        email: userSummary.email,
         isNew: false,
         isRemoved: true
       }
@@ -302,7 +300,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                               {highlightMatch(user.displayName, searchQuery)}
                             </span>
                             <span className="truncate font-mono text-xs text-muted-foreground">
-                              {highlightMatch(user.email, searchQuery)}
+                              {highlightMatch(user.id, searchQuery)}
                             </span>
                           </div>
                           <div className="ml-4 shrink-0">
@@ -402,7 +400,7 @@ const ManageMembershipDialog: React.FC<ManageMembershipDialogProps> = ({
                             <span
                               className={`font-mono text-xs text-muted-foreground ${member.isRemoved ? "line-through" : ""}`}
                             >
-                              {member.email}
+                              {member.id}
                             </span>
                           </div>
                         </TableCell>

@@ -90,7 +90,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
           const filteredUsers = response.users.filter(
             (user: UserSummary) =>
               (user.displayName.toLowerCase().includes(query.toLowerCase()) ||
-                user.email.toLowerCase().includes(query.toLowerCase())) &&
+                user.id.toLowerCase().includes(query.toLowerCase())) &&
               !assignedUserIds.some(assignedUser => assignedUser === user.id) &&
               !selectedUsers.some(selectedUser => selectedUser.id === user.id)
           )
@@ -280,7 +280,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
                           {highlightMatch(user.displayName, searchQuery)}
                         </span>
                         <span className="truncate font-mono text-xs text-muted-foreground">
-                          {highlightMatch(user.email, searchQuery)}
+                          {highlightMatch(user.id, searchQuery)}
                         </span>
                       </div>
                     </div>
@@ -317,7 +317,7 @@ const AssignUsersStep: React.FC<AssignUsersStepProps> = ({
                       <TableCell>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">{user.displayName}</span>
-                          <span className="font-mono text-xs text-muted-foreground">{user.email}</span>
+                          <span className="font-mono text-xs text-muted-foreground">{user.id}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
