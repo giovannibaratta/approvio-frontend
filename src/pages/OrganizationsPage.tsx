@@ -1,14 +1,16 @@
 import {useEffect, useState} from "react"
 import {isLeft} from "fp-ts/Either"
 import type {OrganizationList} from "@approvio/api"
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Alert, AlertDescription} from "@/components/ui/alert"
 import {Button} from "@/components/ui/button"
-import {listOwnOrganizations, switchOrganization} from "@/services/api"
+import {listOwnOrganizations, logout, switchOrganization} from "@/services/api"
 import {useAppSelector} from "@/store/hooks"
+import {clearPendingInvitation} from "@/services/pending-invitation"
 
 export default function OrganizationsPage() {
+  const navigate = useNavigate()
   const session = useAppSelector(state => state.auth.session)
   const selectedId = session?.data.selectedOrganizationId
   const [organizations, setOrganizations] = useState<OrganizationList | null>(null)
@@ -16,19 +18,36 @@ export default function OrganizationsPage() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [switching, setSwitching] = useState(false)
+  const [requiresFreshSignIn, setRequiresFreshSignIn] = useState(false)
 
   useEffect(() => {
     let current = true
     void listOwnOrganizations(page).then(result => {
       if (!current) return
-      if (isLeft(result)) setError(result.left.message)
-      else setOrganizations(result.right)
+      if (isLeft(result)) {
+        if (selectedId && result.left.status === 401) setRequiresFreshSignIn(true)
+        else setError(result.left.message)
+      } else setOrganizations(result.right)
       setLoading(false)
     })
+
     return () => {
       current = false
     }
-  }, [page])
+  }, [page, selectedId])
+
+  async function signOutToSwitch() {
+    setSwitching(true)
+    setError(null)
+    const result = await logout()
+    if (isLeft(result)) {
+      setError(result.left.message)
+      setSwitching(false)
+      return
+    }
+    clearPendingInvitation()
+    navigate("/login", {replace: true})
+  }
 
   async function select(organizationId: string) {
     if (!session) return
@@ -114,6 +133,14 @@ export default function OrganizationsPage() {
               }}
             >
               Next
+            </Button>
+          </div>
+        )}
+        {requiresFreshSignIn && (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Sign in again to load your organization list.</p>
+            <Button disabled={switching} onClick={() => void signOutToSwitch()}>
+              Sign out to switch
             </Button>
           </div>
         )}

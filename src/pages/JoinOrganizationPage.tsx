@@ -17,7 +17,13 @@ export default function JoinOrganizationPage() {
   const navigate = useNavigate()
   const notification = useNotification()
   const session = useAppSelector(state => state.auth.session)
-  const [savedInvitation] = useState(readPendingInvitation)
+  const [savedInvitation] = useState(() => {
+    const invitation = readPendingInvitation()
+    if (!invitation) return null
+    if (linkedOrganizationId && linkedOrganizationId !== invitation.organizationId) return null
+    if (linkedInvitationId && linkedInvitationId !== invitation.invitationId) return null
+    return invitation
+  })
   const [organizationId, setOrganizationId] = useState(linkedOrganizationId ?? savedInvitation?.organizationId ?? "")
   const [invitationId, setInvitationId] = useState(linkedInvitationId ?? savedInvitation?.invitationId ?? "")
   const [token, setToken] = useState(

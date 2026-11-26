@@ -54,6 +54,9 @@ export const handlers = [
   http.post("*/auth/web/refresh", () => new HttpResponse(null, {status: 401})),
 
   http.get("*/o", () => {
+    const selected = sessionStorage.getItem("mock-organization") ?? organizationId
+    if (selected && sessionStorage.getItem("mock-require-platform") === "true")
+      return HttpResponse.json({code: "INVALID_SESSION", message: "A platform session is required"}, {status: 401})
     const items = mockOrganizations()
     return HttpResponse.json({items, page: 1, limit: 25, total: items.length})
   }),

@@ -56,3 +56,17 @@ test("keeps the invitation through sign-in and lets the user enter the joined or
   await expect(page).toHaveURL("/")
   await expect(page.getByRole("link", {name: "Profile"})).toBeVisible()
 })
+
+test("offers a fresh sign-in when the selected session cannot list organizations", async ({page}) => {
+  // Given
+  await page.addInitScript(() => sessionStorage.setItem("mock-require-platform", "true"))
+  await page.goto("/")
+
+  // When
+  await page.getByRole("link", {name: "Organizations"}).click()
+  await page.getByRole("button", {name: "Sign out to switch"}).click()
+
+  // Expect
+  await expect(page).toHaveURL("/login")
+  await expect(page.getByRole("link", {name: "Sign in with Google"})).toBeVisible()
+})
