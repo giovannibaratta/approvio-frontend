@@ -117,7 +117,11 @@ async function tenantRequest<T>(
 
 async function readBrowserSession(): Promise<Either<FrontendError, Versioned<WebSessionContext>>> {
   const result = await platform.getWebSession()()
-  if (isLeft(result)) return left(mapApiError(result.left))
+  if (isLeft(result)) {
+    const error = mapApiError(result.left)
+    // The SDK tries to refresh after a 401, even on the first visit without cookies.
+    return left(error.code === "REQUEST_MISSING_REFRESH_TOKEN" ? {...error, status: 401} : error)
+  }
   const organizationId = result.right.data.selectedOrganizationId
   const entity = organizationId ? await tenantClient(organizationId).getEntityInfo()() : null
   store.dispatch(setSession({session: result.right, orgRole: entity && isRight(entity) ? entity.right.orgRole : null}))
