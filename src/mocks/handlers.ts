@@ -1,7 +1,18 @@
 import {http, HttpResponse} from "msw"
+import type {OrganizationCreate, OrganizationSummary} from "@approvio/api"
 
 const organizationId = "01910000-0000-7000-8000-000000000001"
-const workspace = {id: organizationId, displayName: "Example workspace", slug: "example-workspace", status: "active"}
+const workspace: OrganizationSummary = {
+  id: organizationId,
+  displayName: "Example workspace",
+  slug: "example-workspace",
+  status: "active"
+}
+
+function mockOrganizations(): OrganizationSummary[] {
+  const stored = sessionStorage.getItem("mock-organizations")
+  return stored === null ? [workspace] : JSON.parse(stored)
+}
 
 export const handlers = [
   // 0. Auth Providers Handler (Discovery endpoint)
@@ -42,7 +53,17 @@ export const handlers = [
 
   http.post("*/auth/web/refresh", () => new HttpResponse(null, {status: 401})),
 
-  http.get("*/o", () => HttpResponse.json({items: [workspace], page: 1, limit: 25, total: 1})),
+  http.get("*/o", () => {
+    const items = mockOrganizations()
+    return HttpResponse.json({items, page: 1, limit: 25, total: items.length})
+  }),
+
+  http.post("*/o", async ({request}) => {
+    const data = (await request.json()) as OrganizationCreate
+    const organization: OrganizationSummary = {...data, id: crypto.randomUUID(), status: "active"}
+    sessionStorage.setItem("mock-organizations", JSON.stringify([...mockOrganizations(), organization]))
+    return HttpResponse.json({organization}, {status: 201})
+  }),
 
   http.post("*/auth/web/select-organization", async ({request}) => {
     const {organizationId} = (await request.json()) as {organizationId: string}

@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import AuthCallbackPage from "./pages/AuthCallbackPage"
 import OrganizationsPage from "./pages/OrganizationsPage"
+import CreateOrganizationPage from "./pages/CreateOrganizationPage"
 import UsersPage from "./pages/UsersPage"
 import UserDetailsPage from "./pages/UserDetailsPage"
 import AuditPage from "./pages/AuditPage"
@@ -197,6 +198,16 @@ const App: React.FC = () => {
             <Route
               path="/organizations"
               element={isAuthenticated ? <OrganizationsPage /> : <Navigate to="/login" replace />}
+            />
+            <Route
+              path="/organizations/new"
+              element={
+                isAuthenticated && !organizationId ? (
+                  <CreateOrganizationPage />
+                ) : (
+                  <Navigate to={isAuthenticated ? "/organizations" : "/login"} replace />
+                )
+              }
             />
             <Route
               element={

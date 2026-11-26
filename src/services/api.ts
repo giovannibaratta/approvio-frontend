@@ -29,6 +29,7 @@ import {
   type ListAuditLogsParams,
   type ListMyAuditLogsParams,
   type ListAuditLogs200Response,
+  type OrganizationCreate,
   type OrganizationList,
   type WebSessionContext,
   type AuthProvider
@@ -133,6 +134,10 @@ export function loadBrowserSession() {
 
 export async function listOwnOrganizations(page = 1): Promise<Either<FrontendError, OrganizationList>> {
   return mapLeft(mapApiError)(await platform.listOwnOrganizations({page, limit: 25})())
+}
+
+export async function createOrganization(input: OrganizationCreate) {
+  return mapLeft(mapApiError)(await platform.createOrganization(input)())
 }
 
 export async function switchOrganization(

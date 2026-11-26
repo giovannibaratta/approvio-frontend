@@ -117,6 +117,11 @@ export default function OrganizationsPage() {
             </Button>
           </div>
         )}
+        {!selectedId && (
+          <Button asChild>
+            <Link to="/organizations/new">Create organization</Link>
+          </Button>
+        )}
         {selectedId && (
           <Button asChild variant="ghost">
             <Link to="/">Back to workspace</Link>
