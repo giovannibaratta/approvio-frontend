@@ -11,7 +11,7 @@ test.describe("UserDetailsPage & Role Management", () => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        headers: {ETag: '"user-version"'},
+        headers: {ETag: '"user-version"', "Access-Control-Expose-Headers": "ETag"},
         body: JSON.stringify(mockUser)
       })
     })
@@ -63,7 +63,7 @@ test.describe("UserDetailsPage & Role Management", () => {
 
     // Assert Personal Information Card
     await expect(component.getByText("User ID")).toBeVisible()
-    await expect(component.getByText("f3c8b4df-6d75-4309-844a-9c7efc8bf141")).toBeVisible()
+    await expect(component.getByText(mockUser.id, {exact: true})).toBeVisible()
     await expect(component.getByText("Standard User")).toBeVisible()
 
     // Assert Group Membership Card

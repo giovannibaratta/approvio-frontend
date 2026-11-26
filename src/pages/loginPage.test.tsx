@@ -25,7 +25,7 @@ test.describe("LoginPage Component Tests", () => {
       })
     })
 
-    const component = await mount(<LoginPageTestWrapper />)
+    const component = await mount(<LoginPageTestWrapper />, {hooksConfig: {signedOut: true}})
 
     await expect(component.getByText("Welcome to Approvio")).toBeVisible()
     await expect(component.getByText("Sign in with Google")).toBeVisible()
@@ -52,7 +52,7 @@ test.describe("LoginPage Component Tests", () => {
       }
     })
 
-    const component = await mount(<LoginPageTestWrapper />)
+    const component = await mount(<LoginPageTestWrapper />, {hooksConfig: {signedOut: true}})
 
     await expect(component.getByText("Provider service unreachable")).toBeVisible()
     const retryButton = component.getByRole("button", {name: "Retry"})
@@ -73,7 +73,7 @@ test.describe("LoginPage Component Tests", () => {
       })
     })
 
-    const component = await mount(<LoginPageTestWrapper />)
+    const component = await mount(<LoginPageTestWrapper />, {hooksConfig: {signedOut: true}})
 
     await expect(
       component.getByText("No identity providers are currently configured. Please contact your administrator.")
