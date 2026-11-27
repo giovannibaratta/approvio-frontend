@@ -70,7 +70,7 @@ export default function OrganizationsPage() {
     <Card className="mx-auto max-w-2xl border-border/50 bg-background/50">
       <CardHeader>
         <CardTitle>Choose an organization</CardTitle>
-        <CardDescription>Open the workspace you want to use.</CardDescription>
+        <CardDescription>Select the organization you want to use.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
@@ -154,7 +154,7 @@ export default function OrganizationsPage() {
         </Button>
         {selectedId && (
           <Button asChild variant="ghost">
-            <Link to="/">Back to workspace</Link>
+            <Link to="/">Back to organization</Link>
           </Button>
         )}
       </CardContent>

@@ -12,6 +12,7 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 export interface AssignedRolesTableProps {
   roles: RoleOperationItem[]
   loading?: boolean
+  // Supplying a versioned user enables role editing with its ETag.
   user?: Versioned<User>
   onRolesChange?: () => void
 }
