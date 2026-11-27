@@ -63,6 +63,10 @@ export default function JoinOrganizationPage() {
     setError(null)
     const result = await acceptOrganizationInvitation(invitation)
     if (isLeft(result)) {
+      if (["INVITATION_EXPIRED", "INVITATION_REVOKED", "INVITATION_ALREADY_ACCEPTED"].includes(result.left.code)) {
+        clearPendingInvitation()
+        setToken("")
+      }
       setError(result.left.message)
       setSubmitting(false)
       return
